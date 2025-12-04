@@ -17,8 +17,6 @@ class Audio extends Model
     /** @use HasFactory<AudioFactory> */
     use HasFactory;
 
-    protected $table = 'audios';
-
     protected $fillable = [
         'title',
         'description',

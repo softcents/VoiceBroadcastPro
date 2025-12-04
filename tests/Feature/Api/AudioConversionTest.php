@@ -15,7 +15,7 @@ test('it dispatches conversion job on upload', function () {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('test.mp3', 100, 'audio/mpeg');
 
-    $response = actingAs($user)->postJson('/api/audios', [
+    $response = actingAs($user)->postJson('/api/audio', [
         'title' => 'Test Upload',
         'type' => AudioType::Record->value,
         'file' => $file,

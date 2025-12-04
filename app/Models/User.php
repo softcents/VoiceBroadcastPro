@@ -9,6 +9,7 @@ use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -63,7 +64,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         );
     }
 
-    public function audios(): HasMany
+    public function audio(): HasMany
     {
         return $this->hasMany(Audio::class);
     }
@@ -76,6 +77,31 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
     public function templates(): HasMany
     {
         return $this->hasMany(Template::class);
+    }
+
+    public function sendingServers(): BelongsToMany
+    {
+        return $this->belongsToMany(SendingServer::class, 'sending_server_user');
+    }
+
+    public function senderIds(): BelongsToMany
+    {
+        return $this->belongsToMany(SenderId::class, 'sender_id_user');
+    }
+
+    public function deposits(): HasMany
+    {
+        return $this->hasMany(Deposit::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function campaigns(): HasMany
+    {
+        return $this->hasMany(Campaign::class);
     }
 
     public function canAccessPanel(Panel $panel): bool

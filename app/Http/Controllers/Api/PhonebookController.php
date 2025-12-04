@@ -22,7 +22,7 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 class PhonebookController extends Controller
 {
     #[Endpoint(title: 'List Phonebooks', description: 'Retrieve a list of phonebooks for the current user.')]
-    #[ResponseFromApiResource(name: PhonebookResource::class, model: User::class, collection: true, paginate: 10)]
+    #[ResponseFromApiResource(name: PhonebookResource::class, model: User::class, collection: true, paginate: 15)]
     #[QueryParam(name: 'page', type: 'integer', description: 'The page number.', required: false)]
     #[QueryParam(name: 'per_page', type: 'integer', description: 'Number of items per page.', required: false)]
     public function index(#[CurrentUser] User $user): ResourceCollection

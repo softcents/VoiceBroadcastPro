@@ -35,4 +35,9 @@ return [
         ],
     ],
 
+    'piprapay' => [
+        'base_url' => env('PIPRAPAY_BASE_URL', 'https://pay.frolax.agency/api'),
+        'api_key' => env('PIPRAPAY_API_KEY'),
+    ],
+
 ];

@@ -15,12 +15,12 @@ return new class extends Migration {
      */
     public function up(): void
     {
-        Schema::create('audios', function (Blueprint $table) {
+        Schema::create('audio', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
             $table->string('title');
             $table->text('description')->nullable();
-            
+
             $table->enum('type', array_column(AudioType::cases(), 'value'));
             $table->enum('approval', array_column(AudioApproval::cases(), 'value'))->default(AudioApproval::Pending->value);
             $table->text('message')->nullable();
@@ -48,6 +48,6 @@ return new class extends Migration {
      */
     public function down(): void
     {
-        Schema::dropIfExists('audios');
+        Schema::dropIfExists('audio');
     }
 };

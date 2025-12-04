@@ -22,7 +22,7 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 class ContactController extends Controller
 {
     #[Endpoint(title: 'List Contacts', description: 'Retrieve a list of contacts for the current user.')]
-    #[ResponseFromApiResource(name: ContactResource::class, model: User::class, collection: true, paginate: 10)]
+    #[ResponseFromApiResource(name: ContactResource::class, model: User::class, collection: true, paginate: 15)]
     #[QueryParam(name: 'phonebook_id', type: 'integer', description: 'Filter by phonebook ID', required: false)]
     #[QueryParam(name: 'page', type: 'integer', description: 'The page number.', required: false)]
     #[QueryParam(name: 'per_page', type: 'integer', description: 'Number of items per page.', required: false)]

@@ -1,5 +1,9 @@
 <?php
 
+use App\Enums\AudioApproval;
+use App\Enums\AudioArtist;
+use App\Enums\AudioGender;
+use App\Enums\AudioLanguage;
 use App\Enums\AudioType;
 use App\Models\Audio;
 use App\Models\User;
@@ -7,13 +11,12 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
-use function Pest\Laravel\assertDatabaseMissing;
 
-test('can list audios', function () {
+test('can list audio', function () {
     $user = User::factory()->create();
     Audio::factory()->count(3)->create(['user_id' => $user->id]);
 
-    $response = actingAs($user)->getJson('/api/audios');
+    $response = actingAs($user)->getJson('/api/audio');
 
     $response->assertOk()
         ->assertJsonCount(3, 'data');
@@ -22,29 +25,29 @@ test('can list audios', function () {
 test('can create audio (tts)', function () {
     $user = User::factory()->create();
 
-    $response = actingAs($user)->postJson('/api/audios', [
+    $response = actingAs($user)->postJson('/api/audio', [
         'title' => 'Test Audio',
         'type' => AudioType::TTS->value,
         'message' => 'Hello World',
-        'language' => \App\Enums\AudioLanguage::BnBD->value,
-        'gender' => \App\Enums\AudioGender::Male->value,
-        'artist' => \App\Enums\AudioArtist::BnBdPradeepNeural->value,
+        'language' => AudioLanguage::BnBD->value,
+        'gender' => AudioGender::Male->value,
+        'artist' => AudioArtist::BnBdPradeepNeural->value,
     ]);
 
     $response->assertCreated()
         ->assertJsonPath('data.title', 'Test Audio')
         ->assertJsonPath('data.type', AudioType::TTS->value)
-        ->assertJsonPath('data.approval', \App\Enums\AudioApproval::Pending->value)
+        ->assertJsonPath('data.approval', AudioApproval::Pending->value)
         ->assertJsonPath('data.message', 'Hello World')
-        ->assertJsonPath('data.language', \App\Enums\AudioLanguage::BnBD->value)
-        ->assertJsonPath('data.artist', \App\Enums\AudioArtist::BnBdPradeepNeural->value);
+        ->assertJsonPath('data.language', AudioLanguage::BnBD->value)
+        ->assertJsonPath('data.artist', AudioArtist::BnBdPradeepNeural->value);
 
-    assertDatabaseHas('audios', [
+    assertDatabaseHas('audio', [
         'title' => 'Test Audio',
         'type' => AudioType::TTS->value,
-        'approval' => \App\Enums\AudioApproval::Pending->value,
+        'approval' => AudioApproval::Pending->value,
         'message' => 'Hello World',
-        'language' => \App\Enums\AudioLanguage::BnBD->value,
+        'language' => AudioLanguage::BnBD->value,
     ]);
 });
 
@@ -54,7 +57,7 @@ test('can create audio (upload)', function () {
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('test.mp3', 100, 'audio/mpeg');
 
-    $response = actingAs($user)->postJson('/api/audios', [
+    $response = actingAs($user)->postJson('/api/audio', [
         'title' => 'Test Upload',
         'type' => AudioType::Record->value,
         'file' => $file,
@@ -72,7 +75,7 @@ test('can show audio', function () {
     $user = User::factory()->create();
     $audio = Audio::factory()->create(['user_id' => $user->id]);
 
-    $response = actingAs($user)->getJson("/api/audios/{$audio->id}");
+    $response = actingAs($user)->getJson("/api/audio/{$audio->id}");
 
     $response->assertOk()
         ->assertJsonPath('data.id', $audio->id);
@@ -82,14 +85,14 @@ test('can update audio', function () {
     $user = User::factory()->create();
     $audio = Audio::factory()->create(['user_id' => $user->id]);
 
-    $response = actingAs($user)->putJson("/api/audios/{$audio->id}", [
+    $response = actingAs($user)->putJson("/api/audio/{$audio->id}", [
         'title' => 'Updated Title',
     ]);
 
     $response->assertOk()
         ->assertJsonPath('data.title', 'Updated Title');
 
-    assertDatabaseHas('audios', [
+    assertDatabaseHas('audio', [
         'id' => $audio->id,
         'title' => 'Updated Title',
     ]);
@@ -100,7 +103,7 @@ test('cannot update others audio', function () {
     $otherUser = User::factory()->create();
     $audio = Audio::factory()->create(['user_id' => $otherUser->id]);
 
-    $response = actingAs($user)->putJson("/api/audios/{$audio->id}", [
+    $response = actingAs($user)->putJson("/api/audio/{$audio->id}", [
         'title' => 'Updated Title',
     ]);
 
@@ -111,7 +114,7 @@ test('can delete audio', function () {
     $user = User::factory()->create();
     $audio = Audio::factory()->create(['user_id' => $user->id]);
 
-    $response = actingAs($user)->deleteJson("/api/audios/{$audio->id}");
+    $response = actingAs($user)->deleteJson("/api/audio/{$audio->id}");
 
     $response->assertNoContent();
 
@@ -119,7 +122,7 @@ test('can delete audio', function () {
     $otherUser = User::factory()->create();
     $audio = Audio::factory()->create(['user_id' => $otherUser->id]);
 
-    $response = actingAs($user)->deleteJson("/api/audios/{$audio->id}");
+    $response = actingAs($user)->deleteJson("/api/audio/{$audio->id}");
 
     $response->assertForbidden();
 });

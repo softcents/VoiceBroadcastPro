@@ -29,7 +29,7 @@ class AudioController extends Controller
     #[QueryParam(name: 'type', type: 'enum', description: 'Filter by type', required: false, enum: AudioType::class)]
     #[QueryParam(name: 'page', type: 'integer', description: 'The page number.', required: false)]
     #[QueryParam(name: 'per_page', type: 'integer', description: 'Number of items per page.', required: false)]
-    #[ResponseFromApiResource(name: AudioResource::class, model: User::class, collection: true, paginate: 10)]
+    #[ResponseFromApiResource(name: AudioResource::class, model: User::class, collection: true, paginate: 15)]
     public function index(#[CurrentUser] User $user, Request $request): ResourceCollection
     {
         $audios = Audio::whereUserId($user->id)
@@ -57,7 +57,7 @@ class AudioController extends Controller
             $data['size'] = $file->getSize();
         }
 
-        $audio = $user->audios()->create($data);
+        $audio = $user->audio()->create($data);
         $audio->refresh();
 
         if ($audio->type === AudioType::Record) {
