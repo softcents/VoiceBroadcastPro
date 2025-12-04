@@ -68,6 +68,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->hasMany(AudioRecord::class, 'user_id');
     }
 
+    public function contactGroups(): HasMany
+    {
+        return $this->hasMany(ContactGroup::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {

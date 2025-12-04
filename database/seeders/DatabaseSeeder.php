@@ -27,5 +27,9 @@ class DatabaseSeeder extends Seeder
             'email' => 'user@mail.com',
             'type' => UserType::User,
         ]);
+
+        $this->call([
+            DemoSeeder::class,
+        ]);
     }
 }

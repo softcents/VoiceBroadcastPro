@@ -2,10 +2,12 @@
 
 namespace Database\Factories;
 
+use App\Models\AudioFile;
+use App\Models\AudioRecord;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\AudioFile>
+ * @extends Factory<AudioFile>
  */
 class AudioFileFactory extends Factory
 {
@@ -17,7 +19,11 @@ class AudioFileFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'audio_record_id' => AudioRecord::factory(),
+            'name' => fake()->word() . '.mp3',
+            'path' => 'audio-records/' . fake()->uuid() . '.mp3',
+            'size' => fake()->numberBetween(1000, 1000000),
+            'mime_type' => 'audio/mpeg',
         ];
     }
 }

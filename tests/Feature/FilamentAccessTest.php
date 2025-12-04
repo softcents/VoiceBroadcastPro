@@ -1,57 +1,45 @@
 <?php
 
-namespace Tests\Feature;
-
 use App\Enums\UserType;
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use function Pest\Laravel\actingAs;
 
-class FilamentAccessTest extends TestCase
-{
-    use RefreshDatabase;
+test('admin can access admin panel', function () {
+    $admin = User::factory()->create([
+        'type' => UserType::Admin,
+    ]);
 
-    public function test_admin_can_access_admin_panel()
-    {
-        $admin = User::factory()->create([
-            'type' => UserType::Admin,
-        ]);
+    actingAs($admin)
+        ->get('/admin')
+        ->assertSuccessful();
+});
 
-        $this->actingAs($admin)
-            ->get('/admin')
-            ->assertSuccessful();
-    }
+test('user cannot access admin panel', function () {
+    $user = User::factory()->create([
+        'type' => UserType::User,
+    ]);
 
-    public function test_user_cannot_access_admin_panel()
-    {
-        $user = User::factory()->create([
-            'type' => UserType::User,
-        ]);
+    actingAs($user)
+        ->get('/admin')
+        ->assertForbidden();
+});
 
-        $this->actingAs($user)
-            ->get('/admin')
-            ->assertForbidden();
-    }
+test('user can access user panel', function () {
+    $user = User::factory()->create([
+        'type' => UserType::User,
+    ]);
 
-    public function test_user_can_access_user_panel()
-    {
-        $user = User::factory()->create([
-            'type' => UserType::User,
-        ]);
+    actingAs($user)
+        ->get('/user')
+        ->assertSuccessful();
+});
 
-        $this->actingAs($user)
-            ->get('/')
-            ->assertSuccessful();
-    }
+test('admin cannot access user panel', function () {
+    $admin = User::factory()->create([
+        'type' => UserType::Admin,
+    ]);
 
-    public function test_admin_cannot_access_user_panel()
-    {
-        $admin = User::factory()->create([
-            'type' => UserType::Admin,
-        ]);
-
-        $this->actingAs($admin)
-            ->get('/')
-            ->assertForbidden();
-    }
-}
+    actingAs($admin)
+        ->get('/user')
+        ->assertForbidden();
+});

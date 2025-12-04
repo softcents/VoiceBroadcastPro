@@ -1,73 +1,63 @@
 <?php
 
-namespace Tests\Feature\Api;
-
 use App\Models\User;
-use Illuminate\Foundation\Testing\RefreshDatabase;
-use Tests\TestCase;
+use Illuminate\Support\Facades\Hash;
+use function Pest\Laravel\actingAs;
+use function Pest\Laravel\assertDatabaseHas;
 
-class AccountTest extends TestCase
-{
-    use RefreshDatabase;
+test('can get account details', function () {
+    $user = User::factory()->create();
 
-    public function test_can_get_account_details(): void
-    {
-        $user = User::factory()->create();
+    $response = actingAs($user)->getJson('/api/account');
 
-        $response = $this->actingAs($user)->getJson('/api/account');
+    $response->assertOk()
+        ->assertJsonPath('data.id', $user->id)
+        ->assertJsonPath('data.name', $user->name)
+        ->assertJsonPath('data.email', $user->email);
+});
 
-        $response->assertOk()
-            ->assertJsonPath('data.id', $user->id)
-            ->assertJsonPath('data.name', $user->name)
-            ->assertJsonPath('data.email', $user->email);
-    }
+test('can update profile', function () {
+    $user = User::factory()->create();
 
-    public function test_can_update_profile(): void
-    {
-        $user = User::factory()->create();
+    $response = actingAs($user)->putJson('/api/account', [
+        'name' => 'New Name',
+        'email' => 'newemail@example.com',
+    ]);
 
-        $response = $this->actingAs($user)->putJson('/api/account', [
-            'name' => 'New Name',
-            'email' => 'newemail@example.com',
-        ]);
+    $response->assertOk()
+        ->assertJsonPath('data.name', 'New Name')
+        ->assertJsonPath('data.email', 'newemail@example.com');
 
-        $response->assertOk()
-            ->assertJsonPath('data.name', 'New Name')
-            ->assertJsonPath('data.email', 'newemail@example.com');
+    assertDatabaseHas('users', [
+        'id' => $user->id,
+        'name' => 'New Name',
+        'email' => 'newemail@example.com',
+    ]);
+});
 
-        $this->assertDatabaseHas('users', [
-            'id' => $user->id,
-            'name' => 'New Name',
-            'email' => 'newemail@example.com',
-        ]);
-    }
+test('can change password', function () {
+    $user = User::factory()->create([
+        'password' => 'password',
+    ]);
 
-    public function test_can_change_password(): void
-    {
-        $user = User::factory()->create([
-            'password' => 'password',
-        ]);
+    $response = actingAs($user)->putJson('/api/account/password', [
+        'current_password' => 'password',
+        'password' => 'newpassword',
+        'password_confirmation' => 'newpassword',
+    ]);
 
-        $response = $this->actingAs($user)->putJson('/api/account/password', [
-            'current_password' => 'password',
-            'password' => 'newpassword',
-            'password_confirmation' => 'newpassword',
-        ]);
+    $response->assertOk();
 
-        $response->assertOk();
+    expect(Hash::check('newpassword', $user->fresh()->password))->toBeTrue();
+});
 
-        $this->assertTrue(\Illuminate\Support\Facades\Hash::check('newpassword', $user->fresh()->password));
-    }
+test('can get balance', function () {
+    $user = User::factory()->create([
+        'balance' => 10,
+    ]);
 
-    public function test_can_get_balance(): void
-    {
-        $user = User::factory()->create([
-            'balance' => 10,
-        ]);
+    $response = actingAs($user)->getJson('/api/account/balance');
 
-        $response = $this->actingAs($user)->getJson('/api/account/balance');
-
-        $response->assertOk()
-            ->assertJsonPath('data.balance', 10);
-    }
-}
+    $response->assertOk()
+        ->assertJsonPath('data.balance', 10);
+});

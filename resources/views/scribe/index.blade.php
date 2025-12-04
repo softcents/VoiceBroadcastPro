@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-    <title>Voice API Docs</title>
+    <title>Voice API Documentation</title>
     <meta charset="utf-8"/>
     <meta
         name="viewport"
