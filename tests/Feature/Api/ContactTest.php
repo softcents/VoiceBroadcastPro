@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Contact;
-use App\Models\ContactGroup;
+use App\Models\Phonebook;
 use App\Models\User;
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
@@ -9,8 +9,8 @@ use function Pest\Laravel\assertDatabaseMissing;
 
 test('can list contacts', function () {
     $user = User::factory()->create();
-    $group = ContactGroup::factory()->create(['user_id' => $user->id]);
-    Contact::factory()->count(3)->create(['contact_group_id' => $group->id]);
+    $phonebook = Phonebook::factory()->create(['user_id' => $user->id]);
+    Contact::factory()->count(3)->create(['phonebook_id' => $phonebook->id]);
 
     $response = actingAs($user)->getJson('/api/contacts');
 
@@ -18,46 +18,49 @@ test('can list contacts', function () {
         ->assertJsonCount(3, 'data');
 });
 
-test('can filter contacts by group', function () {
+test('can filter contacts by phonebook', function () {
     $user = User::factory()->create();
-    $group1 = ContactGroup::factory()->create(['user_id' => $user->id]);
-    $group2 = ContactGroup::factory()->create(['user_id' => $user->id]);
-    Contact::factory()->count(2)->create(['contact_group_id' => $group1->id]);
-    Contact::factory()->count(1)->create(['contact_group_id' => $group2->id]);
+    $phonebook1 = Phonebook::factory()->create(['user_id' => $user->id]);
+    $phonebook2 = Phonebook::factory()->create(['user_id' => $user->id]);
+    Contact::factory()->create(['phonebook_id' => $phonebook1->id]);
+    Contact::factory()->create(['phonebook_id' => $phonebook2->id]);
 
-    $response = actingAs($user)->getJson("/api/contacts?contact_group_id={$group1->id}");
+    $response = actingAs($user)->getJson("/api/contacts?phonebook_id={$phonebook1->id}");
 
     $response->assertOk()
-        ->assertJsonCount(2, 'data');
+        ->assertJsonCount(1, 'data');
 });
 
 test('can create contact', function () {
     $user = User::factory()->create();
-    $group = ContactGroup::factory()->create(['user_id' => $user->id]);
+    $phonebook = Phonebook::factory()->create(['user_id' => $user->id]);
 
     $response = actingAs($user)->postJson('/api/contacts', [
-        'contact_group_id' => $group->id,
+        'phonebook_id' => $phonebook->id,
         'first_name' => 'John',
         'last_name' => 'Doe',
         'phone_number' => '+8801712345678',
     ]);
 
     $response->assertCreated()
-        ->assertJsonPath('data.first_name', 'John');
+        ->assertJsonPath('data.first_name', 'John')
+        ->assertJsonPath('data.last_name', 'Doe');
 
     assertDatabaseHas('contacts', [
-        'contact_group_id' => $group->id,
+        'phonebook_id' => $phonebook->id,
         'first_name' => 'John',
+        'last_name' => 'Doe',
+        'phone_number' => '+8801712345678',
     ]);
 });
 
-test('cannot create contact in others group', function () {
+test('cannot create contact in others phonebook', function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
-    $group = ContactGroup::factory()->create(['user_id' => $otherUser->id]);
+    $phonebook = Phonebook::factory()->create(['user_id' => $otherUser->id]);
 
     $response = actingAs($user)->postJson('/api/contacts', [
-        'contact_group_id' => $group->id,
+        'phonebook_id' => $phonebook->id,
         'first_name' => 'John',
         'last_name' => 'Doe',
         'phone_number' => '+8801712345678',
@@ -68,8 +71,8 @@ test('cannot create contact in others group', function () {
 
 test('can show contact', function () {
     $user = User::factory()->create();
-    $group = ContactGroup::factory()->create(['user_id' => $user->id]);
-    $contact = Contact::factory()->create(['contact_group_id' => $group->id]);
+    $phonebook = Phonebook::factory()->create(['user_id' => $user->id]);
+    $contact = Contact::factory()->create(['phonebook_id' => $phonebook->id]);
 
     $response = actingAs($user)->getJson("/api/contacts/{$contact->id}");
 
@@ -80,8 +83,8 @@ test('can show contact', function () {
 test('cannot show others contact', function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
-    $group = ContactGroup::factory()->create(['user_id' => $otherUser->id]);
-    $contact = Contact::factory()->create(['contact_group_id' => $group->id]);
+    $phonebook = Phonebook::factory()->create(['user_id' => $otherUser->id]);
+    $contact = Contact::factory()->create(['phonebook_id' => $phonebook->id]);
 
     $response = actingAs($user)->getJson("/api/contacts/{$contact->id}");
 
@@ -90,27 +93,30 @@ test('cannot show others contact', function () {
 
 test('can update contact', function () {
     $user = User::factory()->create();
-    $group = ContactGroup::factory()->create(['user_id' => $user->id]);
-    $contact = Contact::factory()->create(['contact_group_id' => $group->id]);
+    $phonebook = Phonebook::factory()->create(['user_id' => $user->id]);
+    $contact = Contact::factory()->create(['phonebook_id' => $phonebook->id]);
 
     $response = actingAs($user)->putJson("/api/contacts/{$contact->id}", [
         'first_name' => 'Jane',
+        'last_name' => 'Doe',
     ]);
 
     $response->assertOk()
-        ->assertJsonPath('data.first_name', 'Jane');
+        ->assertJsonPath('data.first_name', 'Jane')
+        ->assertJsonPath('data.last_name', 'Doe');
 
     assertDatabaseHas('contacts', [
         'id' => $contact->id,
         'first_name' => 'Jane',
+        'last_name' => 'Doe',
     ]);
 });
 
 test('cannot update others contact', function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
-    $group = ContactGroup::factory()->create(['user_id' => $otherUser->id]);
-    $contact = Contact::factory()->create(['contact_group_id' => $group->id]);
+    $phonebook = Phonebook::factory()->create(['user_id' => $otherUser->id]);
+    $contact = Contact::factory()->create(['phonebook_id' => $phonebook->id]);
 
     $response = actingAs($user)->putJson("/api/contacts/{$contact->id}", [
         'first_name' => 'Jane',
@@ -121,8 +127,8 @@ test('cannot update others contact', function () {
 
 test('can delete contact', function () {
     $user = User::factory()->create();
-    $group = ContactGroup::factory()->create(['user_id' => $user->id]);
-    $contact = Contact::factory()->create(['contact_group_id' => $group->id]);
+    $phonebook = Phonebook::factory()->create(['user_id' => $user->id]);
+    $contact = Contact::factory()->create(['phonebook_id' => $phonebook->id]);
 
     $response = actingAs($user)->deleteJson("/api/contacts/{$contact->id}");
 
@@ -136,8 +142,8 @@ test('can delete contact', function () {
 test('cannot delete others contact', function () {
     $user = User::factory()->create();
     $otherUser = User::factory()->create();
-    $group = ContactGroup::factory()->create(['user_id' => $otherUser->id]);
-    $contact = Contact::factory()->create(['contact_group_id' => $group->id]);
+    $phonebook = Phonebook::factory()->create(['user_id' => $otherUser->id]);
+    $contact = Contact::factory()->create(['phonebook_id' => $phonebook->id]);
 
     $response = actingAs($user)->deleteJson("/api/contacts/{$contact->id}");
 

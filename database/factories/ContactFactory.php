@@ -3,7 +3,6 @@
 namespace Database\Factories;
 
 use App\Models\Contact;
-use App\Models\ContactGroup;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,7 +18,7 @@ class ContactFactory extends Factory
     public function definition(): array
     {
         return [
-            'contact_group_id' => ContactGroup::factory(),
+            'phonebook_id' => \App\Models\Phonebook::factory(),
             'first_name' => fake()->firstName(),
             'last_name' => fake()->lastName(),
             'phone_number' => '+8801' . fake()->numerify('##########'),

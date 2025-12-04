@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\Api\AudioRecordController;
 use App\Http\Controllers\Api\AccountController;
+use App\Http\Controllers\Api\AudioRecordController;
+use App\Http\Controllers\Api\ContactController;
+use App\Http\Controllers\Api\PhonebookController;
+use App\Http\Controllers\Api\TemplateController;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
@@ -13,6 +16,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::apiResource('audio-records', AudioRecordController::class);
-    Route::apiResource('contact-groups', \App\Http\Controllers\Api\ContactGroupController::class);
-    Route::apiResource('contacts', \App\Http\Controllers\Api\ContactController::class);
+    Route::apiResource('phonebooks', PhonebookController::class);
+    Route::apiResource('contacts', ContactController::class);
+    Route::apiResource('templates', TemplateController::class);
 });

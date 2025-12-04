@@ -18,6 +18,8 @@ use Knuckles\Scribe\Attributes\QueryParam;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 use App\Http\Requests\AudioRecord\UpdateAudioRecordRequest;
 
+use Knuckles\Scribe\Attributes\Response;
+
 #[Group('Audio Record', 'Manage audio recordings')]
 #[Authenticated]
 class AudioRecordController extends Controller
@@ -25,6 +27,8 @@ class AudioRecordController extends Controller
     #[Endpoint('List audio recordings', 'Retrieve a list of audio recordings for the current user.', true)]
     #[ResponseFromApiResource(AudioRecordResource::class, User::class, collection: true, paginate: 10)]
     #[QueryParam('status', 'enum', required: false, enum: AudioRecordStatus::class)]
+    #[QueryParam('page', 'integer', required: false, description: 'The page number.')]
+    #[QueryParam('per_page', 'integer', required: false, description: 'Number of items per page.')]
     public function index(#[CurrentUser] User $user): ResourceCollection
     {
         $records = AudioRecord::whereUserId($user->id)
@@ -35,7 +39,8 @@ class AudioRecordController extends Controller
     }
 
     #[Endpoint('Create audio recording', 'Create a new audio recording.', true)]
-    #[ResponseFromApiResource(AudioRecordResource::class, AudioRecord::class)]
+    #[ResponseFromApiResource(AudioRecordResource::class, AudioRecord::class, 201)]
+    #[Response(["message" => "The given data was invalid.", "errors" => ["title" => ["The title field is required."], "files" => ["The files field is required."]]], 422)]
     public function store(#[CurrentUser] User $user, StoreAudioRecordRequest $request)
     {
         $audioRecord = $user->audioRecords()->create($request->safe()->only(['title']));
@@ -59,6 +64,8 @@ class AudioRecordController extends Controller
      */
     #[Endpoint('Get audio recording', 'Retrieve a specific audio recording.', true)]
     #[ResponseFromApiResource(AudioRecordResource::class, AudioRecord::class)]
+    #[Response(["message" => "This action is unauthorized."], 403)]
+    #[Response(["message" => "Record not found."], 404)]
     public function show(#[CurrentUser] User $user, AudioRecord $audioRecord)
     {
         if ($audioRecord->user_id !== $user->id) {
@@ -73,6 +80,9 @@ class AudioRecordController extends Controller
      */
     #[Endpoint('Update audio recording', 'Update a specific audio recording.', true)]
     #[ResponseFromApiResource(AudioRecordResource::class, AudioRecord::class)]
+    #[Response(["message" => "This action is unauthorized."], 403)]
+    #[Response(["message" => "Record not found."], 404)]
+    #[Response(["message" => "The given data was invalid.", "errors" => ["title" => ["The title field is required."]]], 422)]
     public function update(#[CurrentUser] User $user, UpdateAudioRecordRequest $request, AudioRecord $audioRecord)
     {
         if ($audioRecord->user_id !== $user->id || $audioRecord->status !== AudioRecordStatus::Pending) {
@@ -88,6 +98,9 @@ class AudioRecordController extends Controller
      * Delete audio recording
      */
     #[Endpoint('Delete audio recording', 'Delete a specific audio recording.', true)]
+    #[Response(["message" => "This action is unauthorized."], 403)]
+    #[Response(["message" => "Record not found."], 404)]
+    #[Response(status: 204)]
     public function destroy(#[CurrentUser] User $user, AudioRecord $audioRecord)
     {
         if ($audioRecord->user_id !== $user->id) {

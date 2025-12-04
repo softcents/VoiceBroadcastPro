@@ -23,7 +23,7 @@ class UpdateContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'contact_group_id' => ['sometimes', 'integer', 'exists:contact_groups,id'],
+            'phonebook_id' => ['sometimes', 'integer', 'exists:phonebooks,id'],
             'first_name' => ['sometimes', 'string', 'max:255'],
             'last_name' => ['sometimes', 'string', 'max:255'],
             'phone_number' => ['sometimes', 'string', 'phone:E.164,BD'],
@@ -33,19 +33,19 @@ class UpdateContactRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
-            'contact_group_id' => [
-                'description' => 'The ID of the contact group.',
+            'phonebook_id' => [
+                'description' => 'The ID of the phonebook. (Optional)',
             ],
             'first_name' => [
-                'description' => 'The first name of the contact.',
+                'description' => 'The first name of the contact. (Optional)',
                 'example' => 'John'
             ],
             'last_name' => [
-                'description' => 'The last name of the contact.',
+                'description' => 'The last name of the contact. (Optional)',
                 'example' => 'Doe'
             ],
             'phone_number' => [
-                'description' => 'The phone number of the contact.',
+                'description' => 'The phone number of the contact. (Optional)',
                 'example' => '+8801XXXXXXXXX',
             ],
         ];

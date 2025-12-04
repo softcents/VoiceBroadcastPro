@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Requests\ContactGroup;
+namespace App\Http\Requests\Template;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateContactGroupRequest extends FormRequest
+class StoreTemplateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,8 +23,8 @@ class UpdateContactGroupRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['sometimes', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1000'],
+            'name' => ['required', 'string', 'max:255'],
+            'content' => ['required', 'string'],
         ];
     }
 
@@ -32,10 +32,12 @@ class UpdateContactGroupRequest extends FormRequest
     {
         return [
             'name' => [
-                'description' => 'The name of the contact group.',
+                'description' => 'The name of the template.',
+                'example' => 'Welcome Message',
             ],
-            'description' => [
-                'description' => 'The description of the contact group.',
+            'content' => [
+                'description' => 'The content of the template.',
+                'example' => 'Hello, this is a welcome message.',
             ],
         ];
     }

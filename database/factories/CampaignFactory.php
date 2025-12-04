@@ -2,14 +2,12 @@
 
 namespace Database\Factories;
 
-use App\Models\ContactGroup;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<ContactGroup>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Campaign>
  */
-class ContactGroupFactory extends Factory
+class CampaignFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,9 +17,7 @@ class ContactGroupFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory(),
-            'name' => fake()->colorName(),
-            'description' => fake()->optional()->text(),
+            //
         ];
     }
 }

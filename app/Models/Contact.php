@@ -13,14 +13,14 @@ class Contact extends Model
     use HasFactory;
 
     protected $fillable = [
-        'contact_group_id',
+        'phonebook_id',
         'first_name',
         'last_name',
         'phone_number',
     ];
 
-    public function contactGroup(): BelongsTo
+    public function phonebook(): BelongsTo
     {
-        return $this->belongsTo(ContactGroup::class);
+        return $this->belongsTo(Phonebook::class);
     }
 }

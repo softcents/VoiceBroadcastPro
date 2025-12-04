@@ -18,22 +18,26 @@ use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\QueryParam;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
-#[Group('Contact', 'Manage contacts')]
+use Knuckles\Scribe\Attributes\Response;
+
+#[Group('Contacts', 'Manage contacts')]
 #[Authenticated]
 class ContactController extends Controller
 {
-    #[Endpoint('List contacts', 'Retrieve a list of contacts for the current user.', true)]
+    #[Endpoint('List Contacts', 'Retrieve a list of contacts for the current user.', true)]
     #[ResponseFromApiResource(ContactResource::class, User::class, collection: true, paginate: 10)]
-    #[QueryParam('contact_group_id', 'integer', required: false, description: 'Filter by contact group ID')]
+    #[QueryParam('phonebook_id', 'integer', required: false, description: 'Filter by phonebook ID')]
+    #[QueryParam('page', 'integer', required: false, description: 'The page number.')]
+    #[QueryParam('per_page', 'integer', required: false, description: 'Number of items per page.')]
     public function index(#[CurrentUser] User $user): ResourceCollection
     {
         $query = Contact::query()
-            ->whereHas('contactGroup', function ($query) use ($user) {
+            ->whereHas('phonebook', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
             });
 
-        if (request()->has('contact_group_id')) {
-            $query->where('contact_group_id', request('contact_group_id'));
+        if (request()->has('phonebook_id')) {
+            $query->where('phonebook_id', request('phonebook_id'));
         }
 
         $contacts = $query->latest()->paginate();
@@ -41,39 +45,45 @@ class ContactController extends Controller
         return ContactResource::collection($contacts);
     }
 
-    #[Endpoint('Create contact', 'Create a new contact.', true)]
-    #[ResponseFromApiResource(ContactResource::class, Contact::class)]
+    #[Endpoint('Create Contact', 'Create a new contact.', true)]
+    #[ResponseFromApiResource(ContactResource::class, Contact::class, 201)]
+    #[Response(["message" => "The given data was invalid.", "errors" => ["first_name" => ["The first name field is required."]]], 422)]
     public function store(#[CurrentUser] User $user, StoreContactRequest $request)
     {
-        // Verify contact group belongs to user
-        $group = $user->contactGroups()->findOrFail($request->contact_group_id);
+        // Verify phonebook belongs to user
+        $phonebook = $user->phonebooks()->findOrFail($request->phonebook_id);
 
-        $contact = $group->contacts()->create($request->validated());
+        $contact = $phonebook->contacts()->create($request->validated());
 
         return new ContactResource($contact);
     }
 
-    #[Endpoint('Get contact', 'Retrieve a specific contact.', true)]
+    #[Endpoint('Get Contact', 'Retrieve a specific contact.', true)]
     #[ResponseFromApiResource(ContactResource::class, Contact::class)]
+    #[Response(["message" => "This action is unauthorized."], 403)]
+    #[Response(["message" => "Record not found."], 404)]
     public function show(#[CurrentUser] User $user, Contact $contact)
     {
-        if ($contact->contactGroup->user_id !== $user->id) {
+        if ($contact->phonebook->user_id !== $user->id) {
             abort(403);
         }
 
         return new ContactResource($contact);
     }
 
-    #[Endpoint('Update contact', 'Update a specific contact.', true)]
+    #[Endpoint('Update Contact', 'Update a specific contact.', true)]
     #[ResponseFromApiResource(ContactResource::class, Contact::class)]
+    #[Response(["message" => "This action is unauthorized."], 403)]
+    #[Response(["message" => "Record not found."], 404)]
+    #[Response(["message" => "The given data was invalid.", "errors" => ["first_name" => ["The first name field is required."]]], 422)]
     public function update(#[CurrentUser] User $user, UpdateContactRequest $request, Contact $contact)
     {
-        if ($contact->contactGroup->user_id !== $user->id) {
+        if ($contact->phonebook->user_id !== $user->id) {
             abort(403);
         }
 
-        if ($request->has('contact_group_id')) {
-            $user->contactGroups()->findOrFail($request->contact_group_id);
+        if ($request->has('phonebook_id')) {
+            $user->phonebooks()->findOrFail($request->phonebook_id);
         }
 
         $contact->update($request->validated());
@@ -81,10 +91,13 @@ class ContactController extends Controller
         return new ContactResource($contact);
     }
 
-    #[Endpoint('Delete contact', 'Delete a specific contact.', true)]
+    #[Endpoint('Delete Contact', 'Delete a specific contact.', true)]
+    #[Response(["message" => "This action is unauthorized."], 403)]
+    #[Response(["message" => "Record not found."], 404)]
+    #[Response(status: 204)]
     public function destroy(#[CurrentUser] User $user, Contact $contact)
     {
-        if ($contact->contactGroup->user_id !== $user->id) {
+        if ($contact->phonebook->user_id !== $user->id) {
             abort(403);
         }
 

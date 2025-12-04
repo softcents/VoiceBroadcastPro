@@ -23,7 +23,7 @@ class StoreContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'contact_group_id' => ['required', 'integer', 'exists:contact_groups,id'],
+            'phonebook_id' => ['required', 'integer', 'exists:phonebooks,id'],
             'first_name' => ['nullable', 'string', 'max:255'],
             'last_name' => ['nullable', 'string', 'max:255'],
             'phone_number' => ['required', 'string', 'phone:E.164,BD'],
@@ -33,8 +33,8 @@ class StoreContactRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
-            'contact_group_id' => [
-                'description' => 'The ID of the contact group.',
+            'phonebook_id' => [
+                'description' => 'The ID of the phonebook.',
             ],
             'first_name' => [
                 'description' => 'The first name of the contact.',

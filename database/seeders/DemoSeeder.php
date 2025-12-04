@@ -6,7 +6,6 @@ use App\Enums\UserType;
 use App\Models\AudioFile;
 use App\Models\AudioRecord;
 use App\Models\Contact;
-use App\Models\ContactGroup;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -24,15 +23,17 @@ class DemoSeeder extends Seeder
             'type' => UserType::User,
         ]);
 
-        // Create some contact groups for the user
-        $groups = ContactGroup::factory(3)
+
+
+        // Create some phonebooks for the user
+        $phonebooks = \App\Models\Phonebook::factory(3)
             ->for($user)
             ->create();
 
-        // Add contacts to each group
-        foreach ($groups as $group) {
+        // Add contacts to each phonebook
+        foreach ($phonebooks as $phonebook) {
             Contact::factory(5)
-                ->for($group)
+                ->for($phonebook)
                 ->create();
         }
 
