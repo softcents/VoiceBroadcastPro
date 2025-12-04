@@ -1,23 +1,16 @@
-<!doctype html>
+<!-- See https://rapidocweb.com/api.html for options -->
+<!doctype html> <!-- Important: must specify -->
 <html>
 <head>
-    <title>Voice API Documentation</title>
-    <meta charset="utf-8"/>
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1"/>
-    <style>
-        body {
-            margin: 0;
-        }
-    </style>
+    <meta charset="utf-8"> <!-- Important: rapi-doc uses utf8 characters -->
+    <script type="module" src="https://unpkg.com/rapidoc/dist/rapidoc-min.js"></script>
 </head>
 <body>
-
-<script
-    id="api-reference"
-    data-url="{{ route("scribe.openapi") }}">
-</script>
-<script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference"></script>
+<rapi-doc
+    spec-url="{{ route("scribe.openapi") }}"
+    render-style="read"
+    allow-try="true"
+>
+    </rapi-doc>
 </body>
 </html>

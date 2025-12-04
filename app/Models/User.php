@@ -63,9 +63,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         );
     }
 
-    public function audioRecords(): HasMany
+    public function audios(): HasMany
     {
-        return $this->hasMany(AudioRecord::class, 'user_id');
+        return $this->hasMany(Audio::class);
     }
 
     public function phonebooks(): HasMany

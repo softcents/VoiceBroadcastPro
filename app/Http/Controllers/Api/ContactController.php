@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Http\Requests\Contact\StoreContactRequest;
 use App\Http\Requests\Contact\UpdateContactRequest;
 use App\Http\Resources\ContactResource;
@@ -16,19 +14,18 @@ use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\QueryParam;
-use Knuckles\Scribe\Attributes\ResponseFromApiResource;
-
 use Knuckles\Scribe\Attributes\Response;
+use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Contacts', 'Manage contacts')]
 #[Authenticated]
 class ContactController extends Controller
 {
-    #[Endpoint('List Contacts', 'Retrieve a list of contacts for the current user.', true)]
-    #[ResponseFromApiResource(ContactResource::class, User::class, collection: true, paginate: 10)]
-    #[QueryParam('phonebook_id', 'integer', required: false, description: 'Filter by phonebook ID')]
-    #[QueryParam('page', 'integer', required: false, description: 'The page number.')]
-    #[QueryParam('per_page', 'integer', required: false, description: 'Number of items per page.')]
+    #[Endpoint(title: 'List Contacts', description: 'Retrieve a list of contacts for the current user.')]
+    #[ResponseFromApiResource(name: ContactResource::class, model: User::class, collection: true, paginate: 10)]
+    #[QueryParam(name: 'phonebook_id', type: 'integer', description: 'Filter by phonebook ID', required: false)]
+    #[QueryParam(name: 'page', type: 'integer', description: 'The page number.', required: false)]
+    #[QueryParam(name: 'per_page', type: 'integer', description: 'Number of items per page.', required: false)]
     public function index(#[CurrentUser] User $user): ResourceCollection
     {
         $query = Contact::query()
@@ -45,9 +42,9 @@ class ContactController extends Controller
         return ContactResource::collection($contacts);
     }
 
-    #[Endpoint('Create Contact', 'Create a new contact.', true)]
-    #[ResponseFromApiResource(ContactResource::class, Contact::class, 201)]
-    #[Response(["message" => "The given data was invalid.", "errors" => ["first_name" => ["The first name field is required."]]], 422)]
+    #[Endpoint(title: 'Create Contact', description: 'Create a new contact.')]
+    #[ResponseFromApiResource(name: ContactResource::class, model: Contact::class, status: 201)]
+    #[Response(content: ["message" => "The given data was invalid.", "errors" => ["first_name" => ["The first name field is required."]]], status: 422)]
     public function store(#[CurrentUser] User $user, StoreContactRequest $request)
     {
         // Verify phonebook belongs to user
@@ -58,10 +55,10 @@ class ContactController extends Controller
         return new ContactResource($contact);
     }
 
-    #[Endpoint('Get Contact', 'Retrieve a specific contact.', true)]
-    #[ResponseFromApiResource(ContactResource::class, Contact::class)]
-    #[Response(["message" => "This action is unauthorized."], 403)]
-    #[Response(["message" => "Record not found."], 404)]
+    #[Endpoint(title: 'Get Contact', description: 'Retrieve a specific contact.')]
+    #[ResponseFromApiResource(name: ContactResource::class, model: Contact::class)]
+    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
+    #[Response(content: ["message" => "Record not found."], status: 404)]
     public function show(#[CurrentUser] User $user, Contact $contact)
     {
         if ($contact->phonebook->user_id !== $user->id) {
@@ -71,11 +68,11 @@ class ContactController extends Controller
         return new ContactResource($contact);
     }
 
-    #[Endpoint('Update Contact', 'Update a specific contact.', true)]
-    #[ResponseFromApiResource(ContactResource::class, Contact::class)]
-    #[Response(["message" => "This action is unauthorized."], 403)]
-    #[Response(["message" => "Record not found."], 404)]
-    #[Response(["message" => "The given data was invalid.", "errors" => ["first_name" => ["The first name field is required."]]], 422)]
+    #[Endpoint(title: 'Update Contact', description: 'Update a specific contact.')]
+    #[ResponseFromApiResource(name: ContactResource::class, model: Contact::class)]
+    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
+    #[Response(content: ["message" => "Record not found."], status: 404)]
+    #[Response(content: ["message" => "The given data was invalid.", "errors" => ["first_name" => ["The first name field is required."]]], status: 422)]
     public function update(#[CurrentUser] User $user, UpdateContactRequest $request, Contact $contact)
     {
         if ($contact->phonebook->user_id !== $user->id) {
@@ -91,9 +88,9 @@ class ContactController extends Controller
         return new ContactResource($contact);
     }
 
-    #[Endpoint('Delete Contact', 'Delete a specific contact.', true)]
-    #[Response(["message" => "This action is unauthorized."], 403)]
-    #[Response(["message" => "Record not found."], 404)]
+    #[Endpoint(title: 'Delete Contact', description: 'Delete a specific contact.')]
+    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
+    #[Response(content: ["message" => "Record not found."], status: 404)]
     #[Response(status: 204)]
     public function destroy(#[CurrentUser] User $user, Contact $contact)
     {

@@ -2,7 +2,7 @@
 
 namespace App\Enums;
 
-enum AudioRecordStatus: string
+enum AudioApproval: string
 {
     case Pending = 'pending';
     case Approved = 'approved';

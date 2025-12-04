@@ -3,8 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\UserType;
-use App\Models\AudioFile;
-use App\Models\AudioRecord;
+
 use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -37,10 +36,9 @@ class DemoSeeder extends Seeder
                 ->create();
         }
 
-        // Create some audio records with files for the user
-        AudioRecord::factory(5)
+        // Create some audios for the user
+        \App\Models\Audio::factory(5)
             ->for($user)
-            ->has(AudioFile::factory()->count(2), 'audioFiles')
             ->create();
     }
 }

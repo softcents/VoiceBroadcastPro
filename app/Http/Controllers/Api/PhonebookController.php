@@ -3,8 +3,6 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
-
 use App\Http\Requests\Phonebook\StorePhonebookRequest;
 use App\Http\Requests\Phonebook\UpdatePhonebookRequest;
 use App\Http\Resources\PhonebookResource;
@@ -15,6 +13,7 @@ use Illuminate\Http\Resources\Json\ResourceCollection;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
+use Knuckles\Scribe\Attributes\QueryParam;
 use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
@@ -22,10 +21,10 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 #[Authenticated]
 class PhonebookController extends Controller
 {
-    #[Endpoint('List Phonebooks', 'Retrieve a list of phonebooks for the current user.', true)]
-    #[ResponseFromApiResource(PhonebookResource::class, User::class, collection: true, paginate: 10)]
-    #[QueryParam('page', 'integer', required: false, description: 'The page number.')]
-    #[QueryParam('per_page', 'integer', required: false, description: 'Number of items per page.')]
+    #[Endpoint(title: 'List Phonebooks', description: 'Retrieve a list of phonebooks for the current user.')]
+    #[ResponseFromApiResource(name: PhonebookResource::class, model: User::class, collection: true, paginate: 10)]
+    #[QueryParam(name: 'page', type: 'integer', description: 'The page number.', required: false)]
+    #[QueryParam(name: 'per_page', type: 'integer', description: 'Number of items per page.', required: false)]
     public function index(#[CurrentUser] User $user): ResourceCollection
     {
         $phonebooks = Phonebook::whereUserId($user->id)
@@ -36,9 +35,9 @@ class PhonebookController extends Controller
         return PhonebookResource::collection($phonebooks);
     }
 
-    #[Endpoint('Create Phonebook', 'Create a new phonebook.', true)]
-    #[ResponseFromApiResource(PhonebookResource::class, Phonebook::class, 201)]
-    #[Response(["message" => "The given data was invalid.", "errors" => ["name" => ["The name field is required."]]], 422)]
+    #[Endpoint(title: 'Create Phonebook', description: 'Create a new phonebook.')]
+    #[ResponseFromApiResource(name: PhonebookResource::class, model: Phonebook::class, status: 201)]
+    #[Response(content: ["message" => "The given data was invalid.", "errors" => ["name" => ["The name field is required."]]], status: 422)]
     public function store(#[CurrentUser] User $user, StorePhonebookRequest $request)
     {
         $phonebook = $user->phonebooks()->create($request->validated());
@@ -46,10 +45,10 @@ class PhonebookController extends Controller
         return new PhonebookResource($phonebook);
     }
 
-    #[Endpoint('Get Phonebook', 'Retrieve a specific phonebook.', true)]
-    #[ResponseFromApiResource(PhonebookResource::class, Phonebook::class)]
-    #[Response(["message" => "This action is unauthorized."], 403)]
-    #[Response(["message" => "Record not found."], 404)]
+    #[Endpoint(title: 'Get Phonebook', description: 'Retrieve a specific phonebook.')]
+    #[ResponseFromApiResource(name: PhonebookResource::class, model: Phonebook::class)]
+    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
+    #[Response(content: ["message" => "Record not found."], status: 404)]
     public function show(#[CurrentUser] User $user, Phonebook $phonebook)
     {
         if ($phonebook->user_id !== $user->id) {
@@ -59,7 +58,7 @@ class PhonebookController extends Controller
         return new PhonebookResource($phonebook->loadCount('contacts'));
     }
 
-    #[Endpoint('Update Phonebook', 'Update a specific phonebook.', true)]
+    #[Endpoint(title: 'Update Phonebook', description: 'Update a specific phonebook.')]
     #[ResponseFromApiResource(PhonebookResource::class, Phonebook::class)]
     #[Response(["message" => "This action is unauthorized."], 403)]
     #[Response(["message" => "Record not found."], 404)]
@@ -75,9 +74,9 @@ class PhonebookController extends Controller
         return new PhonebookResource($phonebook);
     }
 
-    #[Endpoint('Delete Phonebook', 'Delete a specific phonebook.', true)]
-    #[Response(["message" => "This action is unauthorized."], 403)]
-    #[Response(["message" => "Record not found."], 404)]
+    #[Endpoint(title: 'Delete Phonebook', description: 'Delete a specific phonebook.')]
+    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
+    #[Response(content: ["message" => "Record not found."], status: 404)]
     #[Response(status: 204)]
     public function destroy(#[CurrentUser] User $user, Phonebook $phonebook)
     {
