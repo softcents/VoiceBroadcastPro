@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Customers\Tables;
 
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -10,6 +11,8 @@ use Filament\Actions\RestoreBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Filament\Actions\ViewAction;
+use STS\FilamentImpersonate\Actions\Impersonate;
 
 class CustomersTable
 {
@@ -47,8 +50,12 @@ class CustomersTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                \Filament\Actions\ViewAction::make(),
-                EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    Impersonate::make()
+                        ->label('Login')
+                ])
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

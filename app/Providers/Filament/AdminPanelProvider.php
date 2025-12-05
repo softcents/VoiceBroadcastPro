@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use Andreia\FilamentNordTheme\FilamentNordThemePlugin;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -11,7 +12,6 @@ use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Support\Enums\Width;
 use Filament\Support\Icons\Heroicon;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
@@ -33,7 +33,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->profile()
             //->topNavigation()
-                ->sidebarCollapsibleOnDesktop()
+            ->sidebarCollapsibleOnDesktop()
             ->colors([
                 'primary' => Color::Amber,
             ])
@@ -74,6 +74,10 @@ class AdminPanelProvider extends PanelProvider
                     ->label('Settings')
                     ->icon(Heroicon::OutlinedCog)
                     ->collapsible(),
-            ]);
+            ])
+            ->plugins([
+                FilamentNordThemePlugin::make()
+            ])
+            ->spa();
     }
 }
