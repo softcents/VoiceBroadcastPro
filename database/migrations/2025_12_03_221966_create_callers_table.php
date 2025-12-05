@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sender_ids', function (Blueprint $table) {
+        Schema::create('callers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('sending_server_id')->constrained('sending_servers')->cascadeOnDelete();
-            $table->string('sender_id')->unique();
+            $table->string('caller_name');
+            $table->string('caller_number');
             $table->boolean('enabled')->default(false);
             $table->timestamps();
         });
@@ -25,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sender_ids');
+        Schema::dropIfExists('callers');
     }
 };

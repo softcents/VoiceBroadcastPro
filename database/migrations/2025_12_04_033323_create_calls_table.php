@@ -16,9 +16,10 @@ return new class extends Migration {
             $table->foreignId('user_id')->nullable()->constrained('users');
             $table->foreignId('campaign_id')->nullable()->constrained('campaigns')->cascadeOnDelete();
             $table->foreignId('contact_id')->nullable()->constrained('contacts')->cascadeOnDelete();
-            $table->foreignId('sender_id_id')->nullable()->constrained('sender_ids')->cascadeOnDelete();
+            $table->foreignId('caller_id')->nullable()->constrained('callers')->cascadeOnDelete();
             $table->string('phone_number');
-            $table->enum('status', [array_column(CallStatus::cases(), 'value')]);
+            $table->text('content')->nullable();
+            $table->enum('status', array_column(CallStatus::cases(), 'value'));
             $table->timestamps();
         });
     }

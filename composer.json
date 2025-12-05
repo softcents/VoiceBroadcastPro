@@ -14,9 +14,12 @@
         "filament/filament": "^4.2",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
+        "laravel/telescope": "^5.15",
         "laravel/tinker": "^2.10.1",
         "pbmedia/laravel-ffmpeg": "^8.7",
         "propaganistas/laravel-phone": "^6.0",
+        "spatie/laravel-ray": "^1.43",
+        "textalk/websocket": "^1.5",
         "zpmlabs/filament-api-docs-builder": "^2.0"
     },
     "require-dev": {

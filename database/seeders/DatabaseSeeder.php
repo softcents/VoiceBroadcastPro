@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             SendingServerSeeder::class,
             DemoSeeder::class,
+            UserTwoDataSeeder::class,
         ]);
     }
 }

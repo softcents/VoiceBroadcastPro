@@ -24,4 +24,9 @@ class SendingServer extends Model
     {
         return $this->belongsToMany(User::class, 'sending_server_user');
     }
+
+    public function callers(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Caller::class);
+    }
 }

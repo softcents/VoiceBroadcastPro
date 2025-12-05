@@ -6,6 +6,7 @@ use App\Models\Audio;
 use App\Models\Campaign;
 use App\Models\Phonebook;
 use App\Models\User;
+use Illuminate\Support\Facades\Bus;
 use Laravel\Sanctum\Sanctum;
 
 test('user can list their campaigns', function () {
@@ -37,12 +38,16 @@ test('user can create a campaign', function () {
         'scheduled_at' => now()->addDay()->toDateTimeString(),
     ];
 
+    Bus::fake();
+
     $response = $this->postJson(route('campaigns.store'), $data);
 
     $response->assertCreated()
         ->assertJsonFragment(['title' => 'Test Campaign']);
 
     $this->assertDatabaseHas('campaigns', ['title' => 'Test Campaign']);
+
+    Bus::assertDispatched(\App\Jobs\ProcessCampaign::class);
 });
 
 test('user can view a specific campaign', function () {

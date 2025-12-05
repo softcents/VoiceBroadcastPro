@@ -14,6 +14,16 @@ class Call extends Model
     /** @use HasFactory<CallFactory> */
     use HasFactory;
 
+    protected $fillable = [
+        'user_id',
+        'campaign_id',
+        'contact_id',
+        'caller_id',
+        'phone_number',
+        'content',
+        'status',
+    ];
+
     protected function casts(): array
     {
         return [
@@ -37,8 +47,8 @@ class Call extends Model
         return $this->belongsTo(Contact::class);
     }
 
-    public function senderId(): BelongsTo
+    public function caller(): BelongsTo
     {
-        return $this->belongsTo(SenderId::class);
+        return $this->belongsTo(Caller::class);
     }
 }

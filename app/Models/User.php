@@ -84,9 +84,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail
         return $this->belongsToMany(SendingServer::class, 'sending_server_user');
     }
 
-    public function senderIds(): BelongsToMany
+    public function callers(): BelongsToMany
     {
-        return $this->belongsToMany(SenderId::class, 'sender_id_user');
+        return $this->belongsToMany(Caller::class, 'caller_user');
     }
 
     public function deposits(): HasMany

@@ -2,14 +2,13 @@
 
 namespace Database\Factories;
 
-use App\Models\SenderId;
 use App\Models\SendingServer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends Factory<SenderId>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Caller>
  */
-class SenderIdFactory extends Factory
+class CallerFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -20,7 +19,8 @@ class SenderIdFactory extends Factory
     {
         return [
             'sending_server_id' => SendingServer::factory(),
-            'sender_id' => fake()->unique()->bothify('??????'),
+            'caller_name' => fake()->name(),
+            'caller_number' => fake()->e164PhoneNumber(),
             'enabled' => fake()->boolean(),
         ];
     }

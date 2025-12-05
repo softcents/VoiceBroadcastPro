@@ -10,6 +10,7 @@ use App\Models\Campaign;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Knuckles\Scribe\Attributes\Authenticated;
+use Knuckles\Scribe\Attributes\BodyParam;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
@@ -19,23 +20,42 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 class CampaignController extends Controller
 {
     #[Endpoint(title: 'List Campaigns')]
-    #[ResponseFromApiResource(CampaignResource::class, Campaign::class, collection: true)]
+    #[ResponseFromApiResource(CampaignResource::class, Campaign::class, collection: true, paginate: 15)]
     public function index(#[CurrentUser] User $user)
     {
         $campaigns = Campaign::query()
             ->where('user_id', $user->id)
             ->with(['audio', 'phonebook'])
             ->latest()
-            ->paginate(10);
+            ->paginate(15);
 
         return CampaignResource::collection($campaigns);
     }
 
     #[Endpoint(title: 'Create Campaign')]
     #[ResponseFromApiResource(CampaignResource::class, Campaign::class, status: 201)]
+    #[BodyParam(
+        name: 'phone_numbers',
+        type: 'string[]',
+        description: 'Array of phone numbers in E.164 format. Required if source is Manual.',
+        required: false,
+        example: ['+88017XXXXXXXX', '+88016XXXXXXXX'])
+    ]
     public function store(#[CurrentUser] User $user, StoreCampaignRequest $request)
     {
-        $campaign = $user->campaigns()->create($request->validated());
+        $data = $request->validated();
+        $data['status'] = \App\Enums\CampaignStatus::Pending;
+        
+        if ($request->hasFile('file')) {
+            $path = $request->file('file')->store('campaigns');
+            $data['file_path'] = $path;
+        }
+
+        $campaign = $user->campaigns()->create($data);
+
+        $phoneNumbers = $request->input('phone_numbers');
+
+        \App\Jobs\ProcessCampaign::dispatch($campaign, $phoneNumbers);
 
         return new CampaignResource($campaign->load(['audio', 'phonebook']));
     }

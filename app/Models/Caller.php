@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use Database\Factories\SenderIdFactory;
+use Database\Factories\CallerFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,14 +10,15 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class SenderId extends Model
+class Caller extends Model
 {
-    /** @use HasFactory<SenderIdFactory> */
+    /** @use HasFactory<CallerFactory> */
     use HasFactory;
 
     protected $fillable = [
         "sending_server_id",
-        "sender_id",
+        "caller_name",
+        "caller_number",
         "enabled",
     ];
 
@@ -28,7 +29,7 @@ class SenderId extends Model
 
     public function users(): BelongsToMany
     {
-        return $this->belongsToMany(User::class, 'sender_id_user');
+        return $this->belongsToMany(User::class, 'caller_user');
     }
 
     #[Scope]

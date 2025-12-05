@@ -22,6 +22,7 @@ class Campaign extends Model
         'title',
         'description',
         'source',
+        'file_path',
         'status',
         'scheduled_at',
     ];

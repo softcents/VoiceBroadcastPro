@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Payment\PipraPayController;
+use App\Http\Controllers\Webhook\AsteriskController;
 use App\Livewire\Payments\Cancel;
 use App\Livewire\Payments\Failed;
 use App\Livewire\Payments\Success;
@@ -21,5 +22,6 @@ Route::group(['prefix' => 'payments', 'as' => 'payments.'], function () {
 });
 
 Route::group(['prefix' => 'webhooks', 'as' => 'webhooks.'], function () {
+    Route::post('asterisk', AsteriskController::class)->name('asterisk');
     Route::post('pipra-pay/{deposit}', [PipraPayController::class, 'ipn'])->name('piprapay');
 });
