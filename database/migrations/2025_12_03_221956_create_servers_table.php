@@ -11,12 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sending_servers', function (Blueprint $table) {
+        Schema::create('servers', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('domain');
-            $table->string('username');
-            $table->string('password');
+
+            $table->string('ari_domain');
+            $table->string('ari_username');
+            $table->string('ari_password');
+
+            $table->string('database_host');
+            $table->integer('database_port')->default(3306);
+            $table->string('database_name')->default('asteriskcdrdb');
+            $table->string('database_username');
+            $table->string('database_password');
+
             $table->boolean('enabled')->default(false);
             $table->timestamps();
         });
@@ -27,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sending_servers');
+        Schema::dropIfExists('servers');
     }
 };

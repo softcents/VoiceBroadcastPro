@@ -13,7 +13,7 @@ test('can list callers', function () {
     Sanctum::actingAs($user);
 
     $callers = Caller::factory(3)
-        ->for($user->sendingServers()->first() ?? \App\Models\SendingServer::factory()->create())
+        ->for($user->servers()->first() ?? \App\Models\Server::factory()->create())
         ->create(['enabled' => true]);
     
     // Attach callers to user

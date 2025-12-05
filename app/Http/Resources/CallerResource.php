@@ -18,7 +18,7 @@ class CallerResource extends JsonResource
             'id' => $this->id,
             'caller_name' => $this->caller_name,
             'caller_number' => $this->caller_number,
-            'sending_server_id' => $this->sending_server_id,
+            'server_id' => $this->server_id,
             'enabled' => $this->enabled,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,

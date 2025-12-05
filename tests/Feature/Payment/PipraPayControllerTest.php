@@ -26,7 +26,7 @@ test('callback redirects to success on successful verification', function () {
 
     $response = get(route('payments.piprapay.callback', $deposit));
 
-    $response->assertRedirect(config('app.frontend_url') . '/deposit/success');
+    $response->assertRedirect(route('payments.success'));
 
     expect($deposit->refresh()->status)->toBe(DepositStatus::Completed);
 });
@@ -50,7 +50,7 @@ test('callback redirects to failed on failed verification', function () {
 
     $response = get(route('payments.piprapay.callback', $deposit));
 
-    $response->assertRedirect(config('app.frontend_url') . '/deposit/failed');
+    $response->assertRedirect(route('payments.failed'));
 
     expect($deposit->refresh()->status)->toBe(DepositStatus::Failed);
 });
@@ -68,7 +68,7 @@ test('cancel updates status and redirects', function () {
 
     $response = get(route('payments.piprapay.cancel', $deposit));
 
-    $response->assertRedirect(config('app.frontend_url') . '/deposit/cancel');
+    $response->assertRedirect(route('payments.cancel'));
 
     expect($deposit->refresh()->status)->toBe(DepositStatus::Cancelled);
 });

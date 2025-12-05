@@ -57,3 +57,19 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+
+# Create Asterisk Database User
+```bash
+mysql -u root -e "
+CREATE USER 'softcents'@'103.234.119.204' IDENTIFIED BY 'StrongPass123';
+GRANT SELECT ON asteriskcdrdb.* TO 'softcents'@'103.234.119.204';
+FLUSH PRIVILEGES;"
+```
+
+Verify
+```bash
+mysql -u root -e "
+SELECT user, host FROM mysql.user WHERE user='softcents';
+SHOW GRANTS FOR 'softcents'@'103.234.119.204';"
+```

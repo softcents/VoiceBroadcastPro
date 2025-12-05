@@ -1,0 +1,123 @@
+<?php
+
+namespace App\Filament\Admin\Resources\Deposits\Tables;
+
+use App\Enums\DepositStatus;
+use App\Models\Deposit;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\Select;
+use Filament\Support\Colors\Color;
+use Filament\Support\Enums\Width;
+use Filament\Support\Icons\Heroicon;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class DepositsTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('user.name')
+                    ->label('Customer')
+                    ->searchable(),
+                TextColumn::make('amount')
+                    ->label('Amount')
+                    ->numeric()
+                    ->sortable(),
+                TextColumn::make('currency')
+                    ->label('Currency')
+                    ->searchable(),
+                TextColumn::make('gateway')
+                    ->label('Gateway')
+                    ->searchable(),
+                TextColumn::make('transaction_id')
+                    ->label('Transaction ID')
+                    ->searchable(),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn($state) => ucfirst($state->value))
+                    ->color(fn($state) => match ($state) {
+                        DepositStatus::Pending => Color::Yellow,
+                        DepositStatus::Completed => Color::Green,
+                        DepositStatus::Cancelled => Color::Red,
+                    })
+                    ->icon(fn($state) => match ($state) {
+                        DepositStatus::Pending => Heroicon::OutlinedClock,
+                        DepositStatus::Completed => Heroicon::OutlinedCheckCircle,
+                        DepositStatus::Cancelled => Heroicon::OutlinedXCircle,
+                    }),
+                TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label('Updated At')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->recordActions([
+                ActionGroup::make([
+                    EditAction::make()
+                        ->label('Edit Deposit')
+                        ->disabled(fn($record) => in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled])),
+                    Action::make('edit_status')
+                        ->label('Edit Status')
+                        ->icon(Heroicon::OutlinedPencil)
+                        ->schema([
+                            Select::make('status')
+                                ->label('Status')
+                                ->options(DepositStatus::class)
+                                ->default(fn($record) => $record->status)
+                                ->required()
+                                ->searchable()
+                                ->selectablePlaceholder(false),
+                        ])
+                        ->modalWidth(Width::Small)
+                        ->disabled(fn($record) => in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled]))
+                        ->action(function (Deposit $record, array $data) {
+                            $newStatus = $data['status'];
+                            if (!$newStatus instanceof DepositStatus) {
+                                $newStatus = DepositStatus::tryFrom($newStatus);
+                            }
+
+                            // If transitioning to completed, add funds
+                            if ($newStatus === DepositStatus::Completed && $record->status !== DepositStatus::Completed) {
+                                $record->user->increment('balance', $record->amount * 100);
+
+                                \App\Models\Transaction::create([
+                                    'user_id' => $record->user_id,
+                                    'type' => \App\Enums\TransactionType::Deposit,
+                                    'amount' => $record->amount * 100, // Store in cents
+                                    'currency' => $record->currency,
+                                    'description' => 'Deposit via ' . ucfirst($record->gateway),
+                                    'reference_type' => \App\Models\Deposit::class,
+                                    'reference_id' => $record->id,
+                                ]);
+                            }
+
+                            $record->update(['status' => $newStatus]);
+                        }),
+                    DeleteAction::make()
+                        ->label('Delete Deposit')
+                        ->requiresConfirmation()
+                ])
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}

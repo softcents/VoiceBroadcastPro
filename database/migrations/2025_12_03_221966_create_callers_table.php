@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('callers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('sending_server_id')->constrained('sending_servers')->cascadeOnDelete();
+            $table->foreignId('server_id')->constrained('servers')->cascadeOnDelete();
             $table->string('caller_name');
             $table->string('caller_number');
             $table->boolean('enabled')->default(false);

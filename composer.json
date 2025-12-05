@@ -20,6 +20,7 @@
         "propaganistas/laravel-phone": "^6.0",
         "spatie/laravel-ray": "^1.43",
         "textalk/websocket": "^1.5",
+        "ysfkaya/filament-phone-input": "^4.0",
         "zpmlabs/filament-api-docs-builder": "^2.0"
     },
     "require-dev": {

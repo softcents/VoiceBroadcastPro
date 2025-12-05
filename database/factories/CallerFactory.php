@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\SendingServer;
+use App\Models\Server;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +18,7 @@ class CallerFactory extends Factory
     public function definition(): array
     {
         return [
-            'sending_server_id' => SendingServer::factory(),
+            'server_id' => Server::factory(),
             'caller_name' => fake()->name(),
             'caller_number' => fake()->e164PhoneNumber(),
             'enabled' => fake()->boolean(),

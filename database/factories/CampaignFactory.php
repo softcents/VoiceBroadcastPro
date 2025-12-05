@@ -2,10 +2,16 @@
 
 namespace Database\Factories;
 
+use App\Enums\CampaignSource;
+use App\Enums\CampaignStatus;
+use App\Models\Audio;
+use App\Models\Campaign;
+use App\Models\Phonebook;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Campaign>
+ * @extends Factory<Campaign>
  */
 class CampaignFactory extends Factory
 {
@@ -17,13 +23,13 @@ class CampaignFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => \App\Models\User::factory(),
-            'audio_id' => \App\Models\Audio::factory(),
-            'phonebook_id' => \App\Models\Phonebook::factory(),
+            'user_id' => User::factory(),
+            'audio_id' => Audio::factory(),
+            'phonebook_id' => Phonebook::factory(),
             'title' => fake()->sentence(),
-            'description' => fake()->paragraph(),
-            'source' => \App\Enums\CampaignSource::Manual,
-            'status' => \App\Enums\CampaignStatus::Pending,
+            'description' => fake()->text(),
+            'source' => CampaignSource::Manual,
+            'status' => CampaignStatus::Pending,
             'scheduled_at' => fake()->dateTimeBetween('now', '+1 month'),
         ];
     }

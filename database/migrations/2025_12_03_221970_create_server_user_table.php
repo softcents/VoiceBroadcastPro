@@ -11,11 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('sending_server_user', function (Blueprint $table) {
-            $table->foreignId('sending_server_id')->constrained('sending_servers')->cascadeOnDelete();
+        Schema::create('server_user', function (Blueprint $table) {
+            $table->foreignId('server_id')->constrained('servers')->cascadeOnDelete();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
-            $table->primary(['sending_server_id', 'user_id']);
-            $table->unique(['sending_server_id', 'user_id']);
+            $table->primary(['server_id', 'user_id']);
+            $table->unique(['server_id', 'user_id']);
         });
     }
 
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('sending_server_user');
+        Schema::dropIfExists('server_user');
     }
 };

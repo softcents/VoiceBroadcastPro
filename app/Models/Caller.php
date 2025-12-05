@@ -16,15 +16,15 @@ class Caller extends Model
     use HasFactory;
 
     protected $fillable = [
-        "sending_server_id",
+        "server_id",
         "caller_name",
         "caller_number",
         "enabled",
     ];
 
-    public function sendingServer(): BelongsTo
+    public function server(): BelongsTo
     {
-        return $this->belongsTo(SendingServer::class);
+        return $this->belongsTo(Server::class);
     }
 
     public function users(): BelongsToMany

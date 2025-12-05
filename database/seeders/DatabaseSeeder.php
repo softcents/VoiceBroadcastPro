@@ -20,18 +20,19 @@ class DatabaseSeeder extends Seeder
             'name' => 'Admin',
             'email' => 'admin@mail.com',
             'type' => UserType::Admin,
+            'email_verified_at' => now()
         ]);
 
         User::factory()->create([
             'name' => 'User',
             'email' => 'user@mail.com',
             'type' => UserType::User,
+            'email_verified_at' => now()
         ]);
 
         $this->call([
-            SendingServerSeeder::class,
+            ServerSeeder::class,
             DemoSeeder::class,
-            UserTwoDataSeeder::class,
         ]);
     }
 }
