@@ -8,17 +8,16 @@ use App\Filament\Admin\Resources\Servers\Pages\ListServers;
 use App\Filament\Admin\Resources\Servers\Schemas\ServerForm;
 use App\Filament\Admin\Resources\Servers\Tables\ServersTable;
 use App\Models\Server;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use UnitEnum;
 
 class ServerResource extends Resource
 {
     protected static ?string $model = Server::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedServerStack;
+    protected static string|null|UnitEnum $navigationGroup = 'Settings';
 
     protected static ?string $recordTitleAttribute = 'name';
 

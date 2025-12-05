@@ -3,6 +3,9 @@
 namespace App\Filament\Admin\Resources\Transactions\Tables;
 
 use App\Enums\TransactionType;
+use App\Filament\Admin\Resources\Customers\CustomerResource;
+use App\Filament\Admin\Resources\Deposits\DepositResource;
+use App\Models\Deposit;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -19,15 +22,16 @@ class TransactionsTable
         return $table
             ->columns([
                 TextColumn::make('user.name')
-                    ->label('User')
-                    ->searchable(),
+                    ->label('Customer')
+                    ->searchable()
+                    ->url(fn($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge()
                     ->formatStateUsing(fn ($state) => ucfirst($state->value))
                     ->color(fn ($state) => match ($state) {
                         TransactionType::Deposit => Color::Green,
-                        TransactionType::Expense => Color::Red,
+                        TransactionType::Expense => 'danger',
                         TransactionType::Refund => Color::Gray,
                     })
                     ->icon(fn ($state) => match ($state) {
@@ -52,7 +56,11 @@ class TransactionsTable
                 TextColumn::make('reference_id')
                     ->label('Reference ID')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->url(fn($record) => match ($record->reference_type) {
+                        Deposit::class => DepositResource::getUrl('edit', ['record' => $record->reference_id]),
+                        default => null,
+                    }),
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()

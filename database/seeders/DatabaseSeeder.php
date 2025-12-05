@@ -16,6 +16,11 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        $this->call([
+            TTSLanguageSeeder::class,
+            TTSArtistSeeder::class
+        ]);
+
         User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@mail.com',

@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Deposits\Tables;
 
 use App\Enums\DepositStatus;
+use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Models\Deposit;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -25,7 +26,8 @@ class DepositsTable
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Customer')
-                    ->searchable(),
+                    ->searchable()
+                    ->url(fn($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
                 TextColumn::make('amount')
                     ->label('Amount')
                     ->numeric()
@@ -46,7 +48,7 @@ class DepositsTable
                     ->color(fn($state) => match ($state) {
                         DepositStatus::Pending => Color::Yellow,
                         DepositStatus::Completed => Color::Green,
-                        DepositStatus::Cancelled => Color::Red,
+                        DepositStatus::Cancelled => 'danger',
                     })
                     ->icon(fn($state) => match ($state) {
                         DepositStatus::Pending => Heroicon::OutlinedClock,

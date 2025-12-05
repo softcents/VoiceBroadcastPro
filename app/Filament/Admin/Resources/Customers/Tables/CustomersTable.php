@@ -47,6 +47,7 @@ class CustomersTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
+                \Filament\Actions\ViewAction::make(),
                 EditAction::make(),
             ])
             ->toolbarActions([

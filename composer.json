@@ -9,9 +9,11 @@
     ],
     "license": "MIT",
     "require": {
-        "php": "^8.4",
+        "php": "^8.5",
         "ext-pdo": "*",
         "filament/filament": "^4.2",
+        "filament/spatie-laravel-settings-plugin": "^4.2",
+        "lara-zeus/tabler-icons-enum": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
         "laravel/telescope": "^5.15",
@@ -19,7 +21,7 @@
         "pbmedia/laravel-ffmpeg": "^8.7",
         "propaganistas/laravel-phone": "^6.0",
         "spatie/laravel-ray": "^1.43",
-        "textalk/websocket": "^1.5",
+        "spatie/laravel-settings": "^3.6",
         "ysfkaya/filament-phone-input": "^4.0",
         "zpmlabs/filament-api-docs-builder": "^2.0"
     },

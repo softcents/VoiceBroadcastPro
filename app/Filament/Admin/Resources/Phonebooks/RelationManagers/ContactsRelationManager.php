@@ -1,0 +1,105 @@
+<?php
+
+namespace App\Filament\Admin\Resources\Phonebooks\RelationManagers;
+
+use Filament\Actions\AttachAction;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\CreateAction;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DetachAction;
+use Filament\Actions\DetachBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Infolists\Components\TextEntry;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+
+class ContactsRelationManager extends RelationManager
+{
+    protected static string $relationship = 'contacts';
+
+    public function form(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                Section::make()
+                    ->schema([
+                        TextInput::make('first_name')
+                            ->label('First Name')
+                            ->required(),
+                        TextInput::make('last_name')
+                            ->label('Last Name'),
+                        TextInput::make('phone_number')
+                            ->label('Phone Number')
+                            ->tel()
+                            ->required(),
+                    ])
+            ]);
+    }
+
+    public function infolist(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                TextEntry::make('first_name')
+                    ->placeholder('-'),
+                TextEntry::make('last_name')
+                    ->placeholder('-'),
+                TextEntry::make('phone_number'),
+                TextEntry::make('created_at')
+                    ->dateTime()
+                    ->placeholder('-'),
+                TextEntry::make('updated_at')
+                    ->dateTime()
+                    ->placeholder('-'),
+            ]);
+    }
+
+    public function table(Table $table): Table
+    {
+        return $table
+            ->recordTitleAttribute('phone_number')
+            ->columns([
+                TextColumn::make('first_name')
+                    ->label('First Name')
+                    ->searchable(),
+                TextColumn::make('last_name')
+                    ->label('Last Name')
+                    ->searchable(),
+                TextColumn::make('phone_number')
+                    ->label('Phone Number')
+                    ->searchable(),
+                TextColumn::make('created_at')
+                    ->label('Created At')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->label('Updated At')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->headerActions([
+                CreateAction::make(),
+            ])
+            ->recordActions([
+                ViewAction::make(),
+                EditAction::make(),
+                DeleteAction::make(),
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+}

@@ -29,9 +29,10 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->email(),
             'type' => fake()->randomElement(UserType::cases()),
-            'email_verified_at' => now(),
+            'phone' => '+88017' . fake()->numerify('#######'),
             'password' => static::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+            'email_verified_at' => now(),
         ];
     }
 

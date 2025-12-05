@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Customers;
 
+use App\Enums\UserType;
 use App\Filament\Admin\Resources\Customers\Pages\CreateCustomer;
 use App\Filament\Admin\Resources\Customers\Pages\EditCustomer;
 use App\Filament\Admin\Resources\Customers\Pages\ListCustomers;
@@ -20,6 +21,7 @@ class CustomerResource extends Resource
 {
     protected static ?string $model = User::class;
 
+    protected static ?string $navigationLabel = 'Customers';
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
     protected static ?string $recordTitleAttribute = 'name';
@@ -27,6 +29,11 @@ class CustomerResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return CustomerForm::configure($schema);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return Schemas\CustomerInfolist::configure($schema);
     }
 
     public static function table(Table $table): Table
@@ -46,6 +53,7 @@ class CustomerResource extends Resource
         return [
             'index' => ListCustomers::route('/'),
             'create' => CreateCustomer::route('/create'),
+            'view' => Pages\ViewCustomer::route('/{record}'),
             'edit' => EditCustomer::route('/{record}/edit'),
         ];
     }
@@ -56,5 +64,10 @@ class CustomerResource extends Resource
             ->withoutGlobalScopes([
                 SoftDeletingScope::class,
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('type', UserType::User);
     }
 }
