@@ -1,0 +1,104 @@
+<?php
+
+namespace App\Filament\User\Resources\Audio\Tables;
+
+use App\Enums\AudioConversionStatus;
+use App\Enums\AudioTTSStatus;
+use App\Enums\AudioType;
+use App\Models\Audio;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
+use Filament\Tables\Table;
+use Hugomyb\FilamentMediaAction\Actions\MediaAction;
+use Illuminate\Support\Facades\Storage;
+use LaraZeus\Tabler\Tabler;
+
+class AudioTable
+{
+    public static function configure(Table $table): Table
+    {
+        return $table
+            ->columns([
+                TextColumn::make('user.name')
+                    ->label('Customer')
+                    ->searchable(),
+                TextColumn::make('title')
+                    ->label('Title')
+                    ->searchable()
+                    ->limit(30)
+                    ->tooltip(fn($state): string => (string)$state),
+                TextColumn::make('type')
+                    ->label('Type')
+                    ->badge(),
+                TextColumn::make('approval')
+                    ->label('Approval')
+                    ->badge(),
+                TextColumn::make('conversion_status')
+                    ->label('Conversion')
+                    ->badge(),
+                TextColumn::make('tts_status')
+                    ->label('TTS')
+                    ->badge(),
+                TextColumn::make('duration')
+                    ->numeric()
+                    ->sortable()
+                    ->formatStateUsing(fn(int $state): string => secondsToHuman($state))
+                    ->placeholder(secondsToHuman(0)),
+                TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('deleted_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                TrashedFilter::make(),
+            ])
+            ->recordActions([
+                ActionGroup::make([
+                    MediaAction::make('converted_audio')
+                        ->label('Play Converted')
+                        ->icon(Tabler::Music)
+                        ->media(fn(Audio $record) => Storage::disk('public')->url($record->converted_path))
+                        ->mediaType(MediaAction::TYPE_AUDIO)
+                        ->autoplay()
+                        ->visible(fn(Audio $record) => $record->conversion_status === AudioConversionStatus::Completed),
+                    MediaAction::make('original_audio')
+                        ->label('Play Original')
+                        ->icon(Tabler::Music)
+                        ->media(fn(Audio $record) => Storage::disk('public')->url($record->original_path))
+                        ->mediaType(MediaAction::TYPE_AUDIO)
+                        ->autoplay()
+                        ->visible(fn(Audio $record) => $record->type === AudioType::Upload ||
+                            ($record->type === AudioType::TTS && $record->tts_status !== AudioTTSStatus::Completed)),
+                    ViewAction::make()
+                        ->label('View Details'),
+                    EditAction::make()
+                        ->label('Edit Details'),
+                    DeleteAction::make()
+                        ->label('Delete Audio'),
+                ])
+            ])
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
+                ]),
+            ]);
+    }
+}

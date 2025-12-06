@@ -15,19 +15,15 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use LaraZeus\Tabler\Tabler;
 
 class AudioResource extends Resource
 {
     protected static ?string $model = Audio::class;
 
-    protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedMusicalNote;
+    protected static string|BackedEnum|null $navigationIcon = Tabler::Music;
 
     protected static ?string $recordTitleAttribute = 'title';
-
-    public static function form(Schema $schema): Schema
-    {
-        return AudioForm::configure($schema);
-    }
 
     public static function infolist(Schema $schema): Schema
     {
@@ -50,9 +46,7 @@ class AudioResource extends Resource
     {
         return [
             'index' => ListAudio::route('/'),
-            'create' => CreateAudio::route('/create'),
             'view' => ViewAudio::route('/{record}'),
-            'edit' => EditAudio::route('/{record}/edit'),
         ];
     }
 }

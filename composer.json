@@ -14,6 +14,7 @@
         "andreia/filament-nord-theme": "^2.0",
         "filament/filament": "^4.2",
         "filament/spatie-laravel-settings-plugin": "^4.2",
+        "hugomyb/filament-media-action": "^4.1",
         "lara-zeus/tabler-icons-enum": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/sanctum": "^4.0",
@@ -43,7 +44,10 @@
             "App\\": "app/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Utils/helpers.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

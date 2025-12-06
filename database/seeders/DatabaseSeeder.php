@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Enums\UserAudioType;
 use App\Enums\UserType;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -32,12 +33,14 @@ class DatabaseSeeder extends Seeder
             'name' => 'User',
             'email' => 'user@mail.com',
             'type' => UserType::User,
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
+            'balance' => 500,
+            'audio_type' => UserAudioType::Both
         ]);
 
         $this->call([
             ServerSeeder::class,
-            DemoSeeder::class,
+            //DemoSeeder::class,
         ]);
     }
 }

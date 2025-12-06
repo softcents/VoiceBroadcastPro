@@ -3,12 +3,12 @@
 namespace App\Services\Payment\Gateways;
 
 use App\Models\Deposit;
-use App\Services\Payment\PaymentGatewayInterface;
+use App\Services\Payment\Contracts\PaymentGateway;
 use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
-class PipraPayGateway implements PaymentGatewayInterface
+class PipraPayGateway implements PaymentGateway
 {
     /**
      * @throws ConnectionException

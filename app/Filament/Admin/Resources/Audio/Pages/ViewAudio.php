@@ -11,19 +11,4 @@ use Filament\Resources\Pages\ViewRecord;
 class ViewAudio extends ViewRecord
 {
     protected static string $resource = AudioResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            EditAction::make(),
-        ];
-    }
-
-    protected function getHeaderWidgets(): array
-    {
-        return [
-            CampaignChartWidget::make(),
-            CampaignStatsWidget::make(),
-        ];
-    }
 }

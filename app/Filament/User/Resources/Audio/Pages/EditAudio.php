@@ -1,0 +1,33 @@
+<?php
+
+namespace App\Filament\User\Resources\Audio\Pages;
+
+use App\Filament\User\Resources\Audio\AudioResource;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\ForceDeleteAction;
+use Filament\Actions\RestoreAction;
+use Filament\Actions\ViewAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditAudio extends EditRecord
+{
+    protected static string $resource = AudioResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            ViewAction::make(),
+            DeleteAction::make(),
+            ForceDeleteAction::make(),
+            RestoreAction::make(),
+        ];
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return [
+            'title' => $data['title'] ?? 'Untitled Audio',
+            'description' => $data['description'] ?? null,
+        ];
+    }
+}

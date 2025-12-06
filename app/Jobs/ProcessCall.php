@@ -7,7 +7,7 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
-class DispatchCall implements ShouldQueue
+class ProcessCall implements ShouldQueue
 {
     use Batchable, Queueable;
 

@@ -20,6 +20,8 @@ return new class extends Migration {
             $table->string('phone_number');
             $table->text('content')->nullable();
             $table->enum('status', array_column(CallStatus::cases(), 'value'));
+            $table->float('duration')->default(0);
+            $table->timestamp('called_at')->nullable();
             $table->timestamps();
         });
     }

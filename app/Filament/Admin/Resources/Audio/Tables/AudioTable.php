@@ -3,19 +3,29 @@
 namespace App\Filament\Admin\Resources\Audio\Tables;
 
 use App\Enums\AudioApproval;
+use App\Enums\AudioConversionStatus;
+use App\Enums\AudioTTSStatus;
+use App\Enums\AudioType;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
+use App\Jobs\ConvertAudio;
+use App\Jobs\GenerateAudio;
 use App\Models\Audio;
-use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Support\Icons\Heroicon;
+use Filament\Actions\ForceDeleteBulkAction;
+use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use Hugomyb\FilamentMediaAction\Actions\MediaAction;
+use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\HtmlString;
+use LaraZeus\Tabler\Tabler;
 
 class AudioTable
 {
@@ -26,64 +36,125 @@ class AudioTable
                 TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
-                    ->url(fn(Audio $record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
+                    ->url(fn (Audio $record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
                 TextColumn::make('title')
                     ->label('Title')
-                    ->searchable(),
+                    ->searchable()
+                    ->limit(30)
+                    ->tooltip(fn ($state): string => (string) $state),
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge(),
                 TextColumn::make('approval')
                     ->label('Approval')
-                    ->badge()
-                    ->color(fn($state) => match ($state) {
-                        AudioApproval::Pending => 'warning',
-                        AudioApproval::Approved => 'success',
-                        AudioApproval::Rejected => 'danger',
-                    })
-                    ->icon(fn($state) => match ($state) {
-                        AudioApproval::Pending => Heroicon::OutlinedClock,
-                        AudioApproval::Approved => Heroicon::OutlinedCheckCircle,
-                        AudioApproval::Rejected => Heroicon::OutlinedXCircle,
-                    }),
-                TextColumn::make('original_path')
-                    ->label('Listen')
-                    ->formatStateUsing(fn($state) => $state ? new HtmlString('<audio controls class="w-40 h-8" preload="none"><source src="' . Storage::url($state) . '" type="audio/mpeg"></audio>') : 'No Audio')
-                    ->alignCenter(),
+                    ->badge(),
+                TextColumn::make('conversion_status')
+                    ->label('Conversion')
+                    ->badge(),
+                TextColumn::make('tts_status')
+                    ->label('TTS')
+                    ->badge(),
                 TextColumn::make('duration')
-                    ->label('Duration')
                     ->numeric()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->formatStateUsing(fn ($state): string => secondsToHuman((int) $state))
+                    ->placeholder(secondsToHuman(0)),
                 TextColumn::make('created_at')
-                    ->label('Created At')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('deleted_at')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                TrashedFilter::make(),
             ])
             ->recordActions([
                 ActionGroup::make([
-                    EditAction::make(),
-                    Action::make('approve')
-                        ->label('Approve')
-                        ->icon(Heroicon::OutlinedCheck)
-                        ->color('success')
-                        ->action(fn($record) => $record->update(['approval' => AudioApproval::Approved]))
-                        ->visible(fn($record) => $record->approval !== AudioApproval::Approved),
-                    Action::make('reject')
-                        ->label('Reject')
-                        ->icon(Heroicon::OutlinedXMark)
-                        ->color('danger')
-                        ->action(fn($record) => $record->update(['approval' => AudioApproval::Rejected]))
-                        ->visible(fn($record) => $record->approval !== AudioApproval::Rejected),
+                    MediaAction::make('converted_audio')
+                        ->label('Play Converted')
+                        ->icon(Tabler::Music)
+                        ->media(fn (Audio $record) => Storage::disk('public')->url($record->converted_path))
+                        ->mediaType(MediaAction::TYPE_AUDIO)
+                        ->autoplay()
+                        ->visible(fn (Audio $record) => $record->conversion_status === AudioConversionStatus::Completed),
+                    MediaAction::make('original_audio')
+                        ->label('Play Original')
+                        ->icon(Tabler::Music)
+                        ->media(fn (Audio $record) => Storage::disk('public')->url($record->original_path))
+                        ->mediaType(MediaAction::TYPE_AUDIO)
+                        ->autoplay()
+                        ->visible(fn (Audio $record) => $record->type === AudioType::Upload),
                 ])
+                    ->button()
+                    ->outlined()
+                    ->label('Play')
+                    ->icon(Tabler::Music),
+                ActionGroup::make([
+                    Action::make('approve')
+                        ->icon(Tabler::CircleCheck)
+                        ->label('Approve')
+                        ->visible(fn (Audio $record) => $record->approval !== AudioApproval::Approved)
+                        ->requiresConfirmation()
+                        ->action(function (Audio $record) {
+                            $data = [
+                                'approval' => AudioApproval::Approved,
+                            ];
+
+                            if ($record->type === AudioType::TTS) {
+                                $data['tts_status'] = AudioTTSStatus::Pending;
+                                $data['conversion_status'] = AudioConversionStatus::Pending;
+
+                                $record->update($data);
+
+                                Bus::chain([
+                                    new GenerateAudio($record->id),
+                                    new ConvertAudio($record->id),
+                                ])->dispatch();
+                            } else {
+                                $record->update($data);
+                            }
+                        }),
+                    Action::make('reject')
+                        ->icon(Tabler::CircleX)
+                        ->label('Reject')
+                        ->requiresConfirmation()
+                        ->visible(fn (Audio $record) => $record->approval !== AudioApproval::Rejected)
+                        ->action(fn (Audio $record) => $record->update(['approval' => AudioApproval::Rejected])),
+                    Action::make('tts_retry')
+                        ->icon(Tabler::Reload)
+                        ->label('Retry TTS')
+                        ->visible(fn (Audio $record) => $record->type === AudioType::TTS && $record->tts_status === AudioTTSStatus::Failed)
+                        ->action(function (Audio $record) {
+                            $data['tts_status'] = AudioTTSStatus::Pending;
+                            $data['conversion_status'] = AudioConversionStatus::Pending;
+
+                            $record->update($data);
+
+                            Bus::chain([
+                                new GenerateAudio($record->id),
+                                new ConvertAudio($record->id),
+                            ])->dispatch();
+                        }),
+                    ViewAction::make()
+                        ->icon(Tabler::Eye)
+                        ->label('View Details'),
+                    DeleteAction::make()
+                        ->icon(Tabler::Trash)
+                        ->label('Delete Audio'),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
+                    ForceDeleteBulkAction::make(),
+                    RestoreBulkAction::make(),
                 ]),
             ]);
     }

@@ -2,59 +2,114 @@
 
 namespace App\Filament\Admin\Resources\Audio\Schemas;
 
+use App\Enums\AudioType;
+use App\Filament\Admin\Resources\Customers\CustomerResource;
+use App\Filament\Infolists\Components\AudioPlayerEntry;
 use App\Models\Audio;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
+use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\FontWeight;
+use Filament\Support\Enums\TextSize;
+use LaraZeus\Tabler\Tabler;
 
 class AudioInfolist
 {
     public static function configure(Schema $schema): Schema
     {
         return $schema
+            ->columns(3)
             ->components([
-                TextEntry::make('user.name')
-                    ->label('User'),
-                TextEntry::make('title'),
-                TextEntry::make('description')
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('type')
-                    ->badge(),
-                TextEntry::make('approval')
-                    ->badge(),
-                TextEntry::make('message')
-                    ->placeholder('-')
-                    ->columnSpanFull(),
-                TextEntry::make('language')
-                    ->badge()
-                    ->placeholder('-'),
-                TextEntry::make('gender')
-                    ->badge()
-                    ->placeholder('-'),
-                TextEntry::make('artist')
-                    ->badge()
-                    ->placeholder('-'),
-                TextEntry::make('original_path')
-                    ->placeholder('-'),
-                TextEntry::make('converted_path')
-                    ->placeholder('-'),
-                TextEntry::make('duration')
-                    ->numeric()
-                    ->placeholder('-'),
-                TextEntry::make('size')
-                    ->numeric()
-                    ->placeholder('-'),
-                TextEntry::make('mime_type')
-                    ->placeholder('-'),
-                TextEntry::make('created_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('updated_at')
-                    ->dateTime()
-                    ->placeholder('-'),
-                TextEntry::make('deleted_at')
-                    ->dateTime()
-                    ->visible(fn (Audio $record): bool => $record->trashed()),
+                Group::make()
+                    ->columnSpan(2)
+                    ->schema([
+                        Section::make('Audio Details')
+                            ->icon(Tabler::Music)
+                            ->schema([
+                                TextEntry::make('title')
+                                    ->label('Title')
+                                    ->weight(FontWeight::Bold)
+                                    ->size(TextSize::Large)
+                                    ->icon(Tabler::H1)
+                                    ->columnSpanFull(),
+                                Grid::make(3)->schema([
+                                    TextEntry::make('user.name')
+                                        ->label('Uploaded By')
+                                        ->icon(Tabler::User)
+                                        ->url(fn(Audio $record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
+
+                                    TextEntry::make('type')
+                                        ->badge(),
+
+                                    TextEntry::make('approval')
+                                        ->badge()
+                                        ->label('Approval'),
+                                ]),
+
+                                TextEntry::make('description')
+                                    ->markdown()
+                                    ->placeholder('No description provided.')
+                                    ->columnSpanFull(),
+                            ]),
+
+                        Section::make('Attributes')
+                            ->icon(Tabler::ListDetails)
+                            ->visible(fn(Audio $record) => $record->type === AudioType::TTS)
+                            ->collapsible()
+                            ->schema([
+                                Grid::make(3)->schema([
+                                    TextEntry::make('ttsArtist.name')
+                                        ->label('Artist')
+                                        ->badge()
+                                        ->placeholder('-')
+                                        ->icon(Tabler::Microphone),
+                                    TextEntry::make('ttsArtist.ttsLanguage.name')
+                                        ->label('Language')
+                                        ->badge()
+                                        ->placeholder('-')
+                                        ->icon(Tabler::Language),
+                                    TextEntry::make('ttsArtist.gender')
+                                        ->badge()
+                                        ->placeholder('-'),
+                                ]),
+                                TextEntry::make('message')
+                                    ->label('Message Content')
+                                    ->placeholder('-')
+                                    ->columnSpanFull(),
+                            ]),
+                    ]),
+
+                Group::make()
+                    ->columnSpan(1)
+                    ->schema([
+                        Section::make('File Specifications')
+                            ->icon(Tabler::FileSignal)
+                            ->schema([
+                                TextEntry::make('duration')
+                                    ->label('Duration')
+                                    ->numeric()
+                                    ->formatStateUsing(fn(int $state) => secondsToHuman($state))
+                                    ->icon(Tabler::Clock),
+                                TextEntry::make('size')
+                                    ->label('Size')
+                                    ->numeric()
+                                    ->formatStateUsing(fn(int $state) => bytesToHuman($state))
+                                    ->icon(Tabler::Database),
+                            ]),
+
+                        Section::make('Preview')
+                            ->icon(Tabler::PlayerPlay)
+                            ->schema([
+                                AudioPlayerEntry::make('original_path')
+                                    ->label('Original Audio')
+                                    ->hiddenLabel(),
+                                AudioPlayerEntry::make('converted_path')
+                                    ->label('Converted Audio')
+                                    ->hiddenLabel(),
+                            ]),
+                    ]),
             ]);
     }
 }

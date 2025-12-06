@@ -2,9 +2,7 @@
 
 namespace App\Http\Requests\Audio;
 
-use App\Enums\AudioArtist;
-use App\Enums\AudioGender;
-use App\Enums\AudioLanguage;
+
 use App\Enums\AudioType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -33,18 +31,16 @@ class StoreAudioRequest extends FormRequest
             'type' => ['required', Rule::enum(AudioType::class)],
             'message' => ['required_if:type,tts', 'prohibited_if:type,record', 'nullable', 'string'],
             'file' => ['required_if:type,record', 'prohibited_if:type,tts', 'nullable', 'file', 'mimes:mp3,wav,ogg,m4a', 'max:10240'], // 10MB max
-            'language' => ['required_if:type,tts', 'prohibited_if:type,record', 'nullable', Rule::enum(AudioLanguage::class)],
-            'gender' => ['required_if:type,tts', 'prohibited_if:type,record', 'nullable', Rule::enum(AudioGender::class)],
-            'artist' => ['required_if:type,tts', 'prohibited_if:type,record', 'nullable', Rule::enum(AudioArtist::class)],
+            'tts_artist_id' => ['required_if:type,tts', 'prohibited_if:type,record', 'nullable', 'exists:tts_artists,id'],
         ];
     }
 
     public function bodyParameters(): array
     {
         return [
-            'artist' => [
-                'description' => 'The artist/voice name (required if type is tts).',
-                'example' => 'bn-BD-PradeepNeural',
+            'tts_artist_id' => [
+                'description' => 'The ID of the TTS artist (required if type is tts).',
+                'example' => '1',
             ],
             'description' => [
                 'description' => 'The description of the audio.',
@@ -53,14 +49,7 @@ class StoreAudioRequest extends FormRequest
             'file' => [
                 'description' => 'The audio file to upload (mp3, wav, ogg, m4a). Required if type is record.',
             ],
-            'gender' => [
-                'description' => 'The gender of the voice (required if type is tts).',
-                'example' => 'Male',
-            ],
-            'language' => [
-                'description' => 'The language code (required if type is tts).',
-                'example' => 'bn-BD',
-            ],
+
             'message' => [
                 'description' => 'The message for TTS generation (required if type is tts).',
                 'example' => 'Hello, welcome to our service.',

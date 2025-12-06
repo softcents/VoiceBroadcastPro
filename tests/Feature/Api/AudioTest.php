@@ -1,11 +1,10 @@
 <?php
 
 use App\Enums\AudioApproval;
-use App\Enums\AudioArtist;
-use App\Enums\AudioGender;
-use App\Enums\AudioLanguage;
 use App\Enums\AudioType;
 use App\Models\Audio;
+use App\Models\TTSArtist;
+use App\Models\TTSLanguage;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
@@ -24,14 +23,17 @@ test('can list audio', function () {
 
 test('can create audio (tts)', function () {
     $user = User::factory()->create();
+    $language = TTSLanguage::factory()->create(['code' => 'bn-BD']);
+    $artist = TTSArtist::factory()->create([
+        'tts_language_id' => $language->id,
+        'code' => 'bn-BD-PradeepNeural'
+    ]);
 
     $response = actingAs($user)->postJson('/api/audio', [
         'title' => 'Test Audio',
         'type' => AudioType::TTS->value,
         'message' => 'Hello World',
-        'language' => AudioLanguage::BnBD->value,
-        'gender' => AudioGender::Male->value,
-        'artist' => AudioArtist::BnBdPradeepNeural->value,
+        'tts_artist_id' => $artist->id,
     ]);
 
     $response->assertCreated()
@@ -39,15 +41,14 @@ test('can create audio (tts)', function () {
         ->assertJsonPath('data.type', AudioType::TTS->value)
         ->assertJsonPath('data.approval', AudioApproval::Pending->value)
         ->assertJsonPath('data.message', 'Hello World')
-        ->assertJsonPath('data.language', AudioLanguage::BnBD->value)
-        ->assertJsonPath('data.artist', AudioArtist::BnBdPradeepNeural->value);
+        ->assertJsonPath('data.tts_artist.id', $artist->id);
 
     assertDatabaseHas('audio', [
         'title' => 'Test Audio',
         'type' => AudioType::TTS->value,
         'approval' => AudioApproval::Pending->value,
         'message' => 'Hello World',
-        'language' => AudioLanguage::BnBD->value,
+        'tts_artist_id' => $artist->id,
     ]);
 });
 
@@ -59,13 +60,13 @@ test('can create audio (upload)', function () {
 
     $response = actingAs($user)->postJson('/api/audio', [
         'title' => 'Test Upload',
-        'type' => AudioType::Record->value,
+        'type' => AudioType::Upload->value,
         'file' => $file,
     ]);
 
     $response->assertCreated()
         ->assertJsonPath('data.title', 'Test Upload')
-        ->assertJsonPath('data.type', AudioType::Record->value);
+        ->assertJsonPath('data.type', AudioType::Upload->value);
 
     $audio = Audio::where('title', 'Test Upload')->first();
     Storage::disk('public')->assertExists($audio->original_path); // Assuming default disk is public or linked

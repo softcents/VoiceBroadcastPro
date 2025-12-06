@@ -174,10 +174,12 @@ class TTSLanguageSeeder extends Seeder
                 ['code' => $value],
                 [
                     'name' => $key,
-                    'enabled' => true,
+                    'enabled' => false,
                     'engine' => 'azure',
                 ]
             );
         }
+
+        TTSLanguage::whereIn('code', ['en-US', 'bn-BD'])->update(['enabled' => true]);
     }
 }

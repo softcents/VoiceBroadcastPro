@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('avatar_url')->nullable();
 
+            $table->string('audio_type')->default('upload');
+
             $table->string('password');
             $table->rememberToken();
             $table->timestamp('email_verified_at')->nullable();

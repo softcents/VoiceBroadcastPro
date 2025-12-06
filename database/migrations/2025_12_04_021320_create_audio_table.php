@@ -1,9 +1,7 @@
 <?php
 
 use App\Enums\AudioApproval;
-use App\Enums\AudioArtist;
-use App\Enums\AudioGender;
-use App\Enums\AudioLanguage;
+
 use App\Enums\AudioType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,17 +15,16 @@ return new class extends Migration {
     {
         Schema::create('audio', function (Blueprint $table) {
             $table->id();
+            $table->uuid()->unique();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete();
+            $table->foreignId('tts_artist_id')->nullable()->constrained('tts_artists')->nullOnDelete();
+
             $table->string('title');
             $table->text('description')->nullable();
 
-            $table->enum('type', array_column(AudioType::cases(), 'value'));
-            $table->enum('approval', array_column(AudioApproval::cases(), 'value'))->default(AudioApproval::Pending->value);
+            $table->string('type')->default('tts');
+            $table->string('approval')->default('pending');
             $table->text('message')->nullable();
-
-            $table->enum('language', array_column(AudioLanguage::cases(), 'value'))->nullable();
-            $table->enum('gender', array_column(AudioGender::cases(), 'value'))->nullable();
-            $table->enum('artist', array_column(AudioArtist::cases(), 'value'))->nullable();
 
             // Paths to audio files
             $table->string('original_path')->nullable();
@@ -36,8 +33,15 @@ return new class extends Migration {
             // Additional metadata
             $table->integer('duration')->nullable();
             $table->integer('size')->nullable();
-            $table->string('mime_type')->nullable();
 
+            $table->string('conversion_status')->default('pending');
+            $table->text('conversion_error')->nullable();
+
+            $table->string('tts_status')->nullable();
+            $table->text('tts_error')->nullable();
+
+            $table->timestamp('converted_at')->nullable();
+            $table->timestamp('tts_generated_at')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

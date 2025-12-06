@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Audio\StoreAudioRequest;
 use App\Http\Requests\Audio\UpdateAudioRequest;
 use App\Http\Resources\AudioResource;
-use App\Jobs\ConvertAudioForAsterisk;
+use App\Jobs\ConvertAudio;
 use App\Models\Audio;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -33,6 +33,7 @@ class AudioController extends Controller
     public function index(#[CurrentUser] User $user, Request $request): ResourceCollection
     {
         $audios = Audio::whereUserId($user->id)
+            ->with(['ttsArtist'])
             ->when($request->has('type'), function ($query) use ($request) {
                 $query->where('type', $request->input('type'));
             })
@@ -49,7 +50,7 @@ class AudioController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->type === AudioType::Record->value) {
+        if ($request->type === AudioType::Upload->value) {
             $file = $request->file('file');
             $path = $file->store('audios', 'public');
             $data['original_path'] = $path;
@@ -59,9 +60,10 @@ class AudioController extends Controller
 
         $audio = $user->audio()->create($data);
         $audio->refresh();
+        $audio->load('ttsArtist');
 
-        if ($audio->type === AudioType::Record) {
-            ConvertAudioForAsterisk::dispatch($audio);
+        if ($audio->type === AudioType::Upload) {
+            ConvertAudio::dispatch($audio);
         }
 
         return new AudioResource($audio);

@@ -32,12 +32,12 @@ class ProcessCampaign implements ShouldQueue
         if ($this->campaign->source === CampaignSource::Phonebook) {
             $this->campaign->phonebook->contacts()->chunk(1000, function ($contacts) use (&$jobs) {
                 foreach ($contacts as $contact) {
-                    $jobs[] = new DispatchCall($this->campaign, $contact->phone_number);
+                    $jobs[] = new ProcessCall($this->campaign, $contact->phone_number);
                 }
             });
         } elseif ($this->campaign->source === CampaignSource::Manual) {
             foreach ($this->phoneNumbers ?? [] as $phoneNumber) {
-                $jobs[] = new DispatchCall($this->campaign, $phoneNumber);
+                $jobs[] = new ProcessCall($this->campaign, $phoneNumber);
             }
         } elseif ($this->campaign->source === CampaignSource::Import) {
             if ($this->campaign->file_path && Storage::exists($this->campaign->file_path)) {
@@ -49,7 +49,7 @@ class ProcessCampaign implements ShouldQueue
                     // Assuming first column is phone number if no header mapping logic yet
                     $phoneNumber = $row[0] ?? null;
                     if ($phoneNumber) {
-                        $jobs[] = new DispatchCall($this->campaign, $phoneNumber);
+                        $jobs[] = new ProcessCall($this->campaign, $phoneNumber);
                     }
                 }
                 fclose($handle);

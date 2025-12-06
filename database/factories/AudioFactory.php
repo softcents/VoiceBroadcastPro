@@ -3,9 +3,7 @@
 namespace Database\Factories;
 
 use App\Enums\AudioRecordStatus;
-use App\Enums\AudioArtist;
-use App\Enums\AudioGender;
-use App\Enums\AudioLanguage;
+
 use App\Enums\AudioType;
 use App\Models\Audio;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -29,9 +27,7 @@ class AudioFactory extends Factory
             'type' => AudioType::TTS,
             'approval' => \App\Enums\AudioApproval::Pending,
             'message' => $this->faker->sentence(),
-            'language' => AudioLanguage::BnBD,
-            'gender' => AudioGender::Male,
-            'artist' => AudioArtist::BnBdPradeepNeural,
+            'tts_artist_id' => \App\Models\TTSArtist::factory(),
         ];
     }
 }

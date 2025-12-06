@@ -3,12 +3,13 @@
 namespace App\Services\Payment;
 
 use App\Models\Deposit;
+use App\Services\Payment\Contracts\PaymentGateway;
 use App\Services\Payment\Gateways\PipraPayGateway;
 use InvalidArgumentException;
 
 class PaymentService
 {
-    public function getGateway(string $gatewayName): PaymentGatewayInterface
+    public function getGateway(string $gatewayName): PaymentGateway
     {
         return match ($gatewayName) {
             'piprapay' => app(PipraPayGateway::class),

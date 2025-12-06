@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserAudioType;
 use App\Enums\UserType;
 use Database\Factories\UserFactory;
 use Filament\Models\Contracts\FilamentUser;
@@ -34,6 +35,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
         'type',
         'balance',
         'phone',
+        'audio_type',
         'email_verified_at',
     ];
 
@@ -56,6 +58,7 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     {
         return [
             'type' => UserType::class,
+            'audio_type' => UserAudioType::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];

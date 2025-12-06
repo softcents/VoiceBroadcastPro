@@ -1,7 +1,7 @@
-<x-dynamic-component :component="$getEntryWrapperView()" :entry="$entry">
-    <div class="flex flex-col gap-y-2">
+<x-dynamic-component :component="$entry->getEntryWrapperView()" :entry="$entry">
+    <div class="flex flex-col gap-y-2 w-full">
         @if ($getState())
-            <audio controls class="w-full">
+            <audio controls class="w-full rounded-lg" style="width: 100%;">
                 <source src="{{ \Illuminate\Support\Facades\Storage::url($getState()) }}" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>

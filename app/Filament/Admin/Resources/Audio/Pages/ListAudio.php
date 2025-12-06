@@ -9,11 +9,4 @@ use Filament\Resources\Pages\ListRecords;
 class ListAudio extends ListRecords
 {
     protected static string $resource = AudioResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            CreateAction::make(),
-        ];
-    }
 }

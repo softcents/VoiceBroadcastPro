@@ -1,7 +1,7 @@
 <?php
 
 use App\Enums\AudioType;
-use App\Jobs\ConvertAudioForAsterisk;
+use App\Jobs\ConvertAudio;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
@@ -17,11 +17,11 @@ test('it dispatches conversion job on upload', function () {
 
     $response = actingAs($user)->postJson('/api/audio', [
         'title' => 'Test Upload',
-        'type' => AudioType::Record->value,
+        'type' => AudioType::Upload->value,
         'file' => $file,
     ]);
 
     $response->assertCreated();
 
-    Queue::assertPushed(ConvertAudioForAsterisk::class);
+    Queue::assertPushed(ConvertAudio::class);
 });

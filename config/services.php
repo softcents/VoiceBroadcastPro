@@ -40,4 +40,11 @@ return [
         'api_key' => env('PIPRAPAY_API_KEY'),
     ],
 
+    'azure' => [
+        'tts' => [
+            'key' => env('AZURE_TTS_KEY'),
+            'region' =>  env('AZURE_TTS_REGION', 'southeastasia'),
+        ],
+    ],
+
 ];
