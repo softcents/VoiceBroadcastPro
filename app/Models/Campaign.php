@@ -4,12 +4,15 @@ namespace App\Models;
 
 use App\Enums\CampaignSource;
 use App\Enums\CampaignStatus;
+use App\Models\Scopes\OwnedByAuthUser;
 use Database\Factories\CampaignFactory;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[ScopedBy(OwnedByAuthUser::class)]
 class Campaign extends Model
 {
     /** @use HasFactory<CampaignFactory> */

@@ -6,8 +6,10 @@ use App\Enums\AudioApproval;
 use App\Enums\AudioConversionStatus;
 use App\Enums\AudioTTSStatus;
 use App\Enums\AudioType;
+use App\Models\Scopes\OwnedByAuthUser;
 use Database\Factories\AudioFactory;
 use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,6 +18,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
+#[ScopedBy(OwnedByAuthUser::class)]
 class Audio extends Model
 {
     /** @use HasFactory<AudioFactory> */

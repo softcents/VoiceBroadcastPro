@@ -9,12 +9,14 @@ use App\Filament\Admin\Resources\Campaigns\Schemas\CampaignForm;
 use App\Filament\Admin\Resources\Campaigns\Schemas\CampaignInfolist;
 use App\Filament\Admin\Resources\Campaigns\Tables\CampaignsTable;
 use App\Models\Campaign;
+use App\Models\Scopes\OwnedByAuthUser;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 
+use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
 class CampaignResource extends Resource
@@ -55,5 +57,13 @@ class CampaignResource extends Resource
             'view' => Pages\ViewCampaign::route('/{record}'),
             'edit' => EditCampaign::route('/{record}/edit'),
         ];
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                OwnedByAuthUser::class,
+            ]);
     }
 }

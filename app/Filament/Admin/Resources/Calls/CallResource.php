@@ -7,10 +7,12 @@ use App\Filament\Admin\Resources\Calls\Pages\ListCalls;
 use App\Filament\Admin\Resources\Calls\Schemas\CallForm;
 use App\Filament\Admin\Resources\Calls\Tables\CallsTable;
 use App\Models\Call;
+use App\Models\Scopes\OwnedByAuthUser;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
 class CallResource extends Resource
@@ -43,5 +45,13 @@ class CallResource extends Resource
             'index' => ListCalls::route('/'),
             'create' => CreateCall::route('/create'),
         ];
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                OwnedByAuthUser::class,
+            ]);
     }
 }

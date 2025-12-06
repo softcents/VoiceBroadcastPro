@@ -129,4 +129,9 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     {
         return $this->avatar_url;
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->type === UserType::Admin;
+    }
 }

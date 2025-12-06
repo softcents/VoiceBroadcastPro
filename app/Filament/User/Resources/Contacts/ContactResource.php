@@ -1,16 +1,15 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Contacts;
+namespace App\Filament\User\Resources\Contacts;
 
-use App\Filament\Admin\Resources\Contacts\Pages\CreateContact;
-use App\Filament\Admin\Resources\Contacts\Pages\EditContact;
-use App\Filament\Admin\Resources\Contacts\Pages\ListContacts;
-use App\Filament\Admin\Resources\Contacts\Pages\ViewContact;
-use App\Filament\Admin\Resources\Contacts\Schemas\ContactForm;
-use App\Filament\Admin\Resources\Contacts\Schemas\ContactInfolist;
-use App\Filament\Admin\Resources\Contacts\Tables\ContactsTable;
+use App\Filament\User\Resources\Contacts\Pages\CreateContact;
+use App\Filament\User\Resources\Contacts\Pages\EditContact;
+use App\Filament\User\Resources\Contacts\Pages\ListContacts;
+use App\Filament\User\Resources\Contacts\Pages\ViewContact;
+use App\Filament\User\Resources\Contacts\Schemas\ContactForm;
+use App\Filament\User\Resources\Contacts\Schemas\ContactInfolist;
+use App\Filament\User\Resources\Contacts\Tables\ContactsTable;
 use App\Models\Contact;
-use App\Models\Scopes\OwnedByAuthUser;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -59,11 +58,11 @@ class ContactResource extends Resource
         ];
     }
 
-    public static function getRecordRouteBindingEloquentQuery(): Builder
+    public static function getEloquentQuery(): Builder
     {
-        return parent::getRecordRouteBindingEloquentQuery()
-            ->withoutGlobalScopes([
-                OwnedByAuthUser::class,
-            ]);
+        return parent::getEloquentQuery()
+            ->whereHas('phonebook', function (Builder $query) {
+                $query->where('user_id', auth()->id());
+            });
     }
 }

@@ -10,11 +10,12 @@ use App\Filament\Admin\Resources\Audio\Schemas\AudioForm;
 use App\Filament\Admin\Resources\Audio\Schemas\AudioInfolist;
 use App\Filament\Admin\Resources\Audio\Tables\AudioTable;
 use App\Models\Audio;
+use App\Models\Scopes\OwnedByAuthUser;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
 class AudioResource extends Resource
@@ -48,5 +49,13 @@ class AudioResource extends Resource
             'index' => ListAudio::route('/'),
             'view' => ViewAudio::route('/{record}'),
         ];
+    }
+
+    public static function getRecordRouteBindingEloquentQuery(): Builder
+    {
+        return parent::getRecordRouteBindingEloquentQuery()
+            ->withoutGlobalScopes([
+                OwnedByAuthUser::class,
+            ]);
     }
 }

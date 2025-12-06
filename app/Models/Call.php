@@ -3,12 +3,15 @@
 namespace App\Models;
 
 use App\Enums\CallStatus;
+use App\Models\Scopes\OwnedByAuthUser;
 use Database\Factories\CallFactory;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
 
+#[ScopedBy(OwnedByAuthUser::class)]
 class Call extends Model
 {
     /** @use HasFactory<CallFactory> */

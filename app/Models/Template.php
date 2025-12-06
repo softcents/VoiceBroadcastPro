@@ -3,11 +3,15 @@
 namespace App\Models;
 
 use App\Enums\TemplateApproval;
+use App\Models\Scopes\OwnedByAuthUser;
 use Database\Factories\TemplateFactory;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+
+#[ScopedBy(OwnedByAuthUser::class)]
 class Template extends Model
 {
     /** @use HasFactory<TemplateFactory> */
