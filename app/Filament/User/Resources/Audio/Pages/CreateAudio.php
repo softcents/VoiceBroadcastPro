@@ -2,14 +2,12 @@
 
 namespace App\Filament\User\Resources\Audio\Pages;
 
-use App\Enums\AudioConversionStatus;
-use App\Enums\AudioTTSStatus;
 use App\Enums\AudioType;
 use App\Filament\User\Resources\Audio\AudioResource;
 use App\Jobs\ConvertAudio;
+use App\Models\Audio;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Audio;
 
 class CreateAudio extends CreateRecord
 {

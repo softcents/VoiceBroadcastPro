@@ -2,7 +2,9 @@
 
 namespace App\Filament\Admin\Resources\Phonebooks\Pages;
 
+use App\Filament\Admin\Resources\Contacts\ContactResource;
 use App\Filament\Admin\Resources\Phonebooks\PhonebookResource;
+use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
@@ -14,6 +16,9 @@ class ViewPhonebook extends ViewRecord
     {
         return [
             EditAction::make(),
+            Action::make('create_contact')
+                ->label('Add Contact')
+                ->url(fn () => ContactResource::getUrl('create')),
         ];
     }
 }

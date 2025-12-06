@@ -2,13 +2,11 @@
 
 namespace App\Filament\Admin\Resources\Phonebooks\RelationManagers;
 
-use Filament\Actions\AttachAction;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\DetachAction;
-use Filament\Actions\DetachBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
@@ -18,6 +16,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class ContactsRelationManager extends RelationManager
 {
@@ -34,9 +33,11 @@ class ContactsRelationManager extends RelationManager
                             ->required(),
                         TextInput::make('last_name')
                             ->label('Last Name'),
-                        TextInput::make('phone_number')
+                        PhoneInput::make('phone_number')
                             ->label('Phone Number')
-                            ->tel()
+                            ->defaultCountry('BD')
+                            ->onlyCountries(['BD'])
+                            ->enableIpLookup(false)
                             ->required(),
                     ])
             ]);
@@ -47,14 +48,20 @@ class ContactsRelationManager extends RelationManager
         return $schema
             ->components([
                 TextEntry::make('first_name')
+                    ->label('First Name')
                     ->placeholder('-'),
                 TextEntry::make('last_name')
+                    ->label('Last Name')
                     ->placeholder('-'),
-                TextEntry::make('phone_number'),
+                TextEntry::make('phone_number')
+                    ->label('Phone Number')
+                    ->placeholder('-'),
                 TextEntry::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
                     ->placeholder('-'),
                 TextEntry::make('updated_at')
+                    ->label('Updated At')
                     ->dateTime()
                     ->placeholder('-'),
             ]);
@@ -92,9 +99,11 @@ class ContactsRelationManager extends RelationManager
                 CreateAction::make(),
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
-                DeleteAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make(),
+                    DeleteAction::make(),
+                ])
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -2,9 +2,11 @@
 
 namespace App\Filament\Admin\Resources\Phonebooks\Schemas;
 
+use App\Filament\Admin\Resources\Customers\CustomerResource;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use LaraZeus\Tabler\Tabler;
 
 class PhonebookInfolist
 {
@@ -17,17 +19,24 @@ class PhonebookInfolist
                     ->columns()
                     ->schema([
                         TextEntry::make('user.name')
-                            ->label('User'),
-                        TextEntry::make('name'),
-                        TextEntry::make('description')
-                            ->placeholder('-')
-                            ->columnSpanFull(),
+                            ->icon(Tabler::User)
+                            ->label('User')
+                            ->url(fn($record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
+                        TextEntry::make('name')
+                            ->icon(Tabler::H1)
+                            ->label('Name'),
                         TextEntry::make('created_at')
+                            ->icon(Tabler::ClockPlus)
                             ->dateTime()
                             ->placeholder('-'),
                         TextEntry::make('updated_at')
+                            ->icon(Tabler::ClockEdit)
                             ->dateTime()
                             ->placeholder('-'),
+                        TextEntry::make('description')
+                            ->icon(Tabler::TextCaption)
+                            ->placeholder('-')
+                            ->columnSpanFull(),
                     ])
             ]);
     }

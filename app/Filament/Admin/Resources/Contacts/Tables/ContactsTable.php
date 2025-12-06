@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Phonebooks\Tables;
+namespace App\Filament\Admin\Resources\Contacts\Tables;
 
 use App\Filament\Admin\Resources\Customers\CustomerResource;
+use App\Filament\Admin\Resources\Phonebooks\PhonebookResource;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -12,30 +13,28 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class PhonebooksTable
+class ContactsTable
 {
     public static function configure(Table $table): Table
     {
         return $table
             ->columns([
-                TextColumn::make('user.name')
-                    ->label('User')
+                TextColumn::make('phonebook.user.name')
+                    ->label('Customer')
                     ->searchable()
-                    ->url(fn ($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
+                    ->url(fn($record) => CustomerResource::getUrl('view', ['record' => $record->phonebook->user_id])),
+                TextColumn::make('phonebook.name')
+                    ->searchable()
+                    ->url(fn($record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
                 TextColumn::make('name')
-                    ->label('Name')
                     ->searchable(),
-                TextColumn::make('contacts_count')
-                    ->label('Contacts')
-                    ->counts('contacts')
-                    ->alignCenter(),
+                TextColumn::make('phone_number')
+                    ->searchable(),
                 TextColumn::make('created_at')
-                    ->label('Created At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('updated_at')
-                    ->label('Updated At')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -47,8 +46,7 @@ class PhonebooksTable
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make(),
-                    DeleteAction::make()
-                        ->requiresConfirmation(),
+                    DeleteAction::make(),
                 ])
             ])
             ->toolbarActions([
