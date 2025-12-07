@@ -1,14 +1,15 @@
 <?php
 
-namespace App\Http\Requests\Audio;
+declare(strict_types=1);
 
+namespace App\Http\Requests\Audio;
 
 use App\Enums\AudioType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class StoreAudioRequest extends FormRequest
+final class StoreAudioRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

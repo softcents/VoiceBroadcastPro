@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Audio;
 
 use App\Filament\User\Resources\Audio\Pages\CreateAudio;
@@ -15,10 +17,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
-class AudioResource extends Resource
+final class AudioResource extends Resource
 {
     protected static ?string $model = Audio::class;
 

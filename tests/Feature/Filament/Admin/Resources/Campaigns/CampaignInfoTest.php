@@ -1,12 +1,14 @@
 <?php
 
-use App\Filament\Admin\Resources\Campaigns\CampaignResource;
-use App\Models\Campaign;
-use App\Models\Call;
-use App\Models\User;
+declare(strict_types=1);
+
 use App\Enums\UserType;
-use App\Filament\Admin\Resources\Campaigns\Widgets\CampaignStatsWidget;
+use App\Filament\Admin\Resources\Campaigns\CampaignResource;
 use App\Filament\Admin\Resources\Campaigns\Widgets\CampaignChartWidget;
+use App\Filament\Admin\Resources\Campaigns\Widgets\CampaignStatsWidget;
+use App\Models\Call;
+use App\Models\Campaign;
+use App\Models\User;
 
 it('can view campaign info page with widgets', function () {
     $admin = User::factory()->create(['type' => UserType::Admin]);

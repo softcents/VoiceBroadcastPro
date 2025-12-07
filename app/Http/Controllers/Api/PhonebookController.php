@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -19,7 +21,7 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Phonebooks', 'Manage phonebooks')]
 #[Authenticated]
-class PhonebookController extends Controller
+final class PhonebookController extends Controller
 {
     #[Endpoint(title: 'List Phonebooks', description: 'Retrieve a list of phonebooks for the current user.')]
     #[ResponseFromApiResource(name: PhonebookResource::class, model: User::class, collection: true, paginate: 15)]
@@ -37,7 +39,7 @@ class PhonebookController extends Controller
 
     #[Endpoint(title: 'Create Phonebook', description: 'Create a new phonebook.')]
     #[ResponseFromApiResource(name: PhonebookResource::class, model: Phonebook::class, status: 201)]
-    #[Response(content: ["message" => "The given data was invalid.", "errors" => ["name" => ["The name field is required."]]], status: 422)]
+    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['name' => ['The name field is required.']]], status: 422)]
     public function store(#[CurrentUser] User $user, StorePhonebookRequest $request)
     {
         $phonebook = $user->phonebooks()->create($request->validated());
@@ -47,8 +49,8 @@ class PhonebookController extends Controller
 
     #[Endpoint(title: 'Get Phonebook', description: 'Retrieve a specific phonebook.')]
     #[ResponseFromApiResource(name: PhonebookResource::class, model: Phonebook::class)]
-    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
-    #[Response(content: ["message" => "Record not found."], status: 404)]
+    #[Response(content: ['message' => 'This action is unauthorized.'], status: 403)]
+    #[Response(content: ['message' => 'Record not found.'], status: 404)]
     public function show(#[CurrentUser] User $user, Phonebook $phonebook)
     {
         if ($phonebook->user_id !== $user->id) {
@@ -60,9 +62,9 @@ class PhonebookController extends Controller
 
     #[Endpoint(title: 'Update Phonebook', description: 'Update a specific phonebook.')]
     #[ResponseFromApiResource(PhonebookResource::class, Phonebook::class)]
-    #[Response(["message" => "This action is unauthorized."], 403)]
-    #[Response(["message" => "Record not found."], 404)]
-    #[Response(["message" => "The given data was invalid.", "errors" => ["name" => ["The name field is required."]]], 422)]
+    #[Response(['message' => 'This action is unauthorized.'], 403)]
+    #[Response(['message' => 'Record not found.'], 404)]
+    #[Response(['message' => 'The given data was invalid.', 'errors' => ['name' => ['The name field is required.']]], 422)]
     public function update(#[CurrentUser] User $user, UpdatePhonebookRequest $request, Phonebook $phonebook)
     {
         if ($phonebook->user_id !== $user->id) {
@@ -75,8 +77,8 @@ class PhonebookController extends Controller
     }
 
     #[Endpoint(title: 'Delete Phonebook', description: 'Delete a specific phonebook.')]
-    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
-    #[Response(content: ["message" => "Record not found."], status: 404)]
+    #[Response(content: ['message' => 'This action is unauthorized.'], status: 403)]
+    #[Response(content: ['message' => 'Record not found.'], status: 404)]
     #[Response(status: 204)]
     public function destroy(#[CurrentUser] User $user, Phonebook $phonebook)
     {

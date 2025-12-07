@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Deposits\Tables;
 
 use App\Enums\DepositStatus;
@@ -16,7 +18,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class DepositsTable
+final class DepositsTable
 {
     public static function configure(Table $table): Table
     {
@@ -60,7 +62,7 @@ class DepositsTable
                         ->label('Pay Now')
                         ->icon(Heroicon::OutlinedCreditCard)
                         ->color('success')
-                        ->visible(fn(Deposit $record) => $record->status === DepositStatus::Pending)
+                        ->visible(fn (Deposit $record) => $record->status === DepositStatus::Pending)
                         ->action(function (Deposit $record) {
                             try {
                                 $service = app(PaymentService::class);
@@ -87,12 +89,12 @@ class DepositsTable
                         ->label('Verify Deposit')
                         ->icon(Heroicon::OutlinedCheckCircle)
                         ->color('primary')
-                        ->visible(fn(Deposit $record) => $record->status === DepositStatus::Pending)
+                        ->visible(fn (Deposit $record) => $record->status === DepositStatus::Pending)
                         ->action(function (Deposit $record) {
                             $service = app(PaymentService::class);
                             $paid = $service->verify($record);
 
-                            if ($paid){
+                            if ($paid) {
                                 $record->update(['status' => DepositStatus::Completed]);
                                 $record->user->increment('balance', $record->amount);
 
@@ -100,7 +102,7 @@ class DepositsTable
                                     ->title('Deposit verified and completed successfully.')
                                     ->success()
                                     ->send();
-                            } else{
+                            } else {
                                 Notification::make()
                                     ->title('Deposit verification failed or still pending.')
                                     ->warning()
@@ -109,8 +111,8 @@ class DepositsTable
                         }),
                     DeleteAction::make()
                         ->label('Delete Deposit')
-                        ->requiresConfirmation()
-                ])
+                        ->requiresConfirmation(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

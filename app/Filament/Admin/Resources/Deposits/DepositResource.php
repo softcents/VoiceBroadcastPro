@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Deposits;
 
 use App\Filament\Admin\Resources\Deposits\Pages\CreateDeposit;
@@ -9,18 +11,16 @@ use App\Filament\Admin\Resources\Deposits\Schemas\DepositForm;
 use App\Filament\Admin\Resources\Deposits\Schemas\DepositInfolist;
 use App\Filament\Admin\Resources\Deposits\Tables\DepositsTable;
 use App\Models\Deposit;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
 
-class DepositResource extends Resource
+final class DepositResource extends Resource
 {
     protected static ?string $model = Deposit::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Financial';
+    protected static string|UnitEnum|null $navigationGroup = 'Financial';
 
     protected static ?string $recordTitleAttribute = 'transaction_id';
 

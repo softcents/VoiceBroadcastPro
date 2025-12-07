@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Scope;
@@ -8,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class TTSLanguage extends Model
+final class TTSLanguage extends Model
 {
     use HasFactory;
 
@@ -18,7 +20,7 @@ class TTSLanguage extends Model
         'name',
         'code',
         'engine',
-        'enabled'
+        'enabled',
     ];
 
     public function ttsArtists(): HasMany

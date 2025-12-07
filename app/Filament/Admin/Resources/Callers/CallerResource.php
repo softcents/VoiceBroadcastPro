@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Callers;
 
 use App\Filament\Admin\Resources\Callers\Pages\CreateCaller;
@@ -13,7 +15,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use UnitEnum;
 
-class CallerResource extends Resource
+final class CallerResource extends Resource
 {
     protected static ?string $model = Caller::class;
 

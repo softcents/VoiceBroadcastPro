@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Deposits\Schemas;
 
 use Filament\Infolists\Components\KeyValueEntry;
@@ -12,7 +14,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use LaraZeus\Tabler\Tabler;
 
-class DepositInfolist
+final class DepositInfolist
 {
     public static function configure(Schema $schema): Schema
     {

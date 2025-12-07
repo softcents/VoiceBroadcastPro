@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Contacts\Pages;
 
 use App\Filament\User\Resources\Contacts\ContactResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListContacts extends ListRecords
+final class ListContacts extends ListRecords
 {
     protected static string $resource = ContactResource::class;
 

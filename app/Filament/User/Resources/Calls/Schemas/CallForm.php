@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Calls\Schemas;
 
 use App\Enums\AudioApproval;
@@ -12,7 +14,7 @@ use Filament\Schemas\Schema;
 use LaraZeus\Tabler\Tabler;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-class CallForm
+final class CallForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -28,7 +30,7 @@ class CallForm
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->getOptionLabelFromRecordUsing(fn(Caller $caller) => $caller->name)
+                            ->getOptionLabelFromRecordUsing(fn (Caller $caller) => $caller->name)
                         /*->getSearchResultsUsing(function ($search) {
                             return auth()
                                 ->user()
@@ -65,7 +67,7 @@ class CallForm
                             ->prefixIcon(Tabler::CalendarTime)
                             ->minDate(now()->addMinutes(5))
                             ->maxDate(now()->addDays(30)),
-                    ])
+                    ]),
             ]);
     }
 }

@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Phonebooks;
 
 use App\Filament\User\Resources\Phonebooks\Pages\CreatePhonebook;
 use App\Filament\User\Resources\Phonebooks\Pages\EditPhonebook;
 use App\Filament\User\Resources\Phonebooks\Pages\ListPhonebooks;
 use App\Filament\User\Resources\Phonebooks\Pages\ViewPhonebook;
+use App\Filament\User\Resources\Phonebooks\RelationManagers\ContactsRelationManager;
 use App\Filament\User\Resources\Phonebooks\Schemas\PhonebookForm;
 use App\Filament\User\Resources\Phonebooks\Schemas\PhonebookInfolist;
 use App\Filament\User\Resources\Phonebooks\Tables\PhonebooksTable;
@@ -15,9 +18,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use App\Filament\User\Resources\Phonebooks\RelationManagers\ContactsRelationManager;
 
-class PhonebookResource extends Resource
+final class PhonebookResource extends Resource
 {
     protected static ?string $model = Phonebook::class;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Audio\Schemas;
 
 use App\Enums\AudioType;
@@ -19,7 +21,7 @@ use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use LaraZeus\Tabler\Tabler;
 
-class AudioForm
+final class AudioForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -42,8 +44,8 @@ class AudioForm
                             ->rows(5)
                             ->columnSpanFull()
                             ->disabledOn(['edit', 'view'])
-                            ->visible(fn(Get $get) => $get('type') === AudioType::TTS->value)
-                            ->required(fn(Get $get) => $get('type') === AudioType::TTS->value),
+                            ->visible(fn (Get $get) => $get('type') === AudioType::TTS->value)
+                            ->required(fn (Get $get) => $get('type') === AudioType::TTS->value),
                     ]),
                 Section::make()
                     ->heading('Audio Source')
@@ -68,11 +70,11 @@ class AudioForm
                             ->acceptedFileTypes(['audio/*'])
                             ->maxSize(10240) // 10 MB
                             ->disabledOn(['edit', 'view'])
-                            ->visible(fn(Get $get) => $get('type') === AudioType::Upload->value)
-                            ->required(fn(Get $get) => $get('type') === AudioType::Upload->value),
+                            ->visible(fn (Get $get) => $get('type') === AudioType::Upload->value)
+                            ->required(fn (Get $get) => $get('type') === AudioType::Upload->value),
 
                         Group::make()
-                            ->visible(fn(Get $get) => $get('type') === AudioType::TTS->value)
+                            ->visible(fn (Get $get) => $get('type') === AudioType::TTS->value)
                             ->schema([
                                 Select::make('language_id')
                                     ->label('Language')
@@ -92,7 +94,7 @@ class AudioForm
                                             $component->state($artist->tts_language_id);
                                         }
                                     })
-                                    ->required(fn(Get $get) => $get('type') === AudioType::TTS->value),
+                                    ->required(fn (Get $get) => $get('type') === AudioType::TTS->value),
                                 Select::make('gender')
                                     ->label('Gender')
                                     ->options(TTSArtistGender::class)
@@ -100,16 +102,16 @@ class AudioForm
                                     ->dehydrated(false)
                                     ->prefixIcon(Tabler::Man)
                                     ->disabledOn(['edit', 'view'])
-                                    ->afterStateUpdated(fn(Set $set) => $set('tts_artist_id', null))
+                                    ->afterStateUpdated(fn (Set $set) => $set('tts_artist_id', null))
                                     ->afterStateHydrated(function (Select $component, ?Audio $record) {
                                         if ($record?->tts_artist_id && $artist = TTSArtist::find($record->tts_artist_id)) {
                                             $component->state($artist->gender);
                                         }
                                     })
-                                    ->required(fn(Get $get) => $get('type') === AudioType::TTS->value),
+                                    ->required(fn (Get $get) => $get('type') === AudioType::TTS->value),
                                 Select::make('tts_artist_id')
                                     ->label('Artist')
-                                    ->options(fn(Get $get) => TTSArtist::enabled()
+                                    ->options(fn (Get $get) => TTSArtist::enabled()
                                         ->where('tts_language_id', $get('language_id'))
                                         ->where('gender', $get('gender'))
                                         ->pluck('name', 'id'))
@@ -118,11 +120,11 @@ class AudioForm
                                     ->preload()
                                     ->prefixIcon(Tabler::Microphone)
                                     ->disabledOn(['edit', 'view'])
-                                    ->visible(fn(Get $get) => $get('language_id') && $get('gender'))
-                                    ->required(fn(Get $get) => $get('type') === AudioType::TTS->value),
-                            ])
+                                    ->visible(fn (Get $get) => $get('language_id') && $get('gender'))
+                                    ->required(fn (Get $get) => $get('type') === AudioType::TTS->value),
+                            ]),
 
-                    ])
+                    ]),
             ]);
     }
 }

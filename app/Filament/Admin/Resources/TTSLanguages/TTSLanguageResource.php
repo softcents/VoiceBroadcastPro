@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\TTSLanguages;
 
 use App\Filament\Admin\Resources\TTSLanguages\Pages\CreateTTSLanguage;
@@ -10,21 +12,21 @@ use App\Filament\Admin\Resources\TTSLanguages\Schemas\TTSLanguageForm;
 use App\Filament\Admin\Resources\TTSLanguages\Schemas\TTSLanguageInfolist;
 use App\Filament\Admin\Resources\TTSLanguages\Tables\TTSLanguagesTable;
 use App\Models\TTSLanguage;
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use UnitEnum;
 
-class TTSLanguageResource extends Resource
+final class TTSLanguageResource extends Resource
 {
     protected static ?string $model = TTSLanguage::class;
 
-    protected static string | UnitEnum | null $navigationGroup = 'Text to Speech';
+    protected static string|UnitEnum|null $navigationGroup = 'Text to Speech';
+
     protected static ?string $navigationLabel = 'Languages';
 
     protected static ?string $recordTitleAttribute = 'name';
+
     protected static ?string $slug = 'tts-languages';
 
     public static function form(Schema $schema): Schema
@@ -45,7 +47,7 @@ class TTSLanguageResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \App\Filament\Admin\Resources\TTSLanguages\RelationManagers\ArtistsRelationManager::class,
+            RelationManagers\ArtistsRelationManager::class,
         ];
     }
 

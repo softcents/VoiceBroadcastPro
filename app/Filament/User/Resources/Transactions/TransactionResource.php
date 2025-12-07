@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Transactions;
 
 use App\Filament\User\Resources\Transactions\Pages\ListTransactions;
@@ -12,7 +14,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use UnitEnum;
 
-class TransactionResource extends Resource
+final class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 

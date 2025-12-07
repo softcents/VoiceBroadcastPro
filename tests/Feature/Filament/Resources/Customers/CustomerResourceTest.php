@@ -1,11 +1,13 @@
 <?php
 
-use App\Filament\Admin\Resources\Customers\CustomerResource;
+declare(strict_types=1);
+
+use App\Enums\UserType;
 use App\Filament\Admin\Resources\Customers\Pages\EditCustomer;
 use App\Models\User;
-use App\Enums\UserType;
 use Illuminate\Support\Facades\Hash;
 use Livewire\Livewire;
+
 use function Pest\Laravel\actingAs;
 
 it('does not update password if left empty during customer edit', function () {
@@ -14,7 +16,7 @@ it('does not update password if left empty during customer edit', function () {
         'type' => UserType::User,
         'password' => Hash::make('original-password'),
     ]);
-    
+
     $originalPasswordHash = $customer->password;
 
     actingAs($admin);

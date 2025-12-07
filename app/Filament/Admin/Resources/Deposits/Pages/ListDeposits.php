@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Deposits\Pages;
 
 use App\Filament\Admin\Resources\Deposits\DepositResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListDeposits extends ListRecords
+final class ListDeposits extends ListRecords
 {
     protected static string $resource = DepositResource::class;
 

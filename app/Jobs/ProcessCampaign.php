@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Enums\CallStatus;
@@ -11,12 +13,14 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use Throwable;
 
-class ProcessCampaign implements ShouldQueue
+final class ProcessCampaign implements ShouldQueue
 {
     use Queueable;
 
     public int $tries = 3;
+
     public int $timeout = 3600;
 
     public function __construct(
@@ -27,8 +31,9 @@ class ProcessCampaign implements ShouldQueue
     {
         $campaign = Campaign::find($this->campaignId);
 
-        if (!$campaign) {
+        if (! $campaign) {
             Log::warning("Campaign not found: {$this->campaignId}");
+
             return;
         }
 
@@ -48,7 +53,7 @@ class ProcessCampaign implements ShouldQueue
                                 ->whereIn('id', $callIds)
                                 ->update(['status' => CallStatus::Initiated]);
 
-                            $jobs = $calls->map(fn($call) => new ProcessCall($call->id));
+                            $jobs = $calls->map(fn ($call) => new ProcessCall($call->id));
 
                             $batch = Bus::batch($jobs->toArray())
                                 ->name("Campaign {$campaign->id} - Chunk")
@@ -69,7 +74,7 @@ class ProcessCampaign implements ShouldQueue
 
                             Log::info("Batch dispatched for campaign {$campaign->id}", [
                                 'batch_id' => $batch->id,
-                                'jobs_count' => $calls->count()
+                                'jobs_count' => $calls->count(),
                             ]);
                         });
                     },
@@ -78,7 +83,7 @@ class ProcessCampaign implements ShouldQueue
             });
     }
 
-    public function failed(\Throwable $exception): void
+    public function failed(Throwable $exception): void
     {
         $campaign = Campaign::find($this->campaignId);
 
@@ -88,7 +93,7 @@ class ProcessCampaign implements ShouldQueue
 
         Log::error("ProcessCampaign failed for campaign {$this->campaignId}", [
             'exception' => $exception->getMessage(),
-            'trace' => $exception->getTraceAsString()
+            'trace' => $exception->getTraceAsString(),
         ]);
     }
 }

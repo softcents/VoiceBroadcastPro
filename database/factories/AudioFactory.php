@@ -1,17 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
-use App\Enums\AudioRecordStatus;
-
 use App\Enums\AudioType;
-use App\Models\Audio;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Audio>
  */
-class AudioFactory extends Factory
+final class AudioFactory extends Factory
 {
     /**
      * Define the model's default state.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Contacts;
 
 use App\Filament\Admin\Resources\Contacts\Pages\CreateContact;
@@ -14,12 +16,11 @@ use App\Models\Scopes\OwnedByAuthUser;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
-class ContactResource extends Resource
+final class ContactResource extends Resource
 {
     protected static ?string $model = Contact::class;
 

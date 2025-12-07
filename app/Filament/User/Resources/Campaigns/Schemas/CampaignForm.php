@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Campaigns\Schemas;
 
 use App\Enums\AudioApproval;
@@ -17,7 +19,7 @@ use Filament\Schemas\Schema;
 use LaraZeus\Tabler\Tabler;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-class CampaignForm
+final class CampaignForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -45,7 +47,7 @@ class CampaignForm
                                     ->schema([
                                         Select::make('audio_id')
                                             ->label('Audio File')
-                                            ->relationship('audio', 'title', modifyQueryUsing: fn($query) => $query->where('approval', AudioApproval::Approved))
+                                            ->relationship('audio', 'title', modifyQueryUsing: fn ($query) => $query->where('approval', AudioApproval::Approved))
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -58,16 +60,16 @@ class CampaignForm
                                     ->searchable()
                                     ->preload()
                                     ->prefixIcon(Tabler::AddressBook)
-                                    ->visible(fn($get) => $get('source') === CampaignSource::Phonebook)
-                                    ->required(fn($get) => $get('source') === CampaignSource::Phonebook),
+                                    ->visible(fn ($get) => $get('source') === CampaignSource::Phonebook)
+                                    ->required(fn ($get) => $get('source') === CampaignSource::Phonebook),
 
                                 FileUpload::make('file_path')
                                     ->label('Contact List (CSV)')
                                     ->disk('local') // Adjust disk as needed
                                     ->directory('campaign-files')
                                     ->acceptedFileTypes(['text/csv', 'text/plain', '.csv'])
-                                    ->visible(fn($get) => $get('source') === CampaignSource::Import)
-                                    ->required(fn($get) => $get('source') === CampaignSource::Import),
+                                    ->visible(fn ($get) => $get('source') === CampaignSource::Import)
+                                    ->required(fn ($get) => $get('source') === CampaignSource::Import),
 
                                 Repeater::make('manual_numbers')
                                     ->label('Manual Numbers')
@@ -83,8 +85,8 @@ class CampaignForm
                                     ->minItems(1)
                                     ->grid(2)
                                     ->compact()
-                                    ->visible(fn($get) => $get('source') === CampaignSource::Manual)
-                                    ->required(fn($get) => $get('source') === CampaignSource::Manual)
+                                    ->visible(fn ($get) => $get('source') === CampaignSource::Manual)
+                                    ->required(fn ($get) => $get('source') === CampaignSource::Manual),
                             ]),
                     ]),
 

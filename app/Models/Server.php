@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\ServerFactory;
@@ -11,7 +13,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class Server extends Model
+final class Server extends Model
 {
     /** @use HasFactory<ServerFactory> */
     use HasFactory;
@@ -31,7 +33,7 @@ class Server extends Model
     protected function domain(): Attribute
     {
         return Attribute::make(
-            get: fn() => "{$this->scheme}://{$this->host}" . ($this->port ? ":{$this->port}" : ""),
+            get: fn () => "{$this->scheme}://{$this->host}".($this->port ? ":{$this->port}" : ''),
         );
     }
 

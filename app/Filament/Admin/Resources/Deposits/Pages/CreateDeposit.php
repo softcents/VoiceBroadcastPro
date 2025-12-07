@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Deposits\Pages;
 
 use App\Filament\Admin\Resources\Deposits\DepositResource;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateDeposit extends CreateRecord
+final class CreateDeposit extends CreateRecord
 {
     protected static string $resource = DepositResource::class;
 
@@ -21,7 +23,7 @@ class CreateDeposit extends CreateRecord
                 'type' => \App\Enums\TransactionType::Deposit,
                 'amount' => $deposit->amount * 100, // Store in cents
                 'currency' => $deposit->currency,
-                'description' => 'Deposit via ' . ucfirst($deposit->gateway),
+                'description' => 'Deposit via '.ucfirst($deposit->gateway),
                 'reference_type' => \App\Models\Deposit::class,
                 'reference_id' => $deposit->id,
             ]);

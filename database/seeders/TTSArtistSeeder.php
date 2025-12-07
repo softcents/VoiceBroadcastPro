@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\TTSArtist;
 use App\Models\TTSLanguage;
 use Illuminate\Database\Seeder;
 
-class TTSArtistSeeder extends Seeder
+final class TTSArtistSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -67,7 +69,7 @@ class TTSArtistSeeder extends Seeder
                     'en-US-EvelynMultilingualNeural', 'en-US-LolaMultilingualNeural', 'en-US-NancyMultilingualNeural', 'en-US-PhoebeMultilingualNeural', 'en-US-SerenaMultilingualNeural',
                     'en-US-Ava:DragonHDLatestNeural', 'en-US-Emma:DragonHDLatestNeural', 'en-US-Emma2:DragonHDLatestNeural', 'en-US-Aria:DragonHDLatestNeural',
                     'en-US-Ava3:DragonHDLatestNeural', 'en-US-Bree:DragonHDLatestNeural', 'en-US-Jane:DragonHDLatestNeural', 'en-US-Jenny:DragonHDLatestNeural',
-                    'en-US-Nova:DragonHDLatestNeural', 'en-US-Phoebe:DragonHDLatestNeural', 'en-US-Serena:DragonHDLatestNeural'
+                    'en-US-Nova:DragonHDLatestNeural', 'en-US-Phoebe:DragonHDLatestNeural', 'en-US-Serena:DragonHDLatestNeural',
                 ],
                 'male' => [
                     'en-US-AndrewMultilingualNeural', 'en-US-AlloyTurboMultilingualNeural', 'en-US-EchoTurboMultilingualNeural', 'en-US-OnyxTurboMultilingualNeural',
@@ -77,9 +79,9 @@ class TTSArtistSeeder extends Seeder
                     'en-US-AshTurboMultilingualNeural', 'en-US-DavisMultilingualNeural', 'en-US-DerekMultilingualNeural', 'en-US-DustinMultilingualNeural', 'en-US-LewisMultilingualNeural',
                     'en-US-SamuelMultilingualNeural', 'en-US-Adam:DragonHDLatestNeural', 'en-US-Andrew:DragonHDLatestNeural', 'en-US-Andrew2:DragonHDLatestNeural',
                     'en-US-Brian:DragonHDLatestNeural', 'en-US-Davis:DragonHDLatestNeural', 'en-US-Steffan:DragonHDLatestNeural', 'en-US-Alloy:DragonHDLatestNeural',
-                    'en-US-Andrew3:DragonHDLatestNeural'
+                    'en-US-Andrew3:DragonHDLatestNeural',
                 ],
-                'neutral' => ['en-US-FableTurboMultilingualNeural', 'en-US-BlueNeural', 'en-US-MultiTalker-Ava-Andrew:DragonHDLatestNeural', 'en-US-MultiTalker-Ava-Steffan:DragonHDLatestNeural']
+                'neutral' => ['en-US-FableTurboMultilingualNeural', 'en-US-BlueNeural', 'en-US-MultiTalker-Ava-Andrew:DragonHDLatestNeural', 'en-US-MultiTalker-Ava-Steffan:DragonHDLatestNeural'],
             ],
             'en-ZA' => ['female' => ['en-ZA-LeahNeural'], 'male' => ['en-ZA-LukeNeural']],
             'es-AR' => ['female' => ['es-AR-ElenaNeural'], 'male' => ['es-AR-TomasNeural']],
@@ -194,7 +196,7 @@ class TTSArtistSeeder extends Seeder
 
         foreach ($artists as $languageCode => $genders) {
             $language = TTSLanguage::where('code', $languageCode)->first();
-            if (!$language) {
+            if (! $language) {
                 continue;
             }
 
@@ -204,12 +206,13 @@ class TTSArtistSeeder extends Seeder
                         ['code' => $artistName],
                         [
                             'tts_language_id' => $language->id,
-                            'name' => (function($s) {
+                            'name' => (function ($s) {
                                 $s = preg_replace('/^[a-z]{2,3}(-[A-Z]{2,})?-/', '', $s);
                                 $s = str_replace('-', ' ', $s);
                                 $s = preg_replace('/Neural$/', '', $s);
                                 $s = preg_replace('/Multilingual$/', '', $s);
-                                return trim($s);
+
+                                return mb_trim($s);
                             })($artistName),
                             'gender' => $gender,
                             'enabled' => false,

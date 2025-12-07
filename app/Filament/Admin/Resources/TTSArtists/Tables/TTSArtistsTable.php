@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\TTSArtists\Tables;
 
 use App\Filament\Admin\Resources\TTSLanguages\TTSLanguageResource;
@@ -14,7 +16,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 
-class TTSArtistsTable
+final class TTSArtistsTable
 {
     public static function configure(Table $table): Table
     {
@@ -26,7 +28,7 @@ class TTSArtistsTable
                     ->sortable()
                     ->searchable()
                     ->wrap()
-                    ->url(fn(TTSArtist $record) => TTSLanguageResource::getUrl('view', ['record' => $record->tts_language_id])),
+                    ->url(fn (TTSArtist $record) => TTSLanguageResource::getUrl('view', ['record' => $record->tts_language_id])),
                 TextColumn::make('name')
                     ->label('Artist Name')
                     ->searchable()
@@ -37,7 +39,7 @@ class TTSArtistsTable
                     ->wrap(),
                 TextColumn::make('gender')
                     ->label('Gender')
-                    ->formatStateUsing(fn($state) => $state->name)
+                    ->formatStateUsing(fn ($state) => $state->name)
                     ->sortable(),
                 IconColumn::make('enabled')
                     ->label('Enabled')
@@ -64,14 +66,14 @@ class TTSArtistsTable
                     BulkAction::make('enable')
                         ->label('Enable selected')
                         ->requiresConfirmation()
-                        ->action(fn(Collection $records) => $records->each->update(['enabled' => true]))
+                        ->action(fn (Collection $records) => $records->each->update(['enabled' => true]))
                         ->color('success')
                         ->icon(Heroicon::OutlinedCheckCircle)
                         ->successNotificationTitle('Selected artists have been enabled.'),
                     BulkAction::make('disable')
                         ->label('Disable selected')
                         ->requiresConfirmation()
-                        ->action(fn(Collection $records) => $records->each->update(['enabled' => false]))
+                        ->action(fn (Collection $records) => $records->each->update(['enabled' => false]))
                         ->color('danger')
                         ->icon(Heroicon::OutlinedXCircle)
                         ->successNotificationTitle('Selected artists have been disabled.'),

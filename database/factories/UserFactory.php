@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Enums\UserType;
@@ -11,7 +13,7 @@ use Illuminate\Support\Str;
 /**
  * @extends Factory<User>
  */
-class UserFactory extends Factory
+final class UserFactory extends Factory
 {
     /**
      * The current password being used by the factory.
@@ -29,8 +31,8 @@ class UserFactory extends Factory
             'name' => fake()->name(),
             'email' => fake()->unique()->email(),
             'type' => fake()->randomElement(UserType::cases()),
-            'phone' => '+88017' . fake()->numerify('#######'),
-            'password' => static::$password ??= Hash::make('password'),
+            'phone' => '+88017'.fake()->numerify('#######'),
+            'password' => self::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
             'email_verified_at' => now(),
         ];
@@ -41,7 +43,7 @@ class UserFactory extends Factory
      */
     public function unverified(): static
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'email_verified_at' => null,
         ]);
     }

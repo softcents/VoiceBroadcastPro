@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Pages;
 
 use App\Settings\CallingSetting;
@@ -9,9 +11,9 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use UnitEnum;
 
-class Calling extends SettingsPage
+final class Calling extends SettingsPage
 {
-    protected static string|UnitEnum|null $navigationGroup = "Settings";
+    protected static string|UnitEnum|null $navigationGroup = 'Settings';
 
     protected static string $settings = CallingSetting::class;
 
@@ -24,7 +26,7 @@ class Calling extends SettingsPage
                         TextInput::make('rate_per_minute')
                             ->numeric()
                             ->required(),
-                    ])
+                    ]),
             ]);
     }
 }

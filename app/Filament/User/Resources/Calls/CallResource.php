@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Calls;
 
 use App\Filament\User\Resources\Calls\Pages\CreateCall;
@@ -7,20 +9,19 @@ use App\Filament\User\Resources\Calls\Pages\ListCalls;
 use App\Filament\User\Resources\Calls\Schemas\CallForm;
 use App\Filament\User\Resources\Calls\Tables\CallsTable;
 use App\Models\Call;
-use App\Models\Scopes\OwnedByAuthUser;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
-class CallResource extends Resource
+final class CallResource extends Resource
 {
     protected static ?string $model = Call::class;
 
     protected static ?string $recordTitleAttribute = 'phone_number';
-    protected static string | BackedEnum | null $navigationIcon = Tabler::PhoneCall;
+
+    protected static string|BackedEnum|null $navigationIcon = Tabler::PhoneCall;
 
     public static function form(Schema $schema): Schema
     {
@@ -46,5 +47,4 @@ class CallResource extends Resource
             'create' => CreateCall::route('/create'),
         ];
     }
-
 }

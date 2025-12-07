@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
@@ -7,7 +9,7 @@ use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 use LaraZeus\Tabler\Tabler;
 
-enum UserAudioType: string implements HasIcon, HasLabel, HasColor
+enum UserAudioType: string implements HasColor, HasIcon, HasLabel
 {
     case Upload = 'upload';
     case TTS = 'tts';

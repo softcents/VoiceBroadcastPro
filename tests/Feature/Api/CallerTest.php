@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Tests\Feature\Api;
 
 use App\Models\Caller;
@@ -15,7 +17,7 @@ test('can list callers', function () {
     $callers = Caller::factory(3)
         ->for($user->servers()->first() ?? \App\Models\Server::factory()->create())
         ->create(['enabled' => true]);
-    
+
     // Attach callers to user
     $user->callers()->attach($callers);
 

@@ -1,11 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\AudioType;
 use App\Jobs\ConvertAudio;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Queue;
 use Illuminate\Support\Facades\Storage;
+
 use function Pest\Laravel\actingAs;
 
 test('it dispatches conversion job on upload', function () {

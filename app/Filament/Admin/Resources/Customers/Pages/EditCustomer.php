@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Customers\Pages;
 
 use App\Filament\Admin\Resources\Customers\CustomerResource;
@@ -8,7 +10,7 @@ use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditCustomer extends EditRecord
+final class EditCustomer extends EditRecord
 {
     protected static string $resource = CustomerResource::class;
 

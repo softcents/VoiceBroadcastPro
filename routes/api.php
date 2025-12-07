@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AudioController;
 use App\Http\Controllers\Api\BalanceController;
@@ -9,9 +11,9 @@ use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DepositController;
 use App\Http\Controllers\Api\PhonebookController;
 use App\Http\Controllers\Api\TemplateController;
+use App\Http\Controllers\Api\TTS\ArtistController;
 use App\Http\Controllers\Api\TTS\LanguageController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Api\TTS\ArtistController;
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::prefix('account')->group(function () {

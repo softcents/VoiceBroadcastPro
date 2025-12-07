@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Campaigns\RelationManagers;
 
 use Filament\Actions\BulkActionGroup;
@@ -9,9 +11,8 @@ use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
 use Filament\Tables\Table;
-use LaraZeus\Tabler\Tabler;
 
-class CallsRelationManager extends RelationManager
+final class CallsRelationManager extends RelationManager
 {
     protected static string $relationship = 'calls';
 

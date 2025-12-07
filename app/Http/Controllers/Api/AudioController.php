@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Enums\AudioType;
@@ -22,8 +24,8 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Authenticated]
 #[Group(name: 'Audios', description: 'Manage audio files and TTS')]
-#[Response(content: ["message" => "This action is unauthorized."], status: 403, description: "Unauthorized")]
-class AudioController extends Controller
+#[Response(content: ['message' => 'This action is unauthorized.'], status: 403, description: 'Unauthorized')]
+final class AudioController extends Controller
 {
     #[Endpoint(title: 'List Audios', description: 'Retrieve a list of audios for the current user.')]
     #[QueryParam(name: 'type', type: 'enum', description: 'Filter by type', required: false, enum: AudioType::class)]
@@ -45,7 +47,7 @@ class AudioController extends Controller
 
     #[Endpoint(title: 'Create Audio', description: 'Create a new audio (upload or TTS).')]
     #[ResponseFromApiResource(name: AudioResource::class, model: Audio::class, status: 201)]
-    #[Response(content: ["message" => "The given data was invalid.", "errors" => ["type" => ["The type field is required."]]], status: 422)]
+    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['type' => ['The type field is required.']]], status: 422)]
     public function store(#[CurrentUser] User $user, StoreAudioRequest $request)
     {
         $data = $request->validated();
@@ -82,8 +84,8 @@ class AudioController extends Controller
 
     #[Endpoint(title: 'Update Audio', description: 'Update a specific audio.')]
     #[ResponseFromApiResource(name: AudioResource::class, model: Audio::class)]
-    #[Response(content: ["message" => "The given data was invalid.", "errors" => ["title" => ["The title field is required."]]], status: 422)]
-    #[Response(content: ["message" => "Record not found."], status: 404, description: 'Not Found')]
+    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['title' => ['The title field is required.']]], status: 422)]
+    #[Response(content: ['message' => 'Record not found.'], status: 404, description: 'Not Found')]
     public function update(#[CurrentUser] User $user, UpdateAudioRequest $request, Audio $audio)
     {
         if ($audio->user_id !== $user->id) {

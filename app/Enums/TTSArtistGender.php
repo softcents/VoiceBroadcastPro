@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
@@ -7,18 +9,18 @@ use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 use LaraZeus\Tabler\Tabler;
 
-enum TTSArtistGender: string implements HasLabel, HasColor, HasIcon
+enum TTSArtistGender: string implements HasColor, HasIcon, HasLabel
 {
     case Male = 'male';
     case Female = 'female';
     case Neutral = 'neutral';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
-        return str($this->name)->headline();
+        return str($this->name)->headline()->value();
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): string
     {
         return match ($this) {
             self::Male => 'info',

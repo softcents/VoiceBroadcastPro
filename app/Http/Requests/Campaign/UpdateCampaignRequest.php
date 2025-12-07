@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Campaign;
 
 use App\Enums\CampaignSource;
@@ -7,7 +9,7 @@ use App\Enums\CampaignStatus;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateCampaignRequest extends FormRequest
+final class UpdateCampaignRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -28,7 +30,7 @@ class UpdateCampaignRequest extends FormRequest
             'title' => ['sometimes', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
             'audio_id' => ['sometimes', 'exists:audio,id'],
-            'phonebook_id' => ['nullable', 'required_if:source,' . CampaignSource::Phonebook->value, 'exists:phonebooks,id'],
+            'phonebook_id' => ['nullable', 'required_if:source,'.CampaignSource::Phonebook->value, 'exists:phonebooks,id'],
             'source' => ['sometimes', Rule::enum(CampaignSource::class)],
             'status' => ['sometimes', Rule::enum(CampaignStatus::class)],
             'scheduled_at' => ['nullable', 'date', 'after:now'],

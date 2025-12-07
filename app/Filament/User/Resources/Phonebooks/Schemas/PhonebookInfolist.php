@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Phonebooks\Schemas;
 
-use App\Filament\User\Resources\Customers\CustomerResource;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use LaraZeus\Tabler\Tabler;
 
-class PhonebookInfolist
+final class PhonebookInfolist
 {
     public static function configure(Schema $schema): Schema
     {
@@ -33,7 +34,7 @@ class PhonebookInfolist
                             ->icon(Tabler::TextCaption)
                             ->placeholder('-')
                             ->columnSpanFull(),
-                    ])
+                    ]),
             ]);
     }
 }

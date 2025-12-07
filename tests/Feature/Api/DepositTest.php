@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Models\Deposit;
 use App\Models\User;
-use App\Services\Payment\PaymentService;
 use Illuminate\Support\Facades\Http;
+
 use function Pest\Laravel\actingAs;
 
 test('can list deposits', function () {
@@ -35,7 +37,7 @@ test('can initiate deposit', function () {
 
     $response->assertCreated()
         ->assertJsonPath('data.amount', 100)
-        ->assertJsonPath('data.status', \App\Enums\DepositStatus::Pending->value)
+        ->assertJsonPath('data.status', App\Enums\DepositStatus::Pending->value)
         ->assertJsonPath('data.transaction_id', 12345)
         ->assertJsonPath('data.checkout_url', 'https://pay.frolax.agency/payment/12345');
 
@@ -44,7 +46,7 @@ test('can initiate deposit', function () {
         'amount' => 10000,
         'currency' => 'BDT',
         'gateway' => 'piprapay',
-        'status' => \App\Enums\DepositStatus::Pending->value,
+        'status' => App\Enums\DepositStatus::Pending->value,
         'transaction_id' => '12345',
     ]);
 });
@@ -56,7 +58,7 @@ test('can verify deposit', function () {
         'amount' => 100,
         'currency' => 'BDT',
         'gateway' => 'piprapay',
-        'status' => \App\Enums\DepositStatus::Pending,
+        'status' => App\Enums\DepositStatus::Pending,
         'transaction_id' => '12345',
     ]);
 
@@ -67,20 +69,20 @@ test('can verify deposit', function () {
             'message' => 'Payment verified successfully',
         ], 200),
     ]);
-    
+
     $response = actingAs($user)->postJson("/api/deposits/{$deposit->id}/verify");
 
     $response->assertOk()
-        ->assertJsonPath('data.status', \App\Enums\DepositStatus::Completed->value);
+        ->assertJsonPath('data.status', App\Enums\DepositStatus::Completed->value);
 
     $this->assertDatabaseHas('deposits', [
         'id' => $deposit->id,
-        'status' => \App\Enums\DepositStatus::Completed->value,
+        'status' => App\Enums\DepositStatus::Completed->value,
     ]);
 
     $this->assertDatabaseHas('transactions', [
         'user_id' => $user->id,
-        'type' => \App\Enums\TransactionType::Deposit->value,
+        'type' => App\Enums\TransactionType::Deposit->value,
         'amount' => 10000,
         'currency' => 'BDT',
         'reference_type' => Deposit::class,

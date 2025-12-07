@@ -1,15 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Customers\Schemas;
 
-use App\Enums\UserType;
-use App\Models\TTSArtist;
 use App\Models\User;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
-class CustomerInfolist
+final class CustomerInfolist
 {
     public static function configure(Schema $schema): Schema
     {
@@ -21,10 +21,10 @@ class CustomerInfolist
                             ->label('Name'),
                         TextEntry::make('email')
                             ->label('Email')
-                            ->url(fn(User $record) => 'mailto:' . $record->email),
+                            ->url(fn (User $record) => 'mailto:'.$record->email),
                         TextEntry::make('phone')
                             ->label('Phone')
-                            ->url(fn(User $record) => 'tel:' . $record->phone),
+                            ->url(fn (User $record) => 'tel:'.$record->phone),
                         TextEntry::make('balance')
                             ->label('Balance')
                             ->money('BDT'), // Assuming USD for now, based on balance attribute in User model

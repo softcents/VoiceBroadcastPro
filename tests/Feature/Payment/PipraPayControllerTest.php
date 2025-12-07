@@ -1,9 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\DepositStatus;
 use App\Models\Deposit;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
+
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
 

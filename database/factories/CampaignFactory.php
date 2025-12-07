@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Enums\CampaignSource;
@@ -13,7 +15,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<Campaign>
  */
-class CampaignFactory extends Factory
+final class CampaignFactory extends Factory
 {
     /**
      * Define the model's default state.

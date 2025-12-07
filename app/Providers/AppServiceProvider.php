@@ -1,17 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Providers;
 
 use App\Services\TTS\TTSManager;
 use Filament\Schemas\Schema;
-use Filament\Support\Facades\FilamentView;
 use Filament\Tables\Table;
-use Filament\View\PanelsRenderHook;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Contracts\View\View;
 
-
-class AppServiceProvider extends ServiceProvider
+final class AppServiceProvider extends ServiceProvider
 {
     /**
      * Register any application services.

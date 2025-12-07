@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Audio\Pages;
 
 use App\Enums\AudioType;
@@ -9,7 +11,7 @@ use App\Models\Audio;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
-class CreateAudio extends CreateRecord
+final class CreateAudio extends CreateRecord
 {
     protected static string $resource = AudioResource::class;
 

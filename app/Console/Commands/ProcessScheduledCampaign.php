@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Enums\CampaignStatus;
@@ -8,8 +10,9 @@ use App\Models\Campaign;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use Throwable;
 
-class ProcessScheduledCampaign extends Command
+final class ProcessScheduledCampaign extends Command
 {
     protected $signature = 'app:process-scheduled-campaign
                             {--limit=10 : Maximum number of campaigns to process per chunk}
@@ -45,7 +48,7 @@ class ProcessScheduledCampaign extends Command
                                     // Update campaign status
                                     $campaign->update([
                                         'status' => CampaignStatus::Processing,
-                                        'queued_at' => now()
+                                        'queued_at' => now(),
                                     ]);
 
                                     // Dispatch the campaign processing job
@@ -55,17 +58,17 @@ class ProcessScheduledCampaign extends Command
 
                                     Log::info('Campaign queued for processing', [
                                         'campaign_id' => $campaign->id,
-                                        'campaign_name' => $campaign->name
+                                        'campaign_name' => $campaign->name,
                                     ]);
 
-                                } catch (\Throwable $e) {
+                                } catch (Throwable $e) {
                                     $this->error("  ✗ Failed to queue campaign #{$campaign->id}: {$e->getMessage()}");
 
                                     $campaign->update(['status' => CampaignStatus::Failed]);
 
                                     Log::error('Failed to queue campaign', [
                                         'campaign_id' => $campaign->id,
-                                        'exception' => $e->getMessage()
+                                        'exception' => $e->getMessage(),
                                     ]);
                                 }
                             }
@@ -81,6 +84,7 @@ class ProcessScheduledCampaign extends Command
 
             if ($totalCampaigns === 0) {
                 $this->info('No scheduled campaigns found to process.');
+
                 return self::SUCCESS;
             }
 
@@ -89,17 +93,17 @@ class ProcessScheduledCampaign extends Command
 
             Log::info('Scheduled campaign processing completed', [
                 'total_campaigns' => $totalCampaigns,
-                'chunks' => $processedChunks
+                'chunks' => $processedChunks,
             ]);
 
             return self::SUCCESS;
 
-        } catch (\Throwable $exception) {
-            $this->error('Failed to process scheduled campaigns: ' . $exception->getMessage());
+        } catch (Throwable $exception) {
+            $this->error('Failed to process scheduled campaigns: '.$exception->getMessage());
 
             Log::error('Scheduled campaign processing failed', [
                 'exception' => $exception->getMessage(),
-                'trace' => $exception->getTraceAsString()
+                'trace' => $exception->getTraceAsString(),
             ]);
 
             return self::FAILURE;

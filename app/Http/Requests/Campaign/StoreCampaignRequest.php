@@ -1,15 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Campaign;
 
 use App\Enums\CampaignSource;
-use App\Enums\CampaignStatus;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 
-class StoreCampaignRequest extends FormRequest
+final class StoreCampaignRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -41,7 +42,7 @@ class StoreCampaignRequest extends FormRequest
                 }),
                 'nullable',
                 'integer',
-                Rule::exists('phonebooks', 'id')->where('user_id', Auth::id())
+                Rule::exists('phonebooks', 'id')->where('user_id', Auth::id()),
             ],
 
             'phone_numbers' => [
@@ -53,7 +54,7 @@ class StoreCampaignRequest extends FormRequest
                 }),
                 'nullable',
                 'array',
-                'min:1'
+                'min:1',
             ],
             'phone_numbers.*' => ['string', 'phone:E.164,BD'],
 
@@ -67,7 +68,7 @@ class StoreCampaignRequest extends FormRequest
                 'nullable',
                 'file',
                 'mimes:csv',
-                'max:2048'
+                'max:2048',
             ],
             'scheduled_at' => ['nullable', 'date', 'after:5 minutes'],
         ];

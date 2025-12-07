@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
@@ -22,11 +24,11 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::NotAnswered => 'Not Answered',
-            default => str($this->name)->headline(),
+            default => str($this->name)->headline()->value(),
         };
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): string
     {
         return match ($this) {
             self::Pending => 'primary',

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Deposits\Tables;
 
 use App\Enums\DepositStatus;
@@ -18,7 +20,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class DepositsTable
+final class DepositsTable
 {
     public static function configure(Table $table): Table
     {
@@ -28,7 +30,7 @@ class DepositsTable
                 TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
-                    ->url(fn($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
+                    ->url(fn ($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
                 TextColumn::make('amount')
                     ->label('Amount')
                     ->numeric()
@@ -45,13 +47,13 @@ class DepositsTable
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn($state) => ucfirst($state->value))
-                    ->color(fn($state) => match ($state) {
+                    ->formatStateUsing(fn ($state) => ucfirst($state->value))
+                    ->color(fn ($state) => match ($state) {
                         DepositStatus::Pending => Color::Yellow,
                         DepositStatus::Completed => Color::Green,
                         DepositStatus::Cancelled => 'danger',
                     })
-                    ->icon(fn($state) => match ($state) {
+                    ->icon(fn ($state) => match ($state) {
                         DepositStatus::Pending => Heroicon::OutlinedClock,
                         DepositStatus::Completed => Heroicon::OutlinedCheckCircle,
                         DepositStatus::Cancelled => Heroicon::OutlinedXCircle,
@@ -74,7 +76,7 @@ class DepositsTable
                 ActionGroup::make([
                     EditAction::make()
                         ->label('Edit Deposit')
-                        ->disabled(fn($record) => in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled])),
+                        ->disabled(fn ($record) => in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled])),
                     Action::make('edit_status')
                         ->label('Edit Status')
                         ->icon(Heroicon::OutlinedPencil)
@@ -82,16 +84,16 @@ class DepositsTable
                             Select::make('status')
                                 ->label('Status')
                                 ->options(DepositStatus::class)
-                                ->default(fn($record) => $record->status)
+                                ->default(fn ($record) => $record->status)
                                 ->required()
                                 ->searchable()
                                 ->selectablePlaceholder(false),
                         ])
                         ->modalWidth(Width::Small)
-                        ->disabled(fn($record) => in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled]))
+                        ->disabled(fn ($record) => in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled]))
                         ->action(function (Deposit $record, array $data) {
                             $newStatus = $data['status'];
-                            if (!$newStatus instanceof DepositStatus) {
+                            if (! $newStatus instanceof DepositStatus) {
                                 $newStatus = DepositStatus::tryFrom($newStatus);
                             }
 
@@ -104,8 +106,8 @@ class DepositsTable
                                     'type' => \App\Enums\TransactionType::Deposit,
                                     'amount' => $record->amount * 100, // Store in cents
                                     'currency' => $record->currency,
-                                    'description' => 'Deposit via ' . ucfirst($record->gateway),
-                                    'reference_type' => \App\Models\Deposit::class,
+                                    'description' => 'Deposit via '.ucfirst($record->gateway),
+                                    'reference_type' => Deposit::class,
                                     'reference_id' => $record->id,
                                 ]);
                             }
@@ -114,8 +116,8 @@ class DepositsTable
                         }),
                     DeleteAction::make()
                         ->label('Delete Deposit')
-                        ->requiresConfirmation()
-                ])
+                        ->requiresConfirmation(),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

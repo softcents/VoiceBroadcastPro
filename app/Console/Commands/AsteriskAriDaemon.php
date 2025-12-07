@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Enums\CallStatus;
@@ -13,11 +15,13 @@ use Illuminate\Support\Facades\Http;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use Throwable;
+
 use function Ratchet\Client\connect;
 
-class AsteriskAriDaemon extends Command
+final class AsteriskAriDaemon extends Command
 {
     protected $signature = 'asterisk:ari-listen';
+
     protected $description = 'Multi-server Asterisk ARI Listener Manager (Async)';
 
     // Active connections: [server_id => \Ratchet\Client\WebSocket]
@@ -25,13 +29,13 @@ class AsteriskAriDaemon extends Command
 
     public function handle(): int
     {
-        $this->info("Starting Async Asterisk Manager...");
+        $this->info('Starting Async Asterisk Manager...');
 
         $loop = Loop::get();
 
         // 1. Signal Handling (Graceful Shutdown)
-        $loop->addSignal(SIGINT, fn() => $this->shutdown($loop));
-        $loop->addSignal(SIGTERM, fn() => $this->shutdown($loop));
+        $loop->addSignal(SIGINT, fn () => $this->shutdown($loop));
+        $loop->addSignal(SIGTERM, fn () => $this->shutdown($loop));
 
         // 2. Periodic Server Check (Every 5 seconds)
         $loop->addPeriodicTimer(5.0, function () use ($loop) {
@@ -41,7 +45,7 @@ class AsteriskAriDaemon extends Command
         // 3. Initial Check
         $this->checkServers($loop);
 
-        $this->info("Event loop running. Press Ctrl+C to stop.");
+        $this->info('Event loop running. Press Ctrl+C to stop.');
         $loop->run();
 
         return 0;
@@ -49,12 +53,12 @@ class AsteriskAriDaemon extends Command
 
     private function shutdown(LoopInterface $loop): void
     {
-        $this->info("Shutting down...");
+        $this->info('Shutting down...');
         foreach ($this->connections as $serverId => $conn) {
             $conn->close();
         }
         $loop->stop();
-        $this->info("Goodbye.");
+        $this->info('Goodbye.');
     }
 
     private function checkServers(LoopInterface $loop): void
@@ -63,7 +67,8 @@ class AsteriskAriDaemon extends Command
         try {
             DB::connection()->reconnect();
         } catch (Exception $e) {
-            $this->error("DB Connection failed: " . $e->getMessage());
+            $this->error('DB Connection failed: '.$e->getMessage());
+
             return;
         }
 
@@ -73,14 +78,14 @@ class AsteriskAriDaemon extends Command
         foreach ($servers as $server) {
             $activeServerIds[] = $server->id;
 
-            if (!isset($this->connections[$server->id])) {
+            if (! isset($this->connections[$server->id])) {
                 $this->connectToServer($server, $loop);
             }
         }
 
         // Cleanup removed servers
         foreach ($this->connections as $serverId => $conn) {
-            if (!in_array($serverId, $activeServerIds)) {
+            if (! in_array($serverId, $activeServerIds)) {
                 $this->info("Server {$serverId} removed/disabled. Closing connection.");
                 $conn->close();
                 unset($this->connections[$serverId]);
@@ -97,7 +102,7 @@ class AsteriskAriDaemon extends Command
         $this->connections[$server->id] = true;
 
         $appName = 'originate';
-        $base = "{$server->host}" . ($server->port ? ":{$server->port}" : "");
+        $base = "{$server->host}".($server->port ? ":{$server->port}" : '');
 
         $url = "ws://{$base}/ari/events?api_key={$server->username}:{$server->password}&app={$appName}";
 
@@ -124,12 +129,14 @@ class AsteriskAriDaemon extends Command
     {
         try {
             $event = json_decode($message, true);
-            if (!$event) return;
+            if (! $event) {
+                return;
+            }
 
             $this->processEvent($event, $server);
 
         } catch (Throwable $e) {
-            $this->error("Error processing message: " . $e->getMessage());
+            $this->error('Error processing message: '.$e->getMessage());
         }
     }
 
@@ -145,7 +152,7 @@ class AsteriskAriDaemon extends Command
                 $this->handlePlaybackFinished($event, $server);
                 break;
             case 'Dial':
-                $this->handleDial($event, $server);
+                $this->handleDial($event);
                 break;
             case 'ChannelDestroyed':
                 $this->handleChannelDestroyed($event);
@@ -180,13 +187,15 @@ class AsteriskAriDaemon extends Command
         }
     }
 
-    private function handleDial($event, Server $server): void
+    private function handleDial($event): void
     {
         $peerId = $event['peer']['id'] ?? null;
         $status = $event['dialstatus'] ?? '';
         $timestamp = $event['timestamp'];
 
-        if (!$peerId || empty($status)) return;
+        if (! $peerId || empty($status)) {
+            return;
+        }
 
         $webhookEvent = match ($status) {
             'RINGING' => 'ringing',
@@ -197,7 +206,7 @@ class AsteriskAriDaemon extends Command
             'CONGESTION' => 'failed',
             'CANCEL' => 'canceled',
             'PROGRESS' => 'progress',
-            //default => 'failed'
+            // default => 'failed'
         };
 
         $this->updateStatus($webhookEvent, $peerId, $timestamp);
@@ -205,7 +214,7 @@ class AsteriskAriDaemon extends Command
 
     private function handleChannelDestroyed($event): void
     {
-        if (($event['cause'] ?? 0) == 16) {
+        if (($event['cause'] ?? 0) === 16) {
             $this->updateStatus('completed', $event['channel']['id'], $event['timestamp']);
         }
     }
@@ -219,7 +228,7 @@ class AsteriskAriDaemon extends Command
         // But for this specific request "Refactor to ReactPHP" primarily targeting the loop/sockets,
         // this is acceptable if load isn't massive.
 
-        $base = "{$server->scheme}://{$server->host}" . ($server->port ? ":{$server->port}" : "");
+        $base = "{$server->scheme}://{$server->host}".($server->port ? ":{$server->port}" : '');
         $url = "{$base}/ari/{$endpoint}";
 
         try {
@@ -227,11 +236,11 @@ class AsteriskAriDaemon extends Command
                 ->timeout(5)
                 ->send($method, $url, ['json' => $data]);
 
-            if ($response->failed() && !in_array($response->status(), $ignoreCodes)) {
-                $this->error("[{$server->host}] API Error: " . $response->body());
+            if ($response->failed() && ! in_array($response->status(), $ignoreCodes)) {
+                $this->error("[{$server->host}] API Error: ".$response->body());
             }
         } catch (Exception $e) {
-            $this->error("[{$server->host}] HTTP Error: " . $e->getMessage());
+            $this->error("[{$server->host}] HTTP Error: ".$e->getMessage());
         }
     }
 
@@ -241,25 +250,26 @@ class AsteriskAriDaemon extends Command
 
         $call = Call::whereUniqueId($channelId)->first();
 
-        if (!$call) {
+        if (! $call) {
             $this->warn("Call not found for channel: {$channelId}");
+
             return;
         }
 
         switch ($event) {
-            case "ringing";
+            case 'ringing':
                 $call->update([
                     'status' => CallStatus::Ringing,
                     'ringing_at' => $timestamp,
                 ]);
                 break;
-            case "answered";
+            case 'answered':
                 $call->update([
                     'status' => CallStatus::Answered,
-                    'answered_at' => $timestamp
+                    'answered_at' => $timestamp,
                 ]);
                 break;
-            case "completed";
+            case 'completed':
                 if ($call->status !== CallStatus::Answered) {
                     // Ignore if not answered
                     break;
@@ -268,26 +278,26 @@ class AsteriskAriDaemon extends Command
                 $call->update([
                     'status' => CallStatus::Completed,
                     'ended_at' => $timestamp,
-                    'duration' => $call->answered_at->diffInSeconds($timestamp)
+                    'duration' => $call->answered_at->diffInSeconds($timestamp),
                 ]);
 
                 break;
-            case "busy";
+            case 'busy':
                 $call->update([
                     'status' => CallStatus::Busy,
-                    'ended_at' => $timestamp
+                    'ended_at' => $timestamp,
                 ]);
                 break;
-            case "not_answered";
+            case 'not_answered':
                 $call->update([
                     'status' => CallStatus::NotAnswered,
-                    'ended_at' => $timestamp
+                    'ended_at' => $timestamp,
                 ]);
                 break;
-            case "failed";
+            case 'failed':
                 $call->update([
                     'status' => CallStatus::Failed,
-                    'ended_at' => $timestamp
+                    'ended_at' => $timestamp,
                 ]);
                 break;
         }

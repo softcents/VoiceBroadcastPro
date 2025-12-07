@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Contact;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class UpdateContactRequest extends FormRequest
+final class UpdateContactRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -38,11 +40,11 @@ class UpdateContactRequest extends FormRequest
             ],
             'first_name' => [
                 'description' => 'The first name of the contact. (Optional)',
-                'example' => 'John'
+                'example' => 'John',
             ],
             'last_name' => [
                 'description' => 'The last name of the contact. (Optional)',
-                'example' => 'Doe'
+                'example' => 'Doe',
             ],
             'phone_number' => [
                 'description' => 'The phone number of the contact. (Optional)',

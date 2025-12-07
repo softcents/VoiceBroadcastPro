@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Calls\Tables;
 
 use App\Filament\Admin\Resources\Campaigns\CampaignResource;
@@ -10,7 +12,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class CallsTable
+final class CallsTable
 {
     public static function configure(Table $table): Table
     {
@@ -25,11 +27,11 @@ class CallsTable
                 TextColumn::make('campaign.title')
                     ->searchable()
                     ->sortable()
-                    ->url(fn(Call $record) => $record->campaign ? CampaignResource::getUrl('view', ['record' => $record->campaign_id]) : null),
+                    ->url(fn (Call $record) => $record->campaign ? CampaignResource::getUrl('view', ['record' => $record->campaign_id]) : null),
                 TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
-                    ->url(fn(Call $record) => $record->user ? CustomerResource::getUrl('view', ['record' => $record->user_id]) : null),
+                    ->url(fn (Call $record) => $record->user ? CustomerResource::getUrl('view', ['record' => $record->user_id]) : null),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

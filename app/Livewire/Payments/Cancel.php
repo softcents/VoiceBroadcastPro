@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Livewire\Payments;
 
 use Livewire\Component;
 
-class Cancel extends Component
+final class Cancel extends Component
 {
     public function render()
     {

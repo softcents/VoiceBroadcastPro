@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Contacts\Tables;
 
 use App\Filament\Admin\Resources\Customers\CustomerResource;
@@ -13,7 +15,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class ContactsTable
+final class ContactsTable
 {
     public static function configure(Table $table): Table
     {
@@ -23,10 +25,10 @@ class ContactsTable
                 TextColumn::make('phonebook.user.name')
                     ->label('Customer')
                     ->searchable()
-                    ->url(fn($record) => CustomerResource::getUrl('view', ['record' => $record->phonebook->user_id])),
+                    ->url(fn ($record) => CustomerResource::getUrl('view', ['record' => $record->phonebook->user_id])),
                 TextColumn::make('phonebook.name')
                     ->searchable()
-                    ->url(fn($record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
+                    ->url(fn ($record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('phone_number')
@@ -48,7 +50,7 @@ class ContactsTable
                     ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make(),
-                ])
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

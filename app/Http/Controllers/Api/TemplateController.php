@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -18,16 +20,16 @@ use Knuckles\Scribe\Attributes\QueryParam;
 use Knuckles\Scribe\Attributes\Response as ResponseAttribute;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
-#[Group("Templates", "Manage message templates")]
+#[Group('Templates', 'Manage message templates')]
 #[Authenticated]
-class TemplateController extends Controller
+final class TemplateController extends Controller
 {
     /**
      * List Templates
      *
      * Get a list of all templates belonging to the authenticated user.
      */
-    #[Endpoint(title: "List Templates", description: "Get a list of all templates belonging to the authenticated user.")]
+    #[Endpoint(title: 'List Templates', description: 'Get a list of all templates belonging to the authenticated user.')]
     #[ResponseFromApiResource(name: TemplateResource::class, model: Template::class, collection: true, paginate: 15)]
     #[QueryParam(name: 'page', type: 'integer', description: 'The page number.', required: false)]
     #[QueryParam(name: 'per_page', type: 'integer', description: 'Number of items per page.', required: false)]
@@ -43,9 +45,9 @@ class TemplateController extends Controller
      *
      * Create a new template.
      */
-    #[Endpoint(title: "Create Template", description: "Create a new template.")]
+    #[Endpoint(title: 'Create Template', description: 'Create a new template.')]
     #[ResponseFromApiResource(name: TemplateResource::class, model: Template::class, status: 201)]
-    #[ResponseAttribute(content: ["message" => "The given data was invalid.", "errors" => ["name" => ["The name field is required."]]], status: 422)]
+    #[ResponseAttribute(content: ['message' => 'The given data was invalid.', 'errors' => ['name' => ['The name field is required.']]], status: 422)]
     public function store(#[CurrentUser] User $user, StoreTemplateRequest $request): TemplateResource
     {
         $template = $user->templates()->create($request->validated());
@@ -58,10 +60,10 @@ class TemplateController extends Controller
      *
      * Get details of a specific template.
      */
-    #[Endpoint(title: "Get Template", description: "Get details of a specific template.")]
+    #[Endpoint(title: 'Get Template', description: 'Get details of a specific template.')]
     #[ResponseFromApiResource(name: TemplateResource::class, model: Template::class)]
-    #[ResponseAttribute(content: ["message" => "This action is unauthorized."], status: 403)]
-    #[ResponseAttribute(content: ["message" => "Record not found."], status: 404)]
+    #[ResponseAttribute(content: ['message' => 'This action is unauthorized.'], status: 403)]
+    #[ResponseAttribute(content: ['message' => 'Record not found.'], status: 404)]
     public function show(#[CurrentUser] User $user, Template $template): TemplateResource
     {
         if ($template->user_id !== $user->id) {
@@ -76,11 +78,11 @@ class TemplateController extends Controller
      *
      * Update an existing template.
      */
-    #[Endpoint(title: "Update Template", description: "Update an existing template.")]
+    #[Endpoint(title: 'Update Template', description: 'Update an existing template.')]
     #[ResponseFromApiResource(name: TemplateResource::class, model: Template::class)]
-    #[ResponseAttribute(content: ["message" => "This action is unauthorized."], status: 403)]
-    #[ResponseAttribute(content: ["message" => "Record not found."], status: 404)]
-    #[ResponseAttribute(content: ["message" => "The given data was invalid.", "errors" => ["name" => ["The name field is required."]]], status: 422)]
+    #[ResponseAttribute(content: ['message' => 'This action is unauthorized.'], status: 403)]
+    #[ResponseAttribute(content: ['message' => 'Record not found.'], status: 404)]
+    #[ResponseAttribute(content: ['message' => 'The given data was invalid.', 'errors' => ['name' => ['The name field is required.']]], status: 422)]
     public function update(#[CurrentUser] User $user, UpdateTemplateRequest $request, Template $template): TemplateResource
     {
         if ($template->user_id !== $user->id) {
@@ -97,9 +99,9 @@ class TemplateController extends Controller
      *
      * Delete a template.
      */
-    #[Endpoint(title: "Delete Template", description: "Delete a template.")]
-    #[ResponseAttribute(content: ["message" => "This action is unauthorized."], status: 403)]
-    #[ResponseAttribute(content: ["message" => "Record not found."], status: 404)]
+    #[Endpoint(title: 'Delete Template', description: 'Delete a template.')]
+    #[ResponseAttribute(content: ['message' => 'This action is unauthorized.'], status: 403)]
+    #[ResponseAttribute(content: ['message' => 'Record not found.'], status: 404)]
     #[ResponseAttribute(status: 204)]
     public function destroy(#[CurrentUser] User $user, Template $template): Response
     {

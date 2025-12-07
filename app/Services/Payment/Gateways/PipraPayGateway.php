@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Payment\Gateways;
 
 use App\Models\Deposit;
@@ -8,7 +10,7 @@ use Exception;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
-class PipraPayGateway implements PaymentGateway
+final class PipraPayGateway implements PaymentGateway
 {
     /**
      * @throws ConnectionException
@@ -20,7 +22,7 @@ class PipraPayGateway implements PaymentGateway
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
             'mh-piprapay-api-key' => config('services.piprapay.api_key'),
-        ])->post(config('services.piprapay.base_url') . '/create-charge', [
+        ])->post(config('services.piprapay.base_url').'/create-charge', [
             'full_name' => $deposit->user->name,
             'email_mobile' => $deposit->user->email,
             'amount' => $deposit->amount, // Accessor returns float (e.g., 100.00)
@@ -31,7 +33,7 @@ class PipraPayGateway implements PaymentGateway
             'currency' => $deposit->currency,
             'metadata' => [
                 'deposit_id' => $deposit->id,
-            ]
+            ],
         ]);
 
         if ($response->successful() && $response->json('status')) {
@@ -41,7 +43,7 @@ class PipraPayGateway implements PaymentGateway
             ];
         }
 
-        throw new Exception('Failed to initiate payment: ' . $response->body());
+        throw new Exception('Failed to initiate payment: '.$response->body());
     }
 
     public function verifyPayment(string $paymentId): bool
@@ -50,7 +52,7 @@ class PipraPayGateway implements PaymentGateway
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
             'mh-piprapay-api-key' => config('services.piprapay.api_key'),
-        ])->post(config('services.piprapay.base_url') . '/verify-payments', [
+        ])->post(config('services.piprapay.base_url').'/verify-payments', [
             'pp_id' => $paymentId,
         ]);
 

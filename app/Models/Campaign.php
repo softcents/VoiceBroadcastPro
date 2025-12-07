@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\CampaignSource;
@@ -13,7 +15,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ScopedBy(OwnedByAuthUser::class)]
-class Campaign extends Model
+final class Campaign extends Model
 {
     /** @use HasFactory<CampaignFactory> */
     use HasFactory;
@@ -29,15 +31,6 @@ class Campaign extends Model
         'status',
         'scheduled_at',
     ];
-
-    protected function casts(): array
-    {
-        return [
-            'source' => CampaignSource::class,
-            'status' => CampaignStatus::class,
-            'scheduled_at' => 'datetime',
-        ];
-    }
 
     public function user(): BelongsTo
     {
@@ -57,5 +50,14 @@ class Campaign extends Model
     public function calls(): HasMany
     {
         return $this->hasMany(Call::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'source' => CampaignSource::class,
+            'status' => CampaignStatus::class,
+            'scheduled_at' => 'datetime',
+        ];
     }
 }

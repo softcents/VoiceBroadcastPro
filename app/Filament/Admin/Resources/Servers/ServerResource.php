@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Servers;
 
 use App\Filament\Admin\Resources\Servers\Pages\CreateServer;
@@ -13,7 +15,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use UnitEnum;
 
-class ServerResource extends Resource
+final class ServerResource extends Resource
 {
     protected static ?string $model = Server::class;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Payment;
 
 use App\Enums\DepositStatus;
@@ -7,11 +9,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Deposit;
 use App\Services\Payment\PaymentService;
 
-class PipraPayController extends Controller
+final class PipraPayController extends Controller
 {
-    public function __construct(protected PaymentService $paymentService)
-    {
-    }
+    public function __construct(protected PaymentService $paymentService) {}
 
     public function callback(Deposit $deposit)
     {
@@ -23,16 +23,19 @@ class PipraPayController extends Controller
 
         if ($verified) {
             $this->paymentService->confirm($deposit);
+
             return to_route('payments.success');
         }
 
         $deposit->update(['status' => DepositStatus::Failed]);
+
         return to_route('payments.failed');
     }
 
     public function cancel(Deposit $deposit)
     {
         $deposit->update(['status' => DepositStatus::Cancelled]);
+
         return to_route('payments.cancel');
     }
 
@@ -46,6 +49,7 @@ class PipraPayController extends Controller
 
         if ($verified) {
             $this->paymentService->confirm($deposit);
+
             return response()->json(['status' => 'success']);
         }
 

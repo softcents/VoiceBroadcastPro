@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Factories;
 
 use App\Models\Server;
@@ -8,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 /**
  * @extends Factory<Server>
  */
-class ServerFactory extends Factory
+final class ServerFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,7 +21,7 @@ class ServerFactory extends Factory
     {
         return [
             'name' => fake()->company(),
-            'ari_domain' => 'http://' . fake()->ipv4() . ':8088',
+            'ari_domain' => 'http://'.fake()->ipv4().':8088',
             'ari_username' => fake()->userName(),
             'ari_password' => fake()->password(),
             'database_host' => fake()->ipv4(),

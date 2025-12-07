@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Contacts\Pages;
 
 use App\Filament\Admin\Resources\Contacts\ContactResource;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
-class ViewContact extends ViewRecord
+final class ViewContact extends ViewRecord
 {
     protected static string $resource = ContactResource::class;
 

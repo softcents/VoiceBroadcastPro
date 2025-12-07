@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Audio\Schemas;
 
 use App\Enums\AudioType;
@@ -15,7 +17,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use LaraZeus\Tabler\Tabler;
 
-class AudioInfolist
+final class AudioInfolist
 {
     public static function configure(Schema $schema): Schema
     {
@@ -38,7 +40,7 @@ class AudioInfolist
                                     TextEntry::make('user.name')
                                         ->label('Uploaded By')
                                         ->icon(Tabler::User)
-                                        ->url(fn(Audio $record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
+                                        ->url(fn (Audio $record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
 
                                     TextEntry::make('type')
                                         ->badge(),
@@ -56,7 +58,7 @@ class AudioInfolist
 
                         Section::make('Attributes')
                             ->icon(Tabler::ListDetails)
-                            ->visible(fn(Audio $record) => $record->type === AudioType::TTS)
+                            ->visible(fn (Audio $record) => $record->type === AudioType::TTS)
                             ->collapsible()
                             ->schema([
                                 Grid::make(3)->schema([
@@ -90,12 +92,12 @@ class AudioInfolist
                                 TextEntry::make('duration')
                                     ->label('Duration')
                                     ->numeric()
-                                    ->formatStateUsing(fn(int $state) => secondsToHuman($state))
+                                    ->formatStateUsing(fn (int $state) => secondsToHuman($state))
                                     ->icon(Tabler::Clock),
                                 TextEntry::make('size')
                                     ->label('Size')
                                     ->numeric()
-                                    ->formatStateUsing(fn(int $state) => bytesToHuman($state))
+                                    ->formatStateUsing(fn (int $state) => bytesToHuman($state))
                                     ->icon(Tabler::Database),
                             ]),
 

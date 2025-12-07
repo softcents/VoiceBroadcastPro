@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Servers\Pages;
 
 use App\Filament\Admin\Resources\Servers\ServerResource;
 use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
-class ListServers extends ListRecords
+final class ListServers extends ListRecords
 {
     protected static string $resource = ServerResource::class;
 

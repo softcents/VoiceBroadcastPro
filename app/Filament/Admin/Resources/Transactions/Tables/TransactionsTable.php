@@ -1,21 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Transactions\Tables;
 
-use App\Enums\TransactionType;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Filament\Admin\Resources\Deposits\DepositResource;
 use App\Models\Deposit;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ViewAction;
-use Filament\Support\Colors\Color;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class TransactionsTable
+final class TransactionsTable
 {
     public static function configure(Table $table): Table
     {
@@ -25,7 +20,7 @@ class TransactionsTable
                 TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
-                    ->url(fn($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
+                    ->url(fn ($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge(),
@@ -45,7 +40,7 @@ class TransactionsTable
                     ->label('Reference ID')
                     ->numeric()
                     ->sortable()
-                    ->url(fn($record) => match ($record->reference_type) {
+                    ->url(fn ($record) => match ($record->reference_type) {
                         Deposit::class => DepositResource::getUrl('edit', ['record' => $record->reference_id]),
                         default => null,
                     }),

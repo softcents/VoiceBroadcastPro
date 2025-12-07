@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Phonebook;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StorePhonebookRequest extends FormRequest
+final class StorePhonebookRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

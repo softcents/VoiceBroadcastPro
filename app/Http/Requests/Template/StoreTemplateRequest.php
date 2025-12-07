@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Template;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreTemplateRequest extends FormRequest
+final class StoreTemplateRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

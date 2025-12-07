@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Audio\Tables;
 
 use App\Enums\AudioConversionStatus;
@@ -18,7 +20,7 @@ use Hugomyb\FilamentMediaAction\Actions\MediaAction;
 use Illuminate\Support\Facades\Storage;
 use LaraZeus\Tabler\Tabler;
 
-class AudioTable
+final class AudioTable
 {
     public static function configure(Table $table): Table
     {
@@ -32,7 +34,7 @@ class AudioTable
                     ->label('Title')
                     ->searchable()
                     ->limit(30)
-                    ->tooltip(fn($state): string => (string)$state),
+                    ->tooltip(fn ($state): string => (string) $state),
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge(),
@@ -48,7 +50,7 @@ class AudioTable
                 TextColumn::make('duration')
                     ->numeric()
                     ->sortable()
-                    ->formatStateUsing(fn(int $state): string => secondsToHuman($state))
+                    ->formatStateUsing(fn (int $state): string => secondsToHuman($state))
                     ->placeholder(secondsToHuman(0)),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -66,17 +68,17 @@ class AudioTable
                     MediaAction::make('converted_audio')
                         ->label('Play Converted')
                         ->icon(Tabler::Music)
-                        ->media(fn(Audio $record) => Storage::disk('public')->url($record->converted_path))
+                        ->media(fn (Audio $record) => Storage::disk('public')->url($record->converted_path))
                         ->mediaType(MediaAction::TYPE_AUDIO)
                         ->autoplay()
-                        ->visible(fn(Audio $record) => $record->conversion_status === AudioConversionStatus::Completed),
+                        ->visible(fn (Audio $record) => $record->conversion_status === AudioConversionStatus::Completed),
                     MediaAction::make('original_audio')
                         ->label('Play Original')
                         ->icon(Tabler::Music)
-                        ->media(fn(Audio $record) => Storage::disk('public')->url($record->original_path))
+                        ->media(fn (Audio $record) => Storage::disk('public')->url($record->original_path))
                         ->mediaType(MediaAction::TYPE_AUDIO)
                         ->autoplay()
-                        ->visible(fn(Audio $record) => $record->type === AudioType::Upload ||
+                        ->visible(fn (Audio $record) => $record->type === AudioType::Upload ||
                             ($record->type === AudioType::TTS && $record->tts_status !== AudioTTSStatus::Completed)),
                     ViewAction::make()
                         ->label('View Details'),
@@ -84,7 +86,7 @@ class AudioTable
                         ->label('Edit Details'),
                     DeleteAction::make()
                         ->label('Delete Audio'),
-                ])
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

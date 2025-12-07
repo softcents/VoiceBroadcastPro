@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Callers\Schemas;
 
 use Filament\Forms\Components\Select;
@@ -8,7 +10,7 @@ use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
-class CallerForm
+final class CallerForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -37,7 +39,7 @@ class CallerForm
                         Toggle::make('enabled')
                             ->label('Enabled')
                             ->required(),
-                    ])
+                    ]),
             ]);
     }
 }

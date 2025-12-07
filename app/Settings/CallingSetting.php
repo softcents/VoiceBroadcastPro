@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Settings;
 
 use Spatie\LaravelSettings\Settings;
 
-class CallingSetting extends Settings
+final class CallingSetting extends Settings
 {
     public float $rate_per_minute;
 

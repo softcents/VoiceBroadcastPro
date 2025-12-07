@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\Payment;
 
 use App\Enums\DepositStatus;
@@ -9,7 +11,7 @@ use App\Services\Payment\Contracts\PaymentGateway;
 use App\Services\Payment\Gateways\PipraPayGateway;
 use InvalidArgumentException;
 
-class PaymentService
+final class PaymentService
 {
     public function getGateway(string $gatewayName): PaymentGateway
     {
@@ -22,12 +24,14 @@ class PaymentService
     public function initiate(Deposit $deposit): array
     {
         $gateway = $this->getGateway($deposit->gateway);
+
         return $gateway->initiatePayment($deposit);
     }
 
     public function verify(Deposit $deposit): bool
     {
         $gateway = $this->getGateway($deposit->gateway);
+
         return $gateway->verifyPayment($deposit->transaction_id);
     }
 
@@ -43,7 +47,7 @@ class PaymentService
             'type' => TransactionType::Deposit,
             'amount' => $deposit->amount,
             'currency' => $deposit->currency,
-            'description' => 'Deposit via ' . $deposit->gateway,
+            'description' => 'Deposit via '.$deposit->gateway,
             'reference_type' => Deposit::class,
             'reference_id' => $deposit->id,
         ]);

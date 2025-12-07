@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Models\Scopes\OwnedByAuthUser;
@@ -11,10 +13,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ScopedBy(OwnedByAuthUser::class)]
-class Phonebook extends Model
+final class Phonebook extends Model
 {
     /** @use HasFactory<PhonebookFactory> */
-
     use HasFactory;
 
     protected $fillable = [

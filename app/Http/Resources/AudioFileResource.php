@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class AudioFileResource extends JsonResource
+final class AudioFileResource extends JsonResource
 {
     /**
      * Transform the resource into an array.

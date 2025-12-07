@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\CallerFactory;
@@ -11,24 +13,17 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
-class Caller extends Model
+final class Caller extends Model
 {
     /** @use HasFactory<CallerFactory> */
     use HasFactory;
 
     protected $fillable = [
-        "server_id",
-        "caller_name",
-        "caller_number",
-        "enabled",
+        'server_id',
+        'caller_name',
+        'caller_number',
+        'enabled',
     ];
-
-    protected function name(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => $this->caller_name ." <".$this->caller_number.">",
-        );
-    }
 
     public function server(): BelongsTo
     {
@@ -38,6 +33,13 @@ class Caller extends Model
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'caller_user');
+    }
+
+    protected function name(): Attribute
+    {
+        return Attribute::make(
+            get: fn ($value) => $this->caller_name.' <'.$this->caller_number.'>',
+        );
     }
 
     #[Scope]

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -8,7 +10,6 @@ use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -20,7 +21,7 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 #[Authenticated]
 #[ResponseFromApiResource(name: UserResource::class, model: User::class)]
 #[Response(content: ['message' => 'Unauthenticated.'], status: 401)]
-class AccountController extends Controller
+final class AccountController extends Controller
 {
     #[Endpoint(title: 'Get user details', description: 'Retrieve details of the currently authenticated user.')]
     public function index(#[CurrentUser] User $user): JsonResource

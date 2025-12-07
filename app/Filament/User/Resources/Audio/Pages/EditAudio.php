@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Audio\Pages;
 
 use App\Filament\User\Resources\Audio\AudioResource;
@@ -9,7 +11,7 @@ use Filament\Actions\RestoreAction;
 use Filament\Actions\ViewAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditAudio extends EditRecord
+final class EditAudio extends EditRecord
 {
     protected static string $resource = AudioResource::class;
 

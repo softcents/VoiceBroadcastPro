@@ -1,6 +1,7 @@
 <?php
 
-use App\Filament\Admin\Resources\Customers\CustomerResource;
+declare(strict_types=1);
+
 use App\Enums\UserType;
 use App\Models\User;
 use Livewire\Livewire;

@@ -1,12 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Enums\DepositStatus;
+use App\Enums\UserType;
 use App\Filament\Admin\Resources\Deposits\Pages\CreateDeposit;
 use App\Filament\Admin\Resources\Deposits\Pages\ListDeposits;
 use App\Models\Deposit;
 use App\Models\User;
-use App\Enums\DepositStatus;
-use App\Enums\UserType;
 use Livewire\Livewire;
+
 use function Pest\Laravel\actingAs;
 
 it('updates user balance when deposit is created with completed status', function () {
@@ -76,7 +79,7 @@ it('updates status and balance via table action', function () {
 });
 
 it('disables update status action for completed deposits', function () {
-     $admin = User::factory()->create(['type' => UserType::Admin]);
+    $admin = User::factory()->create(['type' => UserType::Admin]);
     $user = User::factory()->create(['type' => UserType::User]);
     $deposit = Deposit::factory()->create([
         'user_id' => $user->id,

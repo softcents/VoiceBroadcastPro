@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Jobs;
 
 use App\Enums\AudioConversionStatus;
@@ -12,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 
-class ConvertAudio implements ShouldQueue
+final class ConvertAudio implements ShouldQueue
 {
     use Queueable;
 
@@ -30,7 +32,8 @@ class ConvertAudio implements ShouldQueue
 
     /**
      * Create a new job instance.
-     * @param int $id Audio ID
+     *
+     * @param  int  $id  Audio ID
      */
     public function __construct(int $id)
     {
@@ -39,6 +42,7 @@ class ConvertAudio implements ShouldQueue
 
     /**
      * Execute the job.
+     *
      * @throws Exception
      */
     public function handle(): void
@@ -50,10 +54,10 @@ class ConvertAudio implements ShouldQueue
 
         try {
             $inputPath = $this->audio->original_path;
-            $outputPath = 'audios/conversions/' . $this->audio->uuid . '.wav';
+            $outputPath = 'audios/conversions/'.$this->audio->uuid.'.wav';
 
             // Validate input file exists
-            if (!Storage::disk('public')->exists($inputPath)) {
+            if (! Storage::disk('public')->exists($inputPath)) {
                 throw new Exception("Input file not found: {$inputPath}");
             }
 
@@ -66,13 +70,13 @@ class ConvertAudio implements ShouldQueue
             // Update audio record
             $this->updateAudioRecord($outputPath, $duration);
 
-            Log::info("Audio converted successfully", [
+            Log::info('Audio converted successfully', [
                 'audio_id' => $this->audio->id,
                 'output_path' => $outputPath,
             ]);
 
         } catch (Exception $e) {
-            Log::error("Audio conversion failed", [
+            Log::error('Audio conversion failed', [
                 'audio_id' => $this->audio->id,
                 'error' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
@@ -86,6 +90,22 @@ class ConvertAudio implements ShouldQueue
 
             throw $e;
         }
+    }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(?Exception $exception): void
+    {
+        Log::error('Audio conversion job failed permanently', [
+            'audio_id' => $this->audio->id,
+            'error' => $exception?->getMessage(),
+        ]);
+
+        $this->audio->update([
+            'conversion_status' => AudioConversionStatus::Failed,
+            'conversion_error' => $exception?->getMessage() ?? 'Unknown error',
+        ]);
     }
 
     /**
@@ -136,24 +156,8 @@ class ConvertAudio implements ShouldQueue
      */
     protected function ensureDirectoryExists(string $directory): void
     {
-        if (!Storage::disk('public')->exists($directory)) {
+        if (! Storage::disk('public')->exists($directory)) {
             Storage::disk('public')->makeDirectory($directory);
         }
-    }
-
-    /**
-     * Handle a job failure.
-     */
-    public function failed(?Exception $exception): void
-    {
-        Log::error("Audio conversion job failed permanently", [
-            'audio_id' => $this->audio->id,
-            'error' => $exception?->getMessage(),
-        ]);
-
-        $this->audio->update([
-            'conversion_status' => AudioConversionStatus::Failed,
-            'conversion_error' => $exception?->getMessage() ?? 'Unknown error',
-        ]);
     }
 }

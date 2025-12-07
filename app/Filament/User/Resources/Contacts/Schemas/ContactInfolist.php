@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Contacts\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
 
-class ContactInfolist
+final class ContactInfolist
 {
     public static function configure(Schema $schema): Schema
     {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Phonebooks\RelationManagers;
 
 use Filament\Actions\ActionGroup;
@@ -18,7 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-class ContactsRelationManager extends RelationManager
+final class ContactsRelationManager extends RelationManager
 {
     protected static string $relationship = 'contacts';
 
@@ -39,7 +41,7 @@ class ContactsRelationManager extends RelationManager
                             ->onlyCountries(['BD'])
                             ->required()
                             ->rules(['phone:BD']),
-                    ])
+                    ]),
             ]);
     }
 
@@ -103,7 +105,7 @@ class ContactsRelationManager extends RelationManager
                     ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make(),
-                ])
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

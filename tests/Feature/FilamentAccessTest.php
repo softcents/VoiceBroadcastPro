@@ -1,7 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\UserType;
 use App\Models\User;
+
 use function Pest\Laravel\actingAs;
 
 test('admin can access admin panel', function () {

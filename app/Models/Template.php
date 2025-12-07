@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\TemplateApproval;
@@ -10,9 +12,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-
 #[ScopedBy(OwnedByAuthUser::class)]
-class Template extends Model
+final class Template extends Model
 {
     /** @use HasFactory<TemplateFactory> */
     use HasFactory;
@@ -23,15 +24,15 @@ class Template extends Model
         'approval',
     ];
 
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     protected function casts(): array
     {
         return [
             'approval' => TemplateApproval::class,
         ];
-    }
-
-    public function user(): BelongsTo
-    {
-        return $this->belongsTo(User::class);
     }
 }

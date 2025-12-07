@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
@@ -7,17 +9,17 @@ use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 use LaraZeus\Tabler\Tabler;
 
-enum TTSEngine: string implements HasLabel, HasColor, HasIcon
+enum TTSEngine: string implements HasColor, HasIcon, HasLabel
 {
     case Azure = 'azure';
     case Google = 'google';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
-        return str($this->name)->headline();
+        return str($this->name)->headline()->value();
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): string
     {
         return match ($this) {
             self::Azure => 'info',

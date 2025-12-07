@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\TTSLanguage;
 use Illuminate\Database\Seeder;
 
-class TTSLanguageSeeder extends Seeder
+final class TTSLanguageSeeder extends Seeder
 {
     /**
      * Run the database seeds.

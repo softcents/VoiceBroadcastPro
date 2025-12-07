@@ -1,19 +1,20 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\TransactionType;
 use App\Models\Scopes\OwnedByAuthUser;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-
 #[ScopedBy(OwnedByAuthUser::class)]
-class Transaction extends Model
+final class Transaction extends Model
 {
     use HasFactory;
 
@@ -27,13 +28,6 @@ class Transaction extends Model
         'reference_id',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'type' => TransactionType::class,
-        ];
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -44,11 +38,18 @@ class Transaction extends Model
         return $this->morphTo();
     }
 
+    protected function casts(): array
+    {
+        return [
+            'type' => TransactionType::class,
+        ];
+    }
+
     protected function amount(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => $value / 100,
-            set: fn($value) => $value * 100,
+            get: fn ($value) => $value / 100,
+            set: fn ($value) => $value * 100,
         );
     }
 }

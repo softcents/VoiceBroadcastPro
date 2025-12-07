@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\TTSArtistGender;
@@ -9,7 +11,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class TTSArtist extends Model
+final class TTSArtist extends Model
 {
     use HasFactory;
 
@@ -20,19 +22,19 @@ class TTSArtist extends Model
         'name',
         'gender',
         'code',
-        'enabled'
+        'enabled',
     ];
+
+    public function ttsLanguage(): BelongsTo
+    {
+        return $this->belongsTo(TTSLanguage::class, 'tts_language_id');
+    }
 
     protected function casts(): array
     {
         return [
             'gender' => TTSArtistGender::class,
         ];
-    }
-
-    public function ttsLanguage(): BelongsTo
-    {
-        return $this->belongsTo(TTSLanguage::class, 'tts_language_id');
     }
 
     #[Scope]

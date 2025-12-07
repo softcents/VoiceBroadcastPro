@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Campaigns\Pages;
 
 use App\Filament\User\Resources\Campaigns\CampaignResource;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
-class EditCampaign extends EditRecord
+final class EditCampaign extends EditRecord
 {
     protected static string $resource = CampaignResource::class;
 

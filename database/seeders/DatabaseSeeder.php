@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Enums\UserAudioType;
@@ -8,7 +10,7 @@ use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class DatabaseSeeder extends Seeder
+final class DatabaseSeeder extends Seeder
 {
     use WithoutModelEvents;
 
@@ -19,14 +21,14 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             TTSLanguageSeeder::class,
-            TTSArtistSeeder::class
+            TTSArtistSeeder::class,
         ]);
 
         User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@mail.com',
             'type' => UserType::Admin,
-            'email_verified_at' => now()
+            'email_verified_at' => now(),
         ]);
 
         User::factory()->create([
@@ -35,13 +37,14 @@ class DatabaseSeeder extends Seeder
             'type' => UserType::User,
             'email_verified_at' => now(),
             'balance' => 500,
-            'audio_type' => UserAudioType::Both
+            'audio_type' => UserAudioType::Both,
+            'rate' => 0.5,
         ]);
 
         $this->call([
             ServerSeeder::class,
             CallerSeeder::class,
-            //DemoSeeder::class,
+            // DemoSeeder::class,
         ]);
     }
 }

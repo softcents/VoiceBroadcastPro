@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Customers\Tables;
 
 use Filament\Actions\ActionGroup;
@@ -8,13 +10,13 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use Filament\Actions\ViewAction;
 use STS\FilamentImpersonate\Actions\Impersonate;
 
-class CustomersTable
+final class CustomersTable
 {
     public static function configure(Table $table): Table
     {
@@ -55,8 +57,8 @@ class CustomersTable
                     ViewAction::make(),
                     EditAction::make(),
                     Impersonate::make()
-                        ->label('Login')
-                ])
+                        ->label('Login'),
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

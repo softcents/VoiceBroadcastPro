@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\TTSArtists\Schemas;
 
 use App\Enums\TTSArtistGender;
@@ -8,7 +10,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
 
-class TTSArtistForm
+final class TTSArtistForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -35,7 +37,7 @@ class TTSArtistForm
                         Toggle::make('enabled')
                             ->label('Enabled')
                             ->required(),
-                    ])
+                    ]),
             ]);
     }
 }

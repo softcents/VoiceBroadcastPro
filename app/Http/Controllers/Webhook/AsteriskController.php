@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Webhook;
 
 use App\Enums\CallStatus;
@@ -7,7 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AsteriskWebhookRequest;
 use App\Models\Call;
 
-class AsteriskController extends Controller
+final class AsteriskController extends Controller
 {
     public function __invoke(AsteriskWebhookRequest $request)
     {
@@ -16,41 +18,41 @@ class AsteriskController extends Controller
         ray($request->all())->showApp();
 
         switch ($request->validated('event')) {
-            case "ringing";
+            case 'ringing':
                 $call->update([
                     'status' => CallStatus::Ringing,
                     'ringing_at' => $request->validated('timestamp'),
                 ]);
                 break;
-            case "answered";
+            case 'answered':
                 $call->update([
                     'status' => CallStatus::Answered,
-                    'answered_at' => $request->validated('timestamp')
+                    'answered_at' => $request->validated('timestamp'),
                 ]);
                 break;
-            case "completed";
+            case 'completed':
                 $call->update([
                     'status' => CallStatus::Completed,
                     'ended_at' => $request->validated('timestamp'),
-                    'duration' => $call->answered_at?->diffInSeconds($request->validated('timestamp'))
+                    'duration' => $call->answered_at?->diffInSeconds($request->validated('timestamp')),
                 ]);
                 break;
-            case "busy";
+            case 'busy':
                 $call->update([
                     'status' => CallStatus::Busy,
-                    'ended_at' => $request->validated('timestamp')
+                    'ended_at' => $request->validated('timestamp'),
                 ]);
                 break;
-            case "not_answered";
+            case 'not_answered':
                 $call->update([
                     'status' => CallStatus::NotAnswered,
-                    'ended_at' => $request->validated('timestamp')
+                    'ended_at' => $request->validated('timestamp'),
                 ]);
                 break;
-            case "failed";
+            case 'failed':
                 $call->update([
                     'status' => CallStatus::Failed,
-                    'ended_at' => $request->validated('timestamp')
+                    'ended_at' => $request->validated('timestamp'),
                 ]);
                 break;
         }

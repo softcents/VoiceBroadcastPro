@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Deposits;
 
 use App\Filament\User\Resources\Deposits\Pages\ListDeposits;
@@ -11,7 +13,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use UnitEnum;
 
-class DepositResource extends Resource
+final class DepositResource extends Resource
 {
     protected static ?string $model = Deposit::class;
 

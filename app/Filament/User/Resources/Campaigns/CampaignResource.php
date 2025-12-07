@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Campaigns;
 
 use App\Filament\User\Resources\Campaigns\Pages\CreateCampaign;
@@ -9,17 +11,13 @@ use App\Filament\User\Resources\Campaigns\Schemas\CampaignForm;
 use App\Filament\User\Resources\Campaigns\Schemas\CampaignInfolist;
 use App\Filament\User\Resources\Campaigns\Tables\CampaignsTable;
 use App\Models\Campaign;
-use App\Models\Scopes\OwnedByAuthUser;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-
-use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
-class CampaignResource extends Resource
+final class CampaignResource extends Resource
 {
     protected static ?string $model = Campaign::class;
 
@@ -58,6 +56,4 @@ class CampaignResource extends Resource
             'edit' => EditCampaign::route('/{record}/edit'),
         ];
     }
-
-
 }

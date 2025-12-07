@@ -1,16 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Services\TTS\Drivers;
 
 use App\Services\TTS\Contracts\TTSDriver;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
-class AzureTTSDriver implements TTSDriver
+final class AzureTTSDriver implements TTSDriver
 {
     public function __construct(
-        protected string $key,
-        protected string $region
+        private string $key,
+        private string $region
     ) {}
 
     public function speak(string $text, string $language, string $gender, string $artist, string $format = 'mp3'): string
@@ -30,8 +32,8 @@ XML;
             'X-Microsoft-OutputFormat' => 'audio-16khz-128kbitrate-mono-mp3',
             'User-Agent' => 'VoiceApp',
         ])
-        ->withBody($ssml, 'application/ssml+xml')
-        ->post($url);
+            ->withBody($ssml, 'application/ssml+xml')
+            ->post($url);
 
         if ($response->failed()) {
             throw new RuntimeException("Azure TTS failed: {$response->body()}");

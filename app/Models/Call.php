@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\CallStatus;
@@ -15,25 +17,12 @@ use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
 
 #[ScopedBy(OwnedByAuthUser::class)]
 #[ObservedBy(CallObserver::class)]
-class Call extends Model
+final class Call extends Model
 {
     /** @use HasFactory<CallFactory> */
     use HasFactory;
 
     protected $guarded = [];
-
-    protected function casts(): array
-    {
-        return [
-            'status' => CallStatus::class,
-            'phone_number' => E164PhoneNumberCast::class,
-            'called_at' => 'datetime',
-            'ringing_at' => 'datetime',
-            'answered_at' => 'datetime',
-            'ended_at' => 'datetime',
-            'scheduled_at' => 'datetime',
-        ];
-    }
 
     public function user(): BelongsTo
     {
@@ -58,5 +47,18 @@ class Call extends Model
     public function audio(): BelongsTo
     {
         return $this->belongsTo(Audio::class);
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'status' => CallStatus::class,
+            'phone_number' => E164PhoneNumberCast::class,
+            'called_at' => 'datetime',
+            'ringing_at' => 'datetime',
+            'answered_at' => 'datetime',
+            'ended_at' => 'datetime',
+            'scheduled_at' => 'datetime',
+        ];
     }
 }

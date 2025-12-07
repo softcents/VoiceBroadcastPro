@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Transactions\Schemas;
 
 use Filament\Infolists\Components\TextEntry;
@@ -11,7 +13,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use LaraZeus\Tabler\Tabler;
 
-class TransactionInfolist
+final class TransactionInfolist
 {
     public static function configure(Schema $schema): Schema
     {
@@ -20,53 +22,53 @@ class TransactionInfolist
             ->components([
                 Grid::make(3)
                     ->schema([
-                    Group::make()
-                        ->columnSpan(2)
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    Grid::make(2)->schema([
-                                        TextEntry::make('type')
-                                            ->badge(),
-                                        TextEntry::make('created_at')
-                                            ->badge()
-                                            ->date()
-                                            ->color('gray')
-                                            ->icon(Tabler::Calendar),
+                        Group::make()
+                            ->columnSpan(2)
+                            ->schema([
+                                Section::make()
+                                    ->schema([
+                                        Grid::make(2)->schema([
+                                            TextEntry::make('type')
+                                                ->badge(),
+                                            TextEntry::make('created_at')
+                                                ->badge()
+                                                ->date()
+                                                ->color('gray')
+                                                ->icon(Tabler::Calendar),
+                                        ]),
+
+                                        TextEntry::make('amount')
+                                            ->label('Amount')
+                                            ->size(TextSize::Large)
+                                            ->weight(FontWeight::Bold)
+                                            ->numeric(),
+
+                                        TextEntry::make('description')
+                                            ->columnSpanFull(),
                                     ]),
+                            ]),
 
-                                    TextEntry::make('amount')
-                                        ->label('Amount')
-                                        ->size(TextSize::Large)
-                                        ->weight(FontWeight::Bold)
-                                        ->numeric(),
-
-                                    TextEntry::make('description')
-                                        ->columnSpanFull(),
-                                ]),
-                        ]),
-
-                    Group::make()
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    TextEntry::make('user.name')
-                                        ->label('User')
-                                        ->icon(Tabler::User),
-                                    TextEntry::make('reference_type')
-                                        ->label('Reference')
-                                        ->formatStateUsing(fn(string $state) => class_basename($state))
-                                        ->placeholder('-'),
-                                    TextEntry::make('reference_id')
-                                        ->label('Reference ID')
-                                        ->numeric()
-                                        ->placeholder('-'),
-                                    TextEntry::make('currency')
-                                        ->badge()
-                                        ->color('gray'),
-                                ]),
-                        ]),
-                ]),
+                        Group::make()
+                            ->schema([
+                                Section::make()
+                                    ->schema([
+                                        TextEntry::make('user.name')
+                                            ->label('User')
+                                            ->icon(Tabler::User),
+                                        TextEntry::make('reference_type')
+                                            ->label('Reference')
+                                            ->formatStateUsing(fn (string $state) => class_basename($state))
+                                            ->placeholder('-'),
+                                        TextEntry::make('reference_id')
+                                            ->label('Reference ID')
+                                            ->numeric()
+                                            ->placeholder('-'),
+                                        TextEntry::make('currency')
+                                            ->badge()
+                                            ->color('gray'),
+                                    ]),
+                            ]),
+                    ]),
             ]);
     }
 }

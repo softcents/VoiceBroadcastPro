@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Transactions\Tables;
 
 use App\Filament\User\Resources\Deposits\DepositResource;
@@ -8,7 +10,7 @@ use App\Models\Transaction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class TransactionsTable
+final class TransactionsTable
 {
     public static function configure(Table $table): Table
     {
@@ -34,8 +36,8 @@ class TransactionsTable
                     ->label('Reference ID')
                     ->numeric()
                     ->sortable()
-                    ->url(fn(Transaction $record) => match ($record->reference_type) {
-                        Deposit::class => $record->reference ? DepositResource::getUrl('view', ['record' => $record->reference_id]) : "javascript:void(0);",
+                    ->url(fn (Transaction $record) => match ($record->reference_type) {
+                        Deposit::class => $record->reference ? DepositResource::getUrl('view', ['record' => $record->reference_id]) : 'javascript:void(0);',
                         default => null,
                     }),
                 TextColumn::make('created_at')

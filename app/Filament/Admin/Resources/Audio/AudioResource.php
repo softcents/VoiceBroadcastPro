@@ -1,12 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Audio;
 
-use App\Filament\Admin\Resources\Audio\Pages\CreateAudio;
-use App\Filament\Admin\Resources\Audio\Pages\EditAudio;
 use App\Filament\Admin\Resources\Audio\Pages\ListAudio;
 use App\Filament\Admin\Resources\Audio\Pages\ViewAudio;
-use App\Filament\Admin\Resources\Audio\Schemas\AudioForm;
 use App\Filament\Admin\Resources\Audio\Schemas\AudioInfolist;
 use App\Filament\Admin\Resources\Audio\Tables\AudioTable;
 use App\Models\Audio;
@@ -18,7 +17,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
-class AudioResource extends Resource
+final class AudioResource extends Resource
 {
     protected static ?string $model = Audio::class;
 

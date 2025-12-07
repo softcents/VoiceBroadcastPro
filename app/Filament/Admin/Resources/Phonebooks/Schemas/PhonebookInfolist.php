@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Phonebooks\Schemas;
 
 use App\Filament\Admin\Resources\Customers\CustomerResource;
@@ -8,7 +10,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use LaraZeus\Tabler\Tabler;
 
-class PhonebookInfolist
+final class PhonebookInfolist
 {
     public static function configure(Schema $schema): Schema
     {
@@ -21,7 +23,7 @@ class PhonebookInfolist
                         TextEntry::make('user.name')
                             ->icon(Tabler::User)
                             ->label('User')
-                            ->url(fn($record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
+                            ->url(fn ($record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
                         TextEntry::make('name')
                             ->icon(Tabler::H1)
                             ->label('Name'),
@@ -37,7 +39,7 @@ class PhonebookInfolist
                             ->icon(Tabler::TextCaption)
                             ->placeholder('-')
                             ->columnSpanFull(),
-                    ])
+                    ]),
             ]);
     }
 }

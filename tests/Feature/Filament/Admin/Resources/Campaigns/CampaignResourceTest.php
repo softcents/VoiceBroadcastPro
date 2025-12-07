@@ -1,10 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
+use App\Enums\UserType;
 use App\Filament\Admin\Resources\Campaigns\CampaignResource;
 use App\Models\Campaign;
 use App\Models\User;
-use App\Enums\UserType;
-use function Pest\Livewire\livewire;
 
 it('can list campaigns', function () {
     $admin = User::factory()->create(['type' => UserType::Admin]);

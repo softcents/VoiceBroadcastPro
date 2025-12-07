@@ -1,13 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Campaigns\Widgets;
 
 use App\Models\Campaign;
-use App\Enums\CallStatus;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Database\Eloquent\Model;
 
-class CampaignChartWidget extends ChartWidget
+final class CampaignChartWidget extends ChartWidget
 {
     public ?Model $record = null;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\AudioApproval;
 use App\Enums\AudioType;
 use App\Models\Audio;
@@ -8,6 +10,7 @@ use App\Models\TTSLanguage;
 use App\Models\User;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
 
@@ -26,7 +29,7 @@ test('can create audio (tts)', function () {
     $language = TTSLanguage::factory()->create(['code' => 'bn-BD']);
     $artist = TTSArtist::factory()->create([
         'tts_language_id' => $language->id,
-        'code' => 'bn-BD-PradeepNeural'
+        'code' => 'bn-BD-PradeepNeural',
     ]);
 
     $response = actingAs($user)->postJson('/api/audio', [
@@ -53,7 +56,7 @@ test('can create audio (tts)', function () {
 });
 
 test('can create audio (upload)', function () {
-    \Illuminate\Support\Facades\Queue::fake();
+    Illuminate\Support\Facades\Queue::fake();
     Storage::fake('public');
     $user = User::factory()->create();
     $file = UploadedFile::fake()->create('test.mp3', 100, 'audio/mpeg');

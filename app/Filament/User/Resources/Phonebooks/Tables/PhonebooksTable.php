@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Phonebooks\Tables;
 
 use Filament\Actions\ActionGroup;
@@ -11,7 +13,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class PhonebooksTable
+final class PhonebooksTable
 {
     public static function configure(Table $table): Table
     {
@@ -45,7 +47,7 @@ class PhonebooksTable
                     EditAction::make(),
                     DeleteAction::make()
                         ->requiresConfirmation(),
-                ])
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

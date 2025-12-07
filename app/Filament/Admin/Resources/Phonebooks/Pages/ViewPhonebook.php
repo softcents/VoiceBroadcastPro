@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Phonebooks\Pages;
 
 use App\Filament\Admin\Resources\Contacts\ContactResource;
@@ -8,7 +10,7 @@ use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Resources\Pages\ViewRecord;
 
-class ViewPhonebook extends ViewRecord
+final class ViewPhonebook extends ViewRecord
 {
     protected static string $resource = PhonebookResource::class;
 

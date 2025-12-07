@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\Server;
 use Illuminate\Database\Seeder;
 
-class ServerSeeder extends Seeder
+final class ServerSeeder extends Seeder
 {
     /**
      * Run the database seeds.

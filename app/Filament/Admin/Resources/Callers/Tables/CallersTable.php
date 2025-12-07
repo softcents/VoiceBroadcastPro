@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Callers\Tables;
 
 use App\Filament\Admin\Resources\Servers\ServerResource;
@@ -10,7 +12,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class CallersTable
+final class CallersTable
 {
     public static function configure(Table $table): Table
     {
@@ -20,7 +22,7 @@ class CallersTable
                 TextColumn::make('server.name')
                     ->label('Server')
                     ->searchable()
-                    ->url(fn($record) => ServerResource::getUrl('edit', ['record' => $record->server_id])),
+                    ->url(fn ($record) => ServerResource::getUrl('edit', ['record' => $record->server_id])),
                 TextColumn::make('caller_name')
                     ->label('Caller Name')
                     ->searchable(),

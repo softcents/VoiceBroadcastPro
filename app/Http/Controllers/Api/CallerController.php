@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -15,11 +17,11 @@ use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Authenticated]
-#[Group(name: "Callers", description: "Manage callers")]
+#[Group(name: 'Callers', description: 'Manage callers')]
 #[Response(content: ['message' => 'Unauthenticated.'], status: 401)]
-class CallerController extends Controller
+final class CallerController extends Controller
 {
-    #[Endpoint(title: "List Callers", description: "Get a list of all callers belonging to the authenticated user.")]
+    #[Endpoint(title: 'List Callers', description: 'Get a list of all callers belonging to the authenticated user.')]
     #[QueryParam(name: 'page', type: 'integer', description: 'The page number.', required: false)]
     #[QueryParam(name: 'per_page', type: 'integer', description: 'Number of items per page.', required: false)]
     #[ResponseFromApiResource(name: CallerResource::class, model: Caller::class, collection: true, paginate: 15)]

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
@@ -13,12 +15,12 @@ enum TemplateApproval: string implements HasColor, HasIcon, HasLabel
     case Approved = 'approved';
     case Rejected = 'rejected';
 
-    public function getLabel(): ?string
+    public function getLabel(): string
     {
-        return str($this->name)->headline();
+        return str($this->name)->headline()->value();
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): string
     {
         return match ($this) {
             self::Approved => 'success',

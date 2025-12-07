@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\TTSLanguages\Tables;
 
 use Filament\Actions\BulkAction;
@@ -13,7 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 
-class TTSLanguagesTable
+final class TTSLanguagesTable
 {
     public static function configure(Table $table): Table
     {
@@ -61,14 +63,14 @@ class TTSLanguagesTable
                     BulkAction::make('enable')
                         ->label('Enable selected')
                         ->requiresConfirmation()
-                        ->action(fn(Collection $records) => $records->each->update(['enabled' => true]))
+                        ->action(fn (Collection $records) => $records->each->update(['enabled' => true]))
                         ->color('success')
                         ->icon(Heroicon::OutlinedCheckCircle)
                         ->successNotificationTitle('Selected languages have been enabled.'),
                     BulkAction::make('disable')
                         ->label('Disable selected')
                         ->requiresConfirmation()
-                        ->action(fn(Collection $records) => $records->each->update(['enabled' => false]))
+                        ->action(fn (Collection $records) => $records->each->update(['enabled' => false]))
                         ->color('danger')
                         ->icon(Heroicon::OutlinedXCircle)
                         ->successNotificationTitle('Selected languages have been disabled.'),

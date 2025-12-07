@@ -1,9 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Enums\DepositStatus;
-use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Deposit\StoreDepositRequest;
 use App\Http\Resources\DepositResource;
@@ -20,11 +21,9 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Deposits', 'Manage deposits')]
 #[Authenticated]
-class DepositController extends Controller
+final class DepositController extends Controller
 {
-    public function __construct(protected PaymentService $paymentService)
-    {
-    }
+    public function __construct(protected PaymentService $paymentService) {}
 
     #[Endpoint(title: 'List Deposits', description: 'Retrieve a list of deposits for the current user.')]
     #[ResponseFromApiResource(name: DepositResource::class, model: Deposit::class, collection: true, paginate: 15)]
@@ -38,7 +37,7 @@ class DepositController extends Controller
      */
     #[Endpoint(title: 'Initiate Deposit', description: 'Initiate a new deposit.')]
     #[ResponseFromApiResource(name: DepositResource::class, model: Deposit::class, status: 201)]
-    #[Response(content: ["message" => "The given data was invalid.", "errors" => ["amount" => ["The amount field is required."]]], status: 422)]
+    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['amount' => ['The amount field is required.']]], status: 422)]
     public function store(#[CurrentUser] User $user, StoreDepositRequest $request)
     {
         $deposit = $user->deposits()->create([
@@ -65,7 +64,7 @@ class DepositController extends Controller
 
     #[Endpoint(title: 'Get Deposit', description: 'Retrieve a specific deposit.')]
     #[ResponseFromApiResource(name: DepositResource::class, model: Deposit::class)]
-    #[Response(content: ["message" => "Record not found."], status: 404)]
+    #[Response(content: ['message' => 'Record not found.'], status: 404)]
     public function show(#[CurrentUser] User $user, Deposit $deposit)
     {
         if ($deposit->user_id !== $user->id) {

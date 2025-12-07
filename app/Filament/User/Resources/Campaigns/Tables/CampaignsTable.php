@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Campaigns\Tables;
 
 use App\Enums\CampaignSource;
@@ -13,7 +15,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use LaraZeus\Tabler\Tabler;
 
-class CampaignsTable
+final class CampaignsTable
 {
     public static function configure(Table $table): Table
     {
@@ -28,15 +30,15 @@ class CampaignsTable
                 TextColumn::make('status')
                     ->label('Current Status')
                     ->badge()
-                    ->formatStateUsing(fn($state) => $state->name)
-                    ->icon(fn(Campaign $record) => match ($record->status) {
+                    ->formatStateUsing(fn ($state) => $state->name)
+                    ->icon(fn (Campaign $record) => match ($record->status) {
                         CampaignStatus::Pending,
                         CampaignStatus::Cancelled => Tabler::Clock,
                         CampaignStatus::Processing => Tabler::Refresh,
                         CampaignStatus::Completed => Tabler::Check,
                         CampaignStatus::Failed => Tabler::X,
                     })
-                    ->color(fn(Campaign $record) => match ($record->status) {
+                    ->color(fn (Campaign $record) => match ($record->status) {
                         CampaignStatus::Pending,
                         CampaignStatus::Cancelled => 'warning',
                         CampaignStatus::Processing => 'primary',
@@ -45,13 +47,13 @@ class CampaignsTable
                     }),
                 TextColumn::make('source')
                     ->badge()
-                    ->formatStateUsing(fn($state) => $state->name)
-                    ->color(fn($state) => match ($state) {
+                    ->formatStateUsing(fn ($state) => $state->name)
+                    ->color(fn ($state) => match ($state) {
                         CampaignSource::Phonebook => 'success',
                         CampaignSource::Manual => 'primary',
                         CampaignSource::Import => 'secondary',
                     })
-                    ->icon(fn($state) => match ($state) {
+                    ->icon(fn ($state) => match ($state) {
                         CampaignSource::Phonebook => Tabler::AddressBook,
                         CampaignSource::Manual => Tabler::Writing,
                         CampaignSource::Import => Tabler::FileImport,

@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Account;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class UpdateProfileRequest extends FormRequest
+final class UpdateProfileRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -44,8 +46,8 @@ class UpdateProfileRequest extends FormRequest
             ],
             'email' => [
                 'description' => 'The email of the user.',
-                'example' => 'johndoe@example.com'
-            ]
+                'example' => 'johndoe@example.com',
+            ],
         ];
     }
 }

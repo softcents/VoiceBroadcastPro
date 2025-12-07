@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use BackedEnum;
@@ -9,14 +11,14 @@ use Filament\Support\Contracts\HasLabel;
 use Illuminate\Contracts\Support\Htmlable;
 use LaraZeus\Tabler\Tabler;
 
-enum AudioConversionStatus: string implements HasColor, HasLabel, HasIcon
+enum AudioConversionStatus: string implements HasColor, HasIcon, HasLabel
 {
     case Pending = 'pending';
     case Processing = 'processing';
     case Completed = 'completed';
     case Failed = 'failed';
 
-    public function getColor(): string|array|null
+    public function getColor(): string
     {
         return match ($this) {
             self::Pending => 'warning',
@@ -38,6 +40,6 @@ enum AudioConversionStatus: string implements HasColor, HasLabel, HasIcon
 
     public function getLabel(): string|Htmlable|null
     {
-        return str($this->name)->headline();
+        return str($this->name)->headline()->value();
     }
 }

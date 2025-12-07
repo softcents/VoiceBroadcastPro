@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Phonebooks;
 
 use App\Filament\Admin\Resources\Phonebooks\Pages\CreatePhonebook;
@@ -18,7 +20,7 @@ use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-class PhonebookResource extends Resource
+final class PhonebookResource extends Resource
 {
     protected static ?string $model = Phonebook::class;
 
@@ -44,7 +46,7 @@ class PhonebookResource extends Resource
     public static function getRelations(): array
     {
         return [
-            \App\Filament\Admin\Resources\Phonebooks\RelationManagers\ContactsRelationManager::class,
+            RelationManagers\ContactsRelationManager::class,
         ];
     }
 

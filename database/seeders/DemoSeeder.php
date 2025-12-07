@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Enums\CampaignSource;
@@ -13,7 +15,7 @@ use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class DemoSeeder extends Seeder
+final class DemoSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -22,7 +24,7 @@ class DemoSeeder extends Seeder
     {
         $user = User::find(2);
 
-        if (!$user) {
+        if (! $user) {
             return;
         }
 

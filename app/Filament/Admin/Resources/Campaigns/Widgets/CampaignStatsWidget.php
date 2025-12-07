@@ -1,14 +1,16 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Campaigns\Widgets;
 
-use App\Models\Campaign;
 use App\Enums\CallStatus;
+use App\Models\Campaign;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
 
-class CampaignStatsWidget extends StatsOverviewWidget
+final class CampaignStatsWidget extends StatsOverviewWidget
 {
     public ?Model $record = null;
 

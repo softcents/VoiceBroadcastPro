@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use Database\Factories\ContactFactory;
@@ -8,7 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Contact extends Model
+final class Contact extends Model
 {
     /** @use HasFactory<ContactFactory> */
     use HasFactory;
@@ -28,7 +30,7 @@ class Contact extends Model
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn($value) => $this->first_name . ' ' . $this->last_name
+            get: fn ($value) => $this->first_name.' '.$this->last_name
         );
     }
 }

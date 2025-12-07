@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use Filament\Support\Contracts\HasColor;
@@ -8,12 +10,21 @@ use Filament\Support\Contracts\HasLabel;
 use Illuminate\Support\Collection;
 use LaraZeus\Tabler\Tabler;
 
-enum AudioType: string implements HasLabel, HasColor, HasIcon
+enum AudioType: string implements HasColor, HasIcon, HasLabel
 {
     case TTS = 'tts';
     case Upload = 'upload';
 
-    public function getLabel(): ?string
+    public static function availableOptions(UserAudioType $audioType): Collection
+    {
+        return (match ($audioType) {
+            UserAudioType::TTS => collect([self::TTS]),
+            UserAudioType::Upload => collect([self::Upload]),
+            UserAudioType::Both => collect([self::TTS, self::Upload]),
+        })->mapWithKeys(fn ($item) => [$item->value => $item->getLabel()]);
+    }
+
+    public function getLabel(): string
     {
         return match ($this) {
             self::TTS => 'Text to Speech',
@@ -21,7 +32,7 @@ enum AudioType: string implements HasLabel, HasColor, HasIcon
         };
     }
 
-    public function getColor(): string|array|null
+    public function getColor(): string
     {
         return match ($this) {
             self::TTS => 'info',
@@ -35,14 +46,5 @@ enum AudioType: string implements HasLabel, HasColor, HasIcon
             self::TTS => Tabler::Robot,
             self::Upload => Tabler::Microphone,
         };
-    }
-
-    public static function availableOptions(UserAudioType $audioType): Collection
-    {
-        return (match ($audioType) {
-            UserAudioType::TTS => collect([self::TTS]),
-            UserAudioType::Upload => collect([self::Upload]),
-            UserAudioType::Both => collect([self::TTS, self::Upload]),
-        })->mapWithKeys(fn ($item) => [$item->value => $item->getLabel()]);
     }
 }

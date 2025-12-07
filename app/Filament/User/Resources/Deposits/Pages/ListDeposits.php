@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Deposits\Pages;
 
 use App\Enums\DepositStatus;
@@ -11,7 +13,7 @@ use Filament\Resources\Pages\ListRecords;
 use Filament\Support\Enums\Width;
 use Illuminate\Support\Facades\Auth;
 
-class ListDeposits extends ListRecords
+final class ListDeposits extends ListRecords
 {
     protected static string $resource = DepositResource::class;
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Contacts\Schemas;
 
 use Filament\Forms\Components\Select;
@@ -8,7 +10,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-class ContactForm
+final class ContactForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -35,7 +37,7 @@ class ContactForm
                             ->enableIpLookup(false)
                             ->required()
                             ->rules(['phone:BD']),
-                    ])
+                    ]),
             ]);
     }
 }

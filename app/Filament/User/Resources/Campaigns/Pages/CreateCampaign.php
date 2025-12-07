@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Campaigns\Pages;
 
 use App\Enums\CallStatus;
@@ -19,12 +21,13 @@ use RuntimeException;
 use Storage;
 use Throwable;
 
-class CreateCampaign extends CreateRecord
+final class CreateCampaign extends CreateRecord
 {
-    protected static string $resource = CampaignResource::class;
-
     protected const int BATCH_SIZE = 500; // Insert calls in batches for better performance
+
     protected const int MAX_CALLS_PER_CAMPAIGN = 10000; // Prevent memory issues
+
+    protected static string $resource = CampaignResource::class;
 
     protected ?Collection $preparedCalls = null;
 
@@ -100,7 +103,7 @@ class CreateCampaign extends CreateRecord
             // Check for maximum limit
             if ($calls->count() > self::MAX_CALLS_PER_CAMPAIGN) {
                 throw ValidationException::withMessages([
-                    'source' => "Too many calls. Maximum allowed is " . self::MAX_CALLS_PER_CAMPAIGN . " per campaign.",
+                    'source' => 'Too many calls. Maximum allowed is '.self::MAX_CALLS_PER_CAMPAIGN.' per campaign.',
                 ]);
             }
 
@@ -129,7 +132,7 @@ class CreateCampaign extends CreateRecord
         $now = now();
 
         foreach ($data['manual_numbers'] as $item) {
-            $number = trim($item['number'] ?? '');
+            $number = mb_trim($item['number'] ?? '');
 
             if (empty($number)) {
                 continue;
@@ -151,11 +154,11 @@ class CreateCampaign extends CreateRecord
         }
 
         // Notify user about invalid numbers
-        if (!empty($invalidNumbers)) {
+        if (! empty($invalidNumbers)) {
             Notification::make()
                 ->warning()
                 ->title('Invalid phone numbers detected')
-                ->body('Skipped ' . count($invalidNumbers) . ' invalid number(s): ' . implode(', ', array_slice($invalidNumbers, 0, 5)))
+                ->body('Skipped '.count($invalidNumbers).' invalid number(s): '.implode(', ', array_slice($invalidNumbers, 0, 5)))
                 ->send();
         }
 
@@ -207,7 +210,7 @@ class CreateCampaign extends CreateRecord
                         'user_id' => $userId,
                         'contact_id' => $contact->id,
                         'phone_number' => $normalizedNumber,
-                        'contact_name' => trim($contact->first_name . ' ' . $contact->last_name) ?: null,
+                        'contact_name' => mb_trim($contact->first_name.' '.$contact->last_name) ?: null,
                         'status' => CallStatus::Pending,
                         'created_at' => $now,
                         'updated_at' => $now,
@@ -240,7 +243,7 @@ class CreateCampaign extends CreateRecord
             ]);
 
             throw ValidationException::withMessages([
-                'phonebook_id' => 'Failed to load phonebook contacts: ' . $e->getMessage(),
+                'phonebook_id' => 'Failed to load phonebook contacts: '.$e->getMessage(),
             ]);
         }
     }
@@ -261,12 +264,12 @@ class CreateCampaign extends CreateRecord
         try {
             $fullPath = Storage::disk('local')->path($filePath);
 
-            if (!file_exists($fullPath)) {
-                throw new RuntimeException("Import file not found.");
+            if (! file_exists($fullPath)) {
+                throw new RuntimeException('Import file not found.');
             }
 
-            if (!is_readable($fullPath)) {
-                throw new RuntimeException("Import file is not readable.");
+            if (! is_readable($fullPath)) {
+                throw new RuntimeException('Import file is not readable.');
             }
 
             // Check file size (max 10MB to prevent memory issues)
@@ -286,7 +289,7 @@ class CreateCampaign extends CreateRecord
             $handle = fopen($fullPath, 'r');
 
             if ($handle === false) {
-                throw new RuntimeException("Could not open import file.");
+                throw new RuntimeException('Could not open import file.');
             }
 
             try {
@@ -302,7 +305,7 @@ class CreateCampaign extends CreateRecord
                         Notification::make()
                             ->warning()
                             ->title('Import limit reached')
-                            ->body("Only the first " . self::MAX_CALLS_PER_CAMPAIGN . " numbers were imported.")
+                            ->body('Only the first '.self::MAX_CALLS_PER_CAMPAIGN.' numbers were imported.')
                             ->send();
                         break;
                     }
@@ -311,7 +314,7 @@ class CreateCampaign extends CreateRecord
                         continue;
                     }
 
-                    $number = trim($row[0]);
+                    $number = mb_trim($row[0]);
 
                     if ($number === '') {
                         continue;
@@ -360,7 +363,7 @@ class CreateCampaign extends CreateRecord
             ]);
 
             throw ValidationException::withMessages([
-                'file_path' => 'Failed to import file: ' . $e->getMessage(),
+                'file_path' => 'Failed to import file: '.$e->getMessage(),
             ]);
         }
     }
@@ -380,6 +383,7 @@ class CreateCampaign extends CreateRecord
 
             // Try to format as E164
             $phoneNumber = new PhoneNumber($cleaned);
+
             return $phoneNumber->formatE164();
 
         } catch (Throwable $e) {

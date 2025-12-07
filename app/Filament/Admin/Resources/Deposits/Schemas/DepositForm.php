@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Deposits\Schemas;
 
 use App\Enums\DepositStatus;
@@ -9,7 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 
-class DepositForm
+final class DepositForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -61,7 +63,7 @@ class DepositForm
                             ->required(),
                         KeyValue::make('meta_data')
                             ->label('Meta Data'),
-                    ])
+                    ]),
             ]);
     }
 }

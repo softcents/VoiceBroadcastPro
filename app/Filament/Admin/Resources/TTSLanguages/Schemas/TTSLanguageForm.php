@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\TTSLanguages\Schemas;
 
 use Filament\Forms\Components\Select;
@@ -10,7 +12,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Validation\Rules\Unique;
 
-class TTSLanguageForm
+final class TTSLanguageForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -28,7 +30,7 @@ class TTSLanguageForm
                                 table: 'tts_languages',
                                 column: 'code',
                                 ignoreRecord: true,
-                                modifyRuleUsing: fn(Unique $rule, Get $get) => $rule->where('engine', $get('engine')),
+                                modifyRuleUsing: fn (Unique $rule, Get $get) => $rule->where('engine', $get('engine')),
                             ),
                         Select::make('engine')
                             ->label('Engine')
@@ -42,7 +44,7 @@ class TTSLanguageForm
                         Toggle::make('enabled')
                             ->label('Enabled')
                             ->required(),
-                    ])
+                    ]),
             ]);
     }
 }

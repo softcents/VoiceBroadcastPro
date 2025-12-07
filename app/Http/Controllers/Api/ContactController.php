@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -19,7 +21,7 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Contacts', 'Manage contacts')]
 #[Authenticated]
-class ContactController extends Controller
+final class ContactController extends Controller
 {
     #[Endpoint(title: 'List Contacts', description: 'Retrieve a list of contacts for the current user.')]
     #[ResponseFromApiResource(name: ContactResource::class, model: User::class, collection: true, paginate: 15)]
@@ -44,7 +46,7 @@ class ContactController extends Controller
 
     #[Endpoint(title: 'Create Contact', description: 'Create a new contact.')]
     #[ResponseFromApiResource(name: ContactResource::class, model: Contact::class, status: 201)]
-    #[Response(content: ["message" => "The given data was invalid.", "errors" => ["first_name" => ["The first name field is required."]]], status: 422)]
+    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['first_name' => ['The first name field is required.']]], status: 422)]
     public function store(#[CurrentUser] User $user, StoreContactRequest $request)
     {
         // Verify phonebook belongs to user
@@ -57,8 +59,8 @@ class ContactController extends Controller
 
     #[Endpoint(title: 'Get Contact', description: 'Retrieve a specific contact.')]
     #[ResponseFromApiResource(name: ContactResource::class, model: Contact::class)]
-    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
-    #[Response(content: ["message" => "Record not found."], status: 404)]
+    #[Response(content: ['message' => 'This action is unauthorized.'], status: 403)]
+    #[Response(content: ['message' => 'Record not found.'], status: 404)]
     public function show(#[CurrentUser] User $user, Contact $contact)
     {
         if ($contact->phonebook->user_id !== $user->id) {
@@ -70,9 +72,9 @@ class ContactController extends Controller
 
     #[Endpoint(title: 'Update Contact', description: 'Update a specific contact.')]
     #[ResponseFromApiResource(name: ContactResource::class, model: Contact::class)]
-    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
-    #[Response(content: ["message" => "Record not found."], status: 404)]
-    #[Response(content: ["message" => "The given data was invalid.", "errors" => ["first_name" => ["The first name field is required."]]], status: 422)]
+    #[Response(content: ['message' => 'This action is unauthorized.'], status: 403)]
+    #[Response(content: ['message' => 'Record not found.'], status: 404)]
+    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['first_name' => ['The first name field is required.']]], status: 422)]
     public function update(#[CurrentUser] User $user, UpdateContactRequest $request, Contact $contact)
     {
         if ($contact->phonebook->user_id !== $user->id) {
@@ -89,8 +91,8 @@ class ContactController extends Controller
     }
 
     #[Endpoint(title: 'Delete Contact', description: 'Delete a specific contact.')]
-    #[Response(content: ["message" => "This action is unauthorized."], status: 403)]
-    #[Response(content: ["message" => "Record not found."], status: 404)]
+    #[Response(content: ['message' => 'This action is unauthorized.'], status: 403)]
+    #[Response(content: ['message' => 'Record not found.'], status: 404)]
     #[Response(status: 204)]
     public function destroy(#[CurrentUser] User $user, Contact $contact)
     {

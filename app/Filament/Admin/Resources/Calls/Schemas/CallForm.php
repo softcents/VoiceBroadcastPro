@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Calls\Schemas;
 
 use App\Enums\CallStatus;
@@ -9,7 +11,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
 use LaraZeus\Tabler\Tabler;
 
-class CallForm
+final class CallForm
 {
     public static function configure(Schema $schema): Schema
     {

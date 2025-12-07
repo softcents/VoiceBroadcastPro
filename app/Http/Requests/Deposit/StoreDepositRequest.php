@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Deposit;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreDepositRequest extends FormRequest
+final class StoreDepositRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

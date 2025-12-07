@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -43,7 +45,7 @@ return [
     'azure' => [
         'tts' => [
             'key' => env('AZURE_TTS_KEY'),
-            'region' =>  env('AZURE_TTS_REGION', 'southeastasia'),
+            'region' => env('AZURE_TTS_REGION', 'southeastasia'),
         ],
     ],
 

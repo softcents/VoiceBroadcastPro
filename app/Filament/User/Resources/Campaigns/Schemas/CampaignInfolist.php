@@ -1,8 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Campaigns\Schemas;
-use App\Filament\User\Resources\Phonebooks\PhonebookResource;
+
 use App\Filament\Infolists\Components\AudioPlayerEntry;
+use App\Filament\User\Resources\Phonebooks\PhonebookResource;
 use App\Models\Campaign;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
@@ -13,7 +16,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
 use LaraZeus\Tabler\Tabler;
 
-class CampaignInfolist
+final class CampaignInfolist
 {
     public static function configure(Schema $schema): Schema
     {

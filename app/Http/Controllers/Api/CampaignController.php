@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
@@ -17,7 +19,7 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Campaigns', 'Manage voice campaigns')]
 #[Authenticated]
-class CampaignController extends Controller
+final class CampaignController extends Controller
 {
     #[Endpoint(title: 'List Campaigns')]
     #[ResponseFromApiResource(CampaignResource::class, Campaign::class, collection: true, paginate: 15)]
@@ -45,7 +47,7 @@ class CampaignController extends Controller
     {
         $data = $request->validated();
         $data['status'] = \App\Enums\CampaignStatus::Pending;
-        
+
         if ($request->hasFile('file')) {
             $path = $request->file('file')->store('campaigns');
             $data['file_path'] = $path;

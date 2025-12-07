@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 use App\Enums\CampaignSource;
 use App\Enums\CampaignStatus;
 use App\Jobs\ProcessCampaign;

@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Database\Seeders;
 
 use App\Models\Caller;
 use Illuminate\Database\Seeder;
 
-class CallerSeeder extends Seeder
+final class CallerSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -18,7 +20,7 @@ class CallerSeeder extends Seeder
                 'caller_name' => 'SoftCents',
                 'caller_number' => '09617510201',
                 'enabled' => true,
-            ]
+            ],
         ];
 
         foreach ($callers as $caller) {

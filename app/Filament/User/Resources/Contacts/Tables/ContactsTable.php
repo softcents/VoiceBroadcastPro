@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Contacts\Tables;
 
 use App\Filament\User\Resources\Phonebooks\PhonebookResource;
@@ -12,7 +14,7 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class ContactsTable
+final class ContactsTable
 {
     public static function configure(Table $table): Table
     {
@@ -21,7 +23,7 @@ class ContactsTable
             ->columns([
                 TextColumn::make('phonebook.name')
                     ->searchable()
-                    ->url(fn($record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
+                    ->url(fn ($record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('phone_number')
@@ -43,7 +45,7 @@ class ContactsTable
                     ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make(),
-                ])
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Console\Commands;
 
 use App\Enums\CallStatus;
@@ -10,8 +12,9 @@ use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
+use Throwable;
 
-class ProcessScheduledCall extends Command
+final class ProcessScheduledCall extends Command
 {
     protected $signature = 'app:process-scheduled-call
                             {--limit=50 : Maximum number of calls to process per chunk}
@@ -49,19 +52,19 @@ class ProcessScheduledCall extends Command
                                     ->whereIn('id', $callIds)
                                     ->update([
                                         'status' => CallStatus::Initiated,
-                                        'initiated_at' => now()
+                                        'initiated_at' => now(),
                                     ]);
 
-                                $jobs = $calls->map(fn($call) => new ProcessCall($call->id));
+                                $jobs = $calls->map(fn ($call) => new ProcessCall($call->id));
 
                                 $batch = Bus::batch($jobs->toArray())
-                                    ->name('Scheduled Calls - ' . now()->format('Y-m-d H:i:s'))
+                                    ->name('Scheduled Calls - '.now()->format('Y-m-d H:i:s'))
                                     ->allowFailures()
                                     ->dispatch();
 
                                 Log::info('Scheduled calls batch dispatched', [
                                     'batch_id' => $batch->id,
-                                    'call_count' => $calls->count()
+                                    'call_count' => $calls->count(),
                                 ]);
                             });
 
@@ -76,6 +79,7 @@ class ProcessScheduledCall extends Command
 
             if ($totalCalls === 0) {
                 $this->info('No scheduled calls found to process.');
+
                 return self::SUCCESS;
             }
 
@@ -83,17 +87,17 @@ class ProcessScheduledCall extends Command
 
             Log::info('Scheduled call processing completed', [
                 'total_calls' => $totalCalls,
-                'chunks' => $processedChunks
+                'chunks' => $processedChunks,
             ]);
 
             return self::SUCCESS;
 
-        } catch (\Throwable $exception) {
-            $this->error('Failed to process scheduled calls: ' . $exception->getMessage());
+        } catch (Throwable $exception) {
+            $this->error('Failed to process scheduled calls: '.$exception->getMessage());
 
             Log::error('Scheduled call processing failed', [
                 'exception' => $exception->getMessage(),
-                'trace' => $exception->getTraceAsString()
+                'trace' => $exception->getTraceAsString(),
             ]);
 
             return self::FAILURE;

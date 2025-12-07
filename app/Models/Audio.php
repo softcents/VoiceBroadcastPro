@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
 use App\Enums\AudioApproval;
@@ -13,7 +15,6 @@ use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,7 +23,7 @@ use Illuminate\Support\Str;
 
 #[ScopedBy(OwnedByAuthUser::class)]
 #[ObservedBy(AudioObserver::class)]
-class Audio extends Model
+final class Audio extends Model
 {
     /** @use HasFactory<AudioFactory> */
     use HasFactory;
@@ -48,16 +49,6 @@ class Audio extends Model
         'tts_generated_at',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'type' => AudioType::class,
-            'approval' => AudioApproval::class,
-            'conversion_status' => AudioConversionStatus::class,
-            'tts_status' => AudioTTSStatus::class,
-        ];
-    }
-
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -68,24 +59,18 @@ class Audio extends Model
         return $this->belongsTo(TTSArtist::class);
     }
 
-    #[Scope]
-    protected function approved(Builder $query): Builder
-    {
-        return $query->where('approval', AudioApproval::Approved);
-    }
-
     protected static function boot(): void
     {
         parent::boot();
 
-        static::creating(function (Audio $audio) {
+        self::creating(function (Audio $audio) {
             // Generate UUID if not already set
             if (empty($audio->uuid)) {
-                $audio->uuid = (string)Str::uuid();
+                $audio->uuid = (string) Str::uuid();
             }
         });
 
-        static::deleting(function (Audio $audio) {
+        self::deleting(function (Audio $audio) {
             // Delete associated audio files from storage
             if ($audio->original_path && Storage::disk('local')->exists($audio->original_path)) {
                 Storage::disk('local')->delete($audio->original_path);
@@ -94,5 +79,21 @@ class Audio extends Model
                 Storage::disk('local')->delete($audio->converted_path);
             }
         });
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'type' => AudioType::class,
+            'approval' => AudioApproval::class,
+            'conversion_status' => AudioConversionStatus::class,
+            'tts_status' => AudioTTSStatus::class,
+        ];
+    }
+
+    #[Scope]
+    protected function approved(Builder $query): Builder
+    {
+        return $query->where('approval', AudioApproval::Approved);
     }
 }

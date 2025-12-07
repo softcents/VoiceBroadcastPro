@@ -1,15 +1,19 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Customers\Schemas;
 
+use App\Settings\CallingSetting;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
+use LaraZeus\Tabler\Tabler;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-class CustomerForm
+final class CustomerForm
 {
     public static function configure(Schema $schema): Schema
     {
@@ -19,10 +23,12 @@ class CustomerForm
                     ->schema([
                         TextInput::make('name')
                             ->label('Name')
+                            ->prefixIcon(Tabler::User)
                             ->required()
                             ->maxLength(255),
                         TextInput::make('email')
                             ->label('Email')
+                            ->prefixIcon(Tabler::Mail)
                             ->required()
                             ->maxLength(255),
                         PhoneInput::make('phone')
@@ -31,6 +37,14 @@ class CustomerForm
                             ->onlyCountries(['BD'])
                             ->defaultCountry('BD')
                             ->rules(['phone:BD']),
+                        TextInput::make('rate')
+                            ->label('Call Rate (per minute)')
+                            ->prefix('BDT')
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.1)
+                            ->default(app(CallingSetting::class)->rate_per_minute)
+                            ->required(),
                         TextInput::make('password')
                             ->label('Password')
                             ->password()
@@ -46,7 +60,7 @@ class CustomerForm
                                     $component->state(bin2hex(random_bytes(4)));
                                 })
                             ),
-                    ])
+                    ]),
             ]);
     }
 }

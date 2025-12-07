@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\TTSLanguages\Pages;
 
 use App\Filament\Admin\Resources\TTSLanguages\TTSLanguageResource;
 use Filament\Resources\Pages\CreateRecord;
 
-class CreateTTSLanguage extends CreateRecord
+final class CreateTTSLanguage extends CreateRecord
 {
     protected static string $resource = TTSLanguageResource::class;
 }

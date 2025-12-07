@@ -1,13 +1,13 @@
 <?php
 
-use App\Enums\AudioApproval;
+declare(strict_types=1);
 
-use App\Enums\AudioType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+return new class extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -42,7 +42,7 @@ return new class extends Migration {
 
             $table->timestamp('converted_at')->nullable();
             $table->timestamp('tts_generated_at')->nullable();
-            $table->timestamps();;
+            $table->timestamps();
         });
     }
 
