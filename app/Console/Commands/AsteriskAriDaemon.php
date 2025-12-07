@@ -97,7 +97,7 @@ class AsteriskAriDaemon extends Command
         $this->connections[$server->id] = true;
 
         $appName = 'originate';
-        $base = "{$server->scheme}://{$server->host}" . ($server->port ? ":{$server->port}" : "");
+        $base = "{$server->host}" . ($server->port ? ":{$server->port}" : "");
 
         $url = "ws://{$base}/ari/events?api_key={$server->username}:{$server->password}&app={$appName}";
 
