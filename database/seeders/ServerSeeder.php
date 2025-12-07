@@ -15,9 +15,10 @@ class ServerSeeder extends Seeder
         $servers = [
             [
                 'name' => 'Hostomega BDIX',
-                'ari_domain' => 'http://160.191.163.122:8088',
-                'ari_username' => 'softcents',
-                'ari_password' => 'password',
+                'host' => '160.191.163.122',
+                'port' => '8088',
+                'username' => 'softcents',
+                'password' => 'password',
                 'database_host' => '160.191.163.122',
                 'database_port' => 3306,
                 'database_name' => 'asteriskcdrdb',

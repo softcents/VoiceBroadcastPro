@@ -20,8 +20,8 @@ return new class extends Migration {
 
             $table->string('title');
             $table->string('description')->nullable();
-            $table->enum('status', array_column(CampaignStatus::cases(), 'value'));
-            $table->enum('source', array_column(CampaignSource::cases(), 'value'));
+            $table->string('status')->default('pending');
+            $table->string('source')->default('manual');
             $table->string('file_path')->nullable();
             $table->dateTime('scheduled_at')->nullable();
             $table->timestamps();

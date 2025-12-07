@@ -6,6 +6,7 @@ use App\Filament\Admin\Resources\Deposits\Pages\CreateDeposit;
 use App\Filament\Admin\Resources\Deposits\Pages\EditDeposit;
 use App\Filament\Admin\Resources\Deposits\Pages\ListDeposits;
 use App\Filament\Admin\Resources\Deposits\Schemas\DepositForm;
+use App\Filament\Admin\Resources\Deposits\Schemas\DepositInfolist;
 use App\Filament\Admin\Resources\Deposits\Tables\DepositsTable;
 use App\Models\Deposit;
 use BackedEnum;
@@ -31,6 +32,11 @@ class DepositResource extends Resource
     public static function table(Table $table): Table
     {
         return DepositsTable::configure($table);
+    }
+
+    public static function infolist(Schema $schema): Schema
+    {
+        return DepositInfolist::configure($schema);
     }
 
     public static function getRelations(): array

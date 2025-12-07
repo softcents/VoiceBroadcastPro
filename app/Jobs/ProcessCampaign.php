@@ -2,65 +2,93 @@
 
 namespace App\Jobs;
 
-use App\Enums\CampaignSource;
+use App\Enums\CallStatus;
+use App\Enums\CampaignStatus;
 use App\Models\Campaign;
-use Illuminate\Bus\Batch;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\RateLimiter;
 
 class ProcessCampaign implements ShouldQueue
 {
     use Queueable;
 
-    /**
-     * Create a new job instance.
-     */
+    public int $tries = 3;
+    public int $timeout = 3600;
+
     public function __construct(
-        public Campaign $campaign,
-        public ?array $phoneNumbers = null
+        public int $campaignId
     ) {}
 
-    /**
-     * Execute the job.
-     */
     public function handle(): void
     {
-        $jobs = [];
+        $campaign = Campaign::find($this->campaignId);
 
-        if ($this->campaign->source === CampaignSource::Phonebook) {
-            $this->campaign->phonebook->contacts()->chunk(1000, function ($contacts) use (&$jobs) {
-                foreach ($contacts as $contact) {
-                    $jobs[] = new ProcessCall($this->campaign, $contact->phone_number);
-                }
+        if (!$campaign) {
+            Log::warning("Campaign not found: {$this->campaignId}");
+            return;
+        }
+
+        $campaign->update(['status' => CampaignStatus::Processing]);
+
+        $campaign->calls()
+            ->where('status', '!=', CallStatus::Initiated)
+            ->chunkById(50, function ($calls) use ($campaign) {
+                RateLimiter::attempt(
+                    "campaign:{$this->campaignId}",
+                    $maxAttempts = 1,
+                    function () use ($calls, $campaign) {
+                        DB::transaction(function () use ($calls, $campaign) {
+                            $callIds = $calls->pluck('id');
+
+                            DB::table('calls')
+                                ->whereIn('id', $callIds)
+                                ->update(['status' => CallStatus::Initiated]);
+
+                            $jobs = $calls->map(fn($call) => new ProcessCall($call->id));
+
+                            $batch = Bus::batch($jobs->toArray())
+                                ->name("Campaign {$campaign->id} - Chunk")
+                                ->allowFailures()
+                                ->finally(function () use ($campaign) {
+                                    // Check if all calls are processed
+                                    $pendingCalls = $campaign->calls()
+                                        ->where('status', CallStatus::Initiated)
+                                        ->count();
+
+                                    if ($pendingCalls === 0) {
+                                        $campaign->update([
+                                            'status' => CampaignStatus::Completed,
+                                        ]);
+                                    }
+                                })
+                                ->dispatch();
+
+                            Log::info("Batch dispatched for campaign {$campaign->id}", [
+                                'batch_id' => $batch->id,
+                                'jobs_count' => $calls->count()
+                            ]);
+                        });
+                    },
+                    $decaySeconds = 10
+                );
             });
-        } elseif ($this->campaign->source === CampaignSource::Manual) {
-            foreach ($this->phoneNumbers ?? [] as $phoneNumber) {
-                $jobs[] = new ProcessCall($this->campaign, $phoneNumber);
-            }
-        } elseif ($this->campaign->source === CampaignSource::Import) {
-            if ($this->campaign->file_path && Storage::exists($this->campaign->file_path)) {
-                $path = Storage::path($this->campaign->file_path);
-                $handle = fopen($path, 'r');
-                $header = fgetcsv($handle); // Skip header if exists, assuming 'phone' column or first column
+    }
 
-                while (($row = fgetcsv($handle)) !== false) {
-                    // Assuming first column is phone number if no header mapping logic yet
-                    $phoneNumber = $row[0] ?? null;
-                    if ($phoneNumber) {
-                        $jobs[] = new ProcessCall($this->campaign, $phoneNumber);
-                    }
-                }
-                fclose($handle);
-            }
+    public function failed(\Throwable $exception): void
+    {
+        $campaign = Campaign::find($this->campaignId);
+
+        if ($campaign) {
+            $campaign->update(['status' => CampaignStatus::Failed]);
         }
 
-        if (!empty($jobs)) {
-            Bus::batch($jobs)
-                ->name('Campaign: ' . $this->campaign->title)
-                ->onQueue('campaigns')
-                ->dispatch();
-        }
+        Log::error("ProcessCampaign failed for campaign {$this->campaignId}", [
+            'exception' => $exception->getMessage(),
+            'trace' => $exception->getTraceAsString()
+        ]);
     }
 }

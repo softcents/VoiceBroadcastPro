@@ -14,6 +14,7 @@ class ServersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', direction: 'desc')
             ->columns([
                 TextColumn::make('name')
                     ->label('Name')

@@ -83,7 +83,8 @@ class CampaignForm
                                         PhoneInput::make('number')
                                             ->label('Phone Number')
                                             ->defaultCountry('BD')
-                                            ->required(),
+                                            ->required()
+                                            ->rules(['phone:BD']),
                                     ])
                                     ->visible(fn($get) => $get('source') === CampaignSource::Manual)
                                     ->required(fn($get) => $get('source') === CampaignSource::Manual)

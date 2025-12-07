@@ -17,6 +17,7 @@ class PhonebooksTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', direction: 'desc')
             ->columns([
                 TextColumn::make('user.name')
                     ->label('User')

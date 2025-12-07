@@ -22,7 +22,8 @@ class ContactForm
                             ->relationship('phonebook', 'name')
                             ->searchable()
                             ->preload()
-                            ->required(),
+                            ->required()
+                            ->default(request()->integer('phonebook_id') ?? null),
                         TextInput::make('first_name')
                             ->label('First Name')
                             ->required(),
@@ -33,7 +34,8 @@ class ContactForm
                             ->defaultCountry('BD')
                             ->onlyCountries(['BD'])
                             ->enableIpLookup(false)
-                            ->required(),
+                            ->required()
+                            ->rules(['phone:BD']),
                     ])
             ]);
     }

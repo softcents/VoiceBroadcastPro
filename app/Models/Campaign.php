@@ -26,7 +26,6 @@ class Campaign extends Model
         'description',
         'source',
         'file_path',
-        'manual_numbers',
         'status',
         'scheduled_at',
     ];
@@ -37,7 +36,6 @@ class Campaign extends Model
             'source' => CampaignSource::class,
             'status' => CampaignStatus::class,
             'scheduled_at' => 'datetime',
-            'manual_numbers' => 'array',
         ];
     }
 

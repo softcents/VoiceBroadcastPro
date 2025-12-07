@@ -57,12 +57,4 @@ class AudioResource extends Resource
             'edit' => EditAudio::route('/{record}/edit'),
         ];
     }
-
-    public static function getRecordRouteBindingEloquentQuery(): Builder
-    {
-        return parent::getRecordRouteBindingEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ]);
-    }
 }

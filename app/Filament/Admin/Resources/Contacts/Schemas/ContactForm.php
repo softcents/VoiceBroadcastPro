@@ -33,7 +33,8 @@ class ContactForm
                             ->defaultCountry('BD')
                             ->onlyCountries(['BD'])
                             ->enableIpLookup(false)
-                            ->required(),
+                            ->required()
+                            ->rules(['phone:BD']),
                     ])
             ]);
     }

@@ -2,6 +2,8 @@
 
 namespace App\Services\Payment;
 
+use App\Enums\DepositStatus;
+use App\Enums\TransactionType;
 use App\Models\Deposit;
 use App\Services\Payment\Contracts\PaymentGateway;
 use App\Services\Payment\Gateways\PipraPayGateway;
@@ -31,14 +33,14 @@ class PaymentService
 
     public function confirm(Deposit $deposit): void
     {
-        if ($deposit->status === \App\Enums\DepositStatus::Completed) {
+        if ($deposit->status === DepositStatus::Completed) {
             return;
         }
 
-        $deposit->update(['status' => \App\Enums\DepositStatus::Completed]);
+        $deposit->update(['status' => DepositStatus::Completed]);
 
         $deposit->user->transactions()->create([
-            'type' => \App\Enums\TransactionType::Deposit,
+            'type' => TransactionType::Deposit,
             'amount' => $deposit->amount,
             'currency' => $deposit->currency,
             'description' => 'Deposit via ' . $deposit->gateway,
@@ -46,6 +48,6 @@ class PaymentService
             'reference_id' => $deposit->id,
         ]);
 
-        $deposit->user->increment('balance', $deposit->amount);
+        $deposit->user->increment('balance', $deposit->amount * 100);
     }
 }

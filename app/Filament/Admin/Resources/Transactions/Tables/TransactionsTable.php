@@ -20,6 +20,7 @@ class TransactionsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', direction: 'desc')
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Customer')
@@ -27,25 +28,12 @@ class TransactionsTable
                     ->url(fn($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
                 TextColumn::make('type')
                     ->label('Type')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => ucfirst($state->value))
-                    ->color(fn ($state) => match ($state) {
-                        TransactionType::Deposit => Color::Green,
-                        TransactionType::Expense => 'danger',
-                        TransactionType::Refund => Color::Gray,
-                    })
-                    ->icon(fn ($state) => match ($state) {
-                        TransactionType::Deposit => Heroicon::OutlinedArrowDownCircle,
-                        TransactionType::Expense => Heroicon::OutlinedArrowUpCircle,
-                        TransactionType::Refund => Heroicon::OutlinedArrowPath,
-                    }),
+                    ->badge(),
                 TextColumn::make('amount')
                     ->label('Amount')
+                    ->prefix('৳ ')
                     ->numeric()
                     ->sortable(),
-                TextColumn::make('currency')
-                    ->label('Currency')
-                    ->searchable(),
                 TextColumn::make('description')
                     ->label('Description')
                     ->searchable()
@@ -76,8 +64,6 @@ class TransactionsTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
             ])
             ->toolbarActions([
                 //

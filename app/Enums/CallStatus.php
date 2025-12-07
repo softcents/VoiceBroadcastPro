@@ -16,7 +16,7 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     case Busy = 'busy';
     case NotAnswered = 'not_answered';
     case Failed = 'failed';
-    case Cancelled = 'cancelled';
+    case Completed = 'completed';
 
     public function getLabel(): ?string
     {
@@ -29,11 +29,14 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string|array|null
     {
         return match ($this) {
+            self::Pending => 'primary',
+            self::Completed,
             self::Answered => 'success',
-            self::Failed, self::Busy, self::NotAnswered => 'danger',
+            self::Failed,
+            self::Busy,
+            self::NotAnswered => 'danger',
             self::Ringing => 'warning',
             self::Initiated => 'info',
-            self::Pending, self::Cancelled => 'gray',
         };
     }
 
@@ -41,13 +44,13 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::Pending => Tabler::Clock,
-            self::Initiated => Tabler::PlayerPlay,
+            self::Initiated => Tabler::Run,
             self::Ringing => Tabler::PhoneCalling,
+            self::Completed,
             self::Answered => Tabler::PhoneCheck,
             self::Busy => Tabler::PhoneX,
             self::NotAnswered => Tabler::PhoneOff,
             self::Failed => Tabler::CircleX,
-            self::Cancelled => Tabler::Ban,
         };
     }
 }

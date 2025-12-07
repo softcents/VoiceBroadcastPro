@@ -3,11 +3,13 @@
 namespace App\Providers;
 
 use App\Services\TTS\TTSManager;
-use Filament\Facades\Filament;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
+use Filament\Support\Facades\FilamentView;
 use Filament\Tables\Table;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Contracts\View\View;
+
 
 class AppServiceProvider extends ServiceProvider
 {

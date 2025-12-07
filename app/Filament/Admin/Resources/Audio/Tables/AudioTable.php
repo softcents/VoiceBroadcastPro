@@ -12,17 +12,15 @@ use App\Jobs\GenerateAudio;
 use App\Models\Audio;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
-use Filament\Actions\EditAction;
-use Filament\Actions\ForceDeleteBulkAction;
-use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Hugomyb\FilamentMediaAction\Actions\MediaAction;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\Storage;
 use LaraZeus\Tabler\Tabler;
@@ -32,16 +30,17 @@ class AudioTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', direction: 'desc')
             ->columns([
                 TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
-                    ->url(fn (Audio $record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
+                    ->url(fn(Audio $record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
                 TextColumn::make('title')
                     ->label('Title')
                     ->searchable()
                     ->limit(30)
-                    ->tooltip(fn ($state): string => (string) $state),
+                    ->tooltip(fn($state): string => (string)$state),
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge(),
@@ -57,7 +56,7 @@ class AudioTable
                 TextColumn::make('duration')
                     ->numeric()
                     ->sortable()
-                    ->formatStateUsing(fn ($state): string => secondsToHuman((int) $state))
+                    ->formatStateUsing(fn($state): string => secondsToHuman((int)$state))
                     ->placeholder(secondsToHuman(0)),
                 TextColumn::make('created_at')
                     ->dateTime()
@@ -72,25 +71,22 @@ class AudioTable
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->filters([
-                TrashedFilter::make(),
-            ])
             ->recordActions([
                 ActionGroup::make([
                     MediaAction::make('converted_audio')
                         ->label('Play Converted')
                         ->icon(Tabler::Music)
-                        ->media(fn (Audio $record) => Storage::disk('public')->url($record->converted_path))
+                        ->media(fn(Audio $record) => Storage::disk('public')->url($record->converted_path))
                         ->mediaType(MediaAction::TYPE_AUDIO)
                         ->autoplay()
-                        ->visible(fn (Audio $record) => $record->conversion_status === AudioConversionStatus::Completed),
+                        ->visible(fn(Audio $record) => $record->conversion_status === AudioConversionStatus::Completed),
                     MediaAction::make('original_audio')
                         ->label('Play Original')
                         ->icon(Tabler::Music)
-                        ->media(fn (Audio $record) => Storage::disk('public')->url($record->original_path))
+                        ->media(fn(Audio $record) => Storage::disk('public')->url($record->original_path))
                         ->mediaType(MediaAction::TYPE_AUDIO)
                         ->autoplay()
-                        ->visible(fn (Audio $record) => $record->type === AudioType::Upload),
+                        ->visible(fn(Audio $record) => $record->type === AudioType::Upload),
                 ])
                     ->button()
                     ->outlined()
@@ -100,37 +96,19 @@ class AudioTable
                     Action::make('approve')
                         ->icon(Tabler::CircleCheck)
                         ->label('Approve')
-                        ->visible(fn (Audio $record) => $record->approval !== AudioApproval::Approved)
                         ->requiresConfirmation()
-                        ->action(function (Audio $record) {
-                            $data = [
-                                'approval' => AudioApproval::Approved,
-                            ];
-
-                            if ($record->type === AudioType::TTS) {
-                                $data['tts_status'] = AudioTTSStatus::Pending;
-                                $data['conversion_status'] = AudioConversionStatus::Pending;
-
-                                $record->update($data);
-
-                                Bus::chain([
-                                    new GenerateAudio($record->id),
-                                    new ConvertAudio($record->id),
-                                ])->dispatch();
-                            } else {
-                                $record->update($data);
-                            }
-                        }),
+                        ->visible(fn(Audio $record) => $record->approval !== AudioApproval::Approved)
+                        ->action(fn(Audio $record) => $record->update(['approval' => AudioApproval::Approved])),
                     Action::make('reject')
                         ->icon(Tabler::CircleX)
                         ->label('Reject')
                         ->requiresConfirmation()
-                        ->visible(fn (Audio $record) => $record->approval !== AudioApproval::Rejected)
-                        ->action(fn (Audio $record) => $record->update(['approval' => AudioApproval::Rejected])),
+                        ->visible(fn(Audio $record) => $record->approval !== AudioApproval::Rejected)
+                        ->action(fn(Audio $record) => $record->update(['approval' => AudioApproval::Rejected])),
                     Action::make('tts_retry')
                         ->icon(Tabler::Reload)
                         ->label('Retry TTS')
-                        ->visible(fn (Audio $record) => $record->type === AudioType::TTS && $record->tts_status === AudioTTSStatus::Failed)
+                        ->visible(fn(Audio $record) => $record->type === AudioType::TTS && $record->tts_status === AudioTTSStatus::Failed)
                         ->action(function (Audio $record) {
                             $data['tts_status'] = AudioTTSStatus::Pending;
                             $data['conversion_status'] = AudioConversionStatus::Pending;
@@ -152,9 +130,21 @@ class AudioTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('approve')
+                        ->label('Approve Selected')
+                        ->icon(Tabler::CircleCheck)
+                        ->action(function (Collection $records) {
+                            $records->each(fn(Audio $record) => $record->update(['approval' => AudioApproval::Approved]));
+                        })
+                        ->successNotificationTitle('Selected audios have been approved.'),
+                    BulkAction::make('reject')
+                        ->label('Reject Selected')
+                        ->icon(Tabler::CircleX)
+                        ->action(function (Collection $records) {
+                            $records->each(fn(Audio $record) => $record->update(['approval' => AudioApproval::Rejected]));
+                        })
+                        ->successNotificationTitle('Selected audios have been rejected.'),
                     DeleteBulkAction::make(),
-                    ForceDeleteBulkAction::make(),
-                    RestoreBulkAction::make(),
                 ]),
             ]);
     }

@@ -19,12 +19,12 @@
             </p>
 
             <div class="space-y-3">
-                <a href="/user/deposits/create"
+                <a href="/deposits"
                     class="block w-full justify-center rounded-md border border-transparent bg-amber-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900">
                     Try Again
                 </a>
 
-                <a href="/user/dashboard"
+                <a href="/"
                     class="block w-full justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 py-2 px-4 text-sm font-medium text-gray-700 dark:text-gray-200 shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 dark:focus:ring-offset-gray-900">
                     Go to Dashboard
                 </a>

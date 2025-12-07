@@ -13,15 +13,28 @@ return new class extends Migration {
     {
         Schema::create('calls', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->nullable()->constrained('users');
-            $table->foreignId('campaign_id')->nullable()->constrained('campaigns')->cascadeOnDelete();
-            $table->foreignId('contact_id')->nullable()->constrained('contacts')->cascadeOnDelete();
-            $table->foreignId('caller_id')->nullable()->constrained('callers')->cascadeOnDelete();
+            $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
+            $table->foreignId('campaign_id')->nullable()->constrained('campaigns')->nullOnDelete();
+            $table->foreignId('contact_id')->nullable()->constrained('contacts')->nullOnDelete();
+            $table->foreignId('caller_id')->nullable()->constrained('callers')->nullOnDelete();
+            $table->foreignId('audio_id')->nullable()->constrained('audio');
+
             $table->string('phone_number');
             $table->text('content')->nullable();
-            $table->enum('status', array_column(CallStatus::cases(), 'value'));
+            $table->string('status')->nullable();
+
+            // Asterisk
+            $table->string('unique_id')->nullable()->index();
+
             $table->float('duration')->default(0);
+            $table->string('hangup_cause')->nullable();
+
             $table->timestamp('called_at')->nullable();
+            $table->timestamp('ringing_at')->nullable();
+            $table->timestamp('answered_at')->nullable();
+            $table->timestamp('ended_at')->nullable();
+
+            $table->timestamp('scheduled_at')->nullable();
             $table->timestamps();
         });
     }

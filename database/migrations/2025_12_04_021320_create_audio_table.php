@@ -42,8 +42,7 @@ return new class extends Migration {
 
             $table->timestamp('converted_at')->nullable();
             $table->timestamp('tts_generated_at')->nullable();
-            $table->timestamps();
-            $table->softDeletes();
+            $table->timestamps();;
         });
     }
 

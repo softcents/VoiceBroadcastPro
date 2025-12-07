@@ -2,6 +2,7 @@
 
 use App\Enums\CampaignSource;
 use App\Enums\CampaignStatus;
+use App\Jobs\ProcessCampaign;
 use App\Models\Audio;
 use App\Models\Campaign;
 use App\Models\Phonebook;
@@ -47,7 +48,7 @@ test('user can create a campaign', function () {
 
     $this->assertDatabaseHas('campaigns', ['title' => 'Test Campaign']);
 
-    Bus::assertDispatched(\App\Jobs\ProcessCampaign::class);
+    Bus::assertDispatched(ProcessCampaign::class);
 });
 
 test('user can view a specific campaign', function () {

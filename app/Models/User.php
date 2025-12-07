@@ -9,6 +9,8 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Panel;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -112,6 +114,11 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
         return $this->hasMany(Campaign::class);
     }
 
+    public function calls(): HasMany
+    {
+        return $this->hasMany(Call::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
@@ -133,5 +140,17 @@ class User extends Authenticatable implements FilamentUser, MustVerifyEmail, Has
     public function isAdmin(): bool
     {
         return $this->type === UserType::Admin;
+    }
+
+    #[Scope]
+    protected function admin(Builder $query): Builder
+    {
+        return $query->where('type', UserType::Admin);
+    }
+
+    #[Scope]
+    protected function user(Builder $query): Builder
+    {
+        return $query->where('type', UserType::User);
     }
 }

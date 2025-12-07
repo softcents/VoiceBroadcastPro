@@ -2,40 +2,53 @@
 
 namespace App\Jobs;
 
-use App\Models\Campaign;
+use App\Enums\CallStatus;
+use App\Models\Call;
+use Carbon\CarbonImmutable;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\Http;
 
 class ProcessCall implements ShouldQueue
 {
     use Batchable, Queueable;
 
-    /**
-     * Create a new job instance.
-     */
-    public function __construct(
-        public Campaign $campaign,
-        public string $phoneNumber
-    ) {}
+    protected ?Call $call;
+
+    public function __construct(int $callId)
+    {
+        $this->call = Call::with(['audio', 'caller.server'])->find($callId);
+    }
 
     /**
      * Execute the job.
+     * @throws ConnectionException
      */
     public function handle(): void
     {
-        // Mock sending call
-        // In a real scenario, this would interact with Asterisk or a VoIP provider
-        // For now, we just create a Call record
+        $response = Http::withBasicAuth(
+            username: $this->call->caller->server->username,
+            password: $this->call->caller->server->password
+        )
+            ->baseUrl($this->call->caller->server->domain)
+            ->post("ari/channels", [
+                "endpoint" => "PJSIP/{$this->call->phone_number}@{$this->call->caller->caller_number}",
+                "priority" => 1,
+                "callerId" => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
+                "app" => "originate",
+                "appArgs" => url($this->call->audio->converted_path),
+            ]);
 
-        $this->campaign->calls()->create([
-            'user_id' => $this->campaign->user_id,
-            'phone_number' => $this->phoneNumber,
-            'status' => \App\Enums\CallStatus::Initiated,
-            'content' => 'Campaign Call: ' . $this->campaign->title,
+        if ($response->failed()) {
+            throw new ConnectionException("Failed to initiate call for Call ID: {$this->call->id}");
+        }
+
+        $this->call->update([
+            'unique_id' => $response->json('id'),
+            'status' => CallStatus::Initiated,
+            'called_at' => CarbonImmutable::createFromTimeString($response->json('creationtime')),
         ]);
-
-        // Simulate some processing time
-        // sleep(1);
     }
 }

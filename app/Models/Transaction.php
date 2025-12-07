@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\TransactionType;
+use App\Models\Scopes\OwnedByAuthUser;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
+#[ScopedBy(OwnedByAuthUser::class)]
 class Transaction extends Model
 {
     use HasFactory;

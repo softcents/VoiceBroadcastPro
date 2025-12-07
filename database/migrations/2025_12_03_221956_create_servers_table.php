@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id();
             $table->string('name');
 
-            $table->string('ari_domain');
-            $table->string('ari_username');
-            $table->string('ari_password');
+            $table->enum('scheme', ['http', 'https'])->default('http');
+            $table->string('host');
+            $table->string('port')->nullable();
+            $table->string('username');
+            $table->string('password');
 
             $table->string('database_host');
             $table->integer('database_port')->default(3306);

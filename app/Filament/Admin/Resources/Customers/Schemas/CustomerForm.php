@@ -29,7 +29,8 @@ class CustomerForm
                             ->label('Phone')
                             ->required()
                             ->onlyCountries(['BD'])
-                            ->defaultCountry('BD'),
+                            ->defaultCountry('BD')
+                            ->rules(['phone:BD']),
                         TextInput::make('password')
                             ->label('Password')
                             ->password()

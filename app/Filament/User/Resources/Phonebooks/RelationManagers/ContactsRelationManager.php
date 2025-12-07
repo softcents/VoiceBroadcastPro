@@ -37,8 +37,8 @@ class ContactsRelationManager extends RelationManager
                             ->label('Phone Number')
                             ->defaultCountry('BD')
                             ->onlyCountries(['BD'])
-                            ->enableIpLookup(false)
-                            ->required(),
+                            ->required()
+                            ->rules(['phone:BD']),
                     ])
             ]);
     }

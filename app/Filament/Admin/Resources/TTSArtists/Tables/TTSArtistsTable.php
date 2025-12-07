@@ -19,6 +19,7 @@ class TTSArtistsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->defaultSort('created_at', direction: 'desc')
             ->columns([
                 TextColumn::make('ttsLanguage.name')
                     ->label('Language')
