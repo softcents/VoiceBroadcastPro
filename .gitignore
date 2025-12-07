@@ -24,3 +24,7 @@ Homestead.yaml
 Thumbs.db
 
 .scribe
+
+**/caddy
+frankenphp
+frankenphp-worker.php
