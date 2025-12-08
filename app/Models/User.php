@@ -135,6 +135,11 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->type === UserType::Admin;
     }
 
+    public function isUser(): bool
+    {
+        return $this->type === UserType::User;
+    }
+
     #[Scope]
     protected function admin(Builder $query): Builder
     {

@@ -37,11 +37,6 @@ final class CallsTable
                     ->placeholder('-')
                     ->formatStateUsing(fn (int $state) => secondsToHuman($state))
                     ->sortable(),
-                TextColumn::make('campaign.title')
-                    ->label('Campaign')
-                    ->searchable()
-                    ->sortable()
-                    ->url(fn (Call $record) => $record->campaign ? CampaignResource::getUrl('view', ['record' => $record->campaign_id]) : null),
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()

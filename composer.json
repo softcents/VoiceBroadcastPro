@@ -13,8 +13,6 @@
         "ext-pcntl": "*",
         "ext-pdo": "*",
         "ext-posix": "*",
-        "afaya/edge-tts": "^1.6",
-        "andreia/filament-nord-theme": "^2.0",
         "filament/filament": "^4.2",
         "filament/spatie-laravel-settings-plugin": "^4.2",
         "hugomyb/filament-media-action": "^4.1",
@@ -33,7 +31,6 @@
         "spatie/laravel-ray": "^1.43",
         "spatie/laravel-settings": "^3.6",
         "stechstudio/filament-impersonate": "^4.0",
-        "textalk/websocket": "^1.6",
         "ysfkaya/filament-phone-input": "^4.0"
     },
     "require-dev": {

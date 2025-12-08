@@ -19,6 +19,7 @@ final class CallerSeeder extends Seeder
                 'server_id' => 1,
                 'caller_name' => 'SoftCents',
                 'caller_number' => '09617510201',
+                'trunk_name' => '09617510201',
                 'enabled' => true,
             ],
         ];

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Middleware\AdminMiddleware;
 use Laravel\Telescope\Http\Middleware\Authorize;
 use Laravel\Telescope\Watchers;
 
@@ -97,6 +98,7 @@ return [
     'middleware' => [
         'web',
         Authorize::class,
+        AdminMiddleware::class
     ],
 
     /*

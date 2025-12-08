@@ -28,7 +28,7 @@ class StoreOtpRequest extends FormRequest
                 'exists:callers,id,enabled,1',
                 // The caller must belong to the authenticated user by checking whereHas - because its belongsToMany relationship,
             ],
-            'code' => ['required', 'integer', 'max:10'],
+            'code' => ['required', 'integer', 'max_digits:10'],
             'recipient' => ['required', 'string', 'max:15'],
         ];
     }

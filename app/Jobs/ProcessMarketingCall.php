@@ -14,7 +14,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 
-final class ProcessCall implements ShouldQueue
+final class ProcessMarketingCall implements ShouldQueue
 {
     use Batchable, Queueable;
 
@@ -47,12 +47,11 @@ final class ProcessCall implements ShouldQueue
         )
             ->baseUrl($this->call->caller->server->domain)
             ->post('ari/channels', [
-//                'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->caller_number}",
-                'endpoint' => "PJSIP/100",
+                'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->trunk_name}",
                 'priority' => 1,
                 'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
                 'app' => 'originate',
-                'appArgs' => url($this->call->audio->converted_path),
+                'appArgs' => "marketing,".url($this->call->audio->converted_path),
             ]);
 
         if ($response->failed()) {

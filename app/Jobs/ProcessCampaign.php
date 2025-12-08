@@ -53,7 +53,7 @@ final class ProcessCampaign implements ShouldQueue
                                 ->whereIn('id', $callIds)
                                 ->update(['status' => CallStatus::Initiated]);
 
-                            $jobs = $calls->map(fn ($call) => new ProcessCall($call->id));
+                            $jobs = $calls->map(fn ($call) => new ProcessMarketingCall($call->id)->onQueue('marketing'));
 
                             $batch = Bus::batch($jobs->toArray())
                                 ->name("Campaign {$campaign->id} - Chunk")

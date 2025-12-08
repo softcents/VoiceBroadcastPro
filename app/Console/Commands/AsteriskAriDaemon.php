@@ -24,6 +24,7 @@ final class AsteriskAriDaemon extends Command
     protected $signature = 'asterisk:ari-listen';
 
     protected $description = 'Multi-server Asterisk ARI Listener Manager (Async)';
+
     private array $connections = [];
 
     public function handle(): int
@@ -164,7 +165,9 @@ final class AsteriskAriDaemon extends Command
     private function handleStasisStart($event, Server $server): void
     {
         $channelId = $event['channel']['id'];
-        $soundFile = $event['args'][0] ?? 'hello-world';
+        $callType = $event['args'][0] ?? 'marketing';
+        $audioOrOtp = $event['args'][1] ?? 'hello-world';
+        ray($callType, $audioOrOtp);
         $this->info("[{$server->host}] StasisStart: {$channelId}");
 
         // Using Http Facade here is blocking, but for quick API calls it's "okay" in low volume.
@@ -174,11 +177,31 @@ final class AsteriskAriDaemon extends Command
         // but ideally this should also be async.
 
         $this->ariPost($server, "channels/{$channelId}/answer");
-        $this->ariPost($server, "channels/{$channelId}/play", ['media' => "sound:{$soundFile}"]);
+
+        if ($callType === 'otp') {
+            $this->ariPost($server, "channels/{$channelId}/play", ['media' => 'sound:'.url('sounds/pre-otp.wav')]);
+            $this->ariPost($server, "channels/{$channelId}/play", ['media' => "digits:{$audioOrOtp}"]);
+            $this->ariPost($server, "channels/{$channelId}/play", ['media' => 'sound:'.url('sounds/post-otp.wav')]);
+            $this->ariPost($server, "channels/{$channelId}/play", [
+                'media' => "digits:{$audioOrOtp}",
+                'playbackId' => uniqid().'_eof',
+            ]);
+        } else {
+            $this->ariPost($server, "channels/{$channelId}/play", [
+                'media' => "sound:{$audioOrOtp}",
+                'playbackId' => uniqid().'_eof',
+            ]);
+        }
     }
 
     private function handlePlaybackFinished($event, Server $server): void
     {
+        $playbackId = $event['playback']['id'] ?? '';
+
+        if (! str_ends_with($playbackId, '_eof')) {
+            return;
+        }
+
         $targetUri = $event['playback']['target_uri'] ?? '';
         if (str_starts_with($targetUri, 'channel:')) {
             $channelId = str_replace('channel:', '', $targetUri);

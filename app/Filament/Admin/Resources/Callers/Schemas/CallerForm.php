@@ -26,12 +26,21 @@ final class CallerForm
                             ->required()
                             ->searchable()
                             ->preload(),
-                        TextInput::make('caller_name')
-                            ->label('Caller Name')
+                        TextInput::make('trunk_name')
+                            ->label('Trunk Name')
+                            ->helperText('Name of the sip trunk configured in the server')
                             ->required(),
-                        TextInput::make('caller_number')
-                            ->label('Caller Number')
-                            ->required(),
+                        Section::make()
+                            ->heading('Caller Information')
+                            ->description('Details about the caller ID to be used')
+                            ->schema([
+                                TextInput::make('caller_name')
+                                    ->label('Caller Name')
+                                    ->required(),
+                                TextInput::make('caller_number')
+                                    ->label('Caller Number')
+                                    ->required(),
+                            ]),
                         Select::make('users')
                             ->relationship('users', 'name', modifyQueryUsing: function (Builder $query) {
                                 return $query->where('type', UserType::User);

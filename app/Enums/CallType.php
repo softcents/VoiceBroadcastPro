@@ -25,7 +25,7 @@ enum CallType: string implements HasLabel, HasIcon, HasColor
     {
         return match ($this) {
             self::Marketing => Tabler::Speakerphone,
-            self::OTP => CallType::OTP,
+            self::OTP => Tabler::PasswordMobilePhone,
         };
     }
 

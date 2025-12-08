@@ -10,7 +10,6 @@ use App\Jobs\ConvertAudio;
 use App\Jobs\GenerateAudio;
 use App\Models\Audio;
 use App\Models\Phonebook;
-use App\Models\TTSArtist;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Bus;
@@ -46,7 +45,7 @@ final class DemoSeeder extends Seeder
             $phonebook->contacts()->create($contact);
         }
 
-        Audio::factory(3)
+        Audio::factory()
             ->afterCreating(function (Audio $audio) {
                 $audio->update([
                     'approval' => AudioApproval::Approved,
@@ -61,10 +60,7 @@ final class DemoSeeder extends Seeder
                 'user_id' => $user->id,
                 'approval' => AudioApproval::Pending,
                 'type' => AudioType::TTS,
-                'tts_artist_id' => TTSArtist::whereCode('bn-BD-PradeepNeural')
-                    ->whereHas('ttsLanguage', function ($query) {
-                        $query->where('engine', 'frolax');
-                    })->first()->id,
+                'tts_artist_id' => 85,
             ]);
 
         $user->callers()->sync([1]);

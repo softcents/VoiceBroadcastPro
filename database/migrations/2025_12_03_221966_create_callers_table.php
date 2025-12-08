@@ -18,6 +18,7 @@ return new class extends Migration
             $table->foreignId('server_id')->constrained('servers')->cascadeOnDelete();
             $table->string('caller_name');
             $table->string('caller_number');
+            $table->string('trunk_name');
             $table->boolean('enabled')->default(false);
             $table->timestamps();
         });

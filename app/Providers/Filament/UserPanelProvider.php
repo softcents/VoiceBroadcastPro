@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
-use Andreia\FilamentNordTheme\FilamentNordThemePlugin;
+use App\Http\Middleware\UserMiddleware;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -67,9 +67,7 @@ final class UserPanelProvider extends PanelProvider
             ])
             ->authMiddleware([
                 Authenticate::class,
-            ])
-            ->plugins([
-                //FilamentNordThemePlugin::make(),
+                UserMiddleware::class,
             ])
             ->renderHook(
                 name: PanelsRenderHook::GLOBAL_SEARCH_BEFORE,

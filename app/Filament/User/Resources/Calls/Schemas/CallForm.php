@@ -7,6 +7,7 @@ namespace App\Filament\User\Resources\Calls\Schemas;
 use App\Enums\AudioApproval;
 use App\Enums\AudioConversionStatus;
 use App\Models\Caller;
+use App\Models\Contact;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
@@ -27,21 +28,10 @@ final class CallForm
                             ->relationship('caller', modifyQueryUsing: function ($query) {
                                 return $query->enabled();
                             })
-                            ->searchable()
+                            ->searchable(['caller_name', 'caller_number'])
                             ->preload()
                             ->required()
-                            ->getOptionLabelFromRecordUsing(fn (Caller $caller) => $caller->name)
-                        /*->getSearchResultsUsing(function ($search) {
-                            return auth()
-                                ->user()
-                                ->callers()
-                                ->enabled()
-                                ->where('caller_name', 'like', "%{$search}%")
-                                ->orWhere('caller_number', 'like', "%{$search}%")
-                                ->limit(50)
-                                ->pluck('id', 'caller_number')
-                                ->toArray();
-                        })*/,
+                            ->getOptionLabelFromRecordUsing(fn (Caller $caller) => $caller->name),
                         PhoneInput::make('phone_number')
                             ->label('Phone Number')
                             ->onlyCountries(['BD'])

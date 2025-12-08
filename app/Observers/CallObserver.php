@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Enums\CallStatus;
-use App\Jobs\ProcessCall;
+use App\Enums\CallType;
+use App\Jobs\ProcessMarketingCall;
+use App\Jobs\ProcessOtpCall;
 use App\Models\Call;
 use App\Settings\CallingSetting;
 
@@ -17,7 +19,13 @@ final class CallObserver
     public function created(Call $call): void
     {
         if ($call->campaign_id === null && $call->scheduled_at === null) {
-            ProcessCall::dispatch($call->id);
+            if ($call->type === CallType::OTP){
+                ProcessOtpCall::dispatch($call->id)
+                    ->onQueue('otp');
+            } else {
+                ProcessMarketingCall::dispatch($call->id)
+                    ->onQueue('marketing');
+            }
         }
     }
 

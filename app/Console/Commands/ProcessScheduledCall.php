@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Console\Commands;
 
 use App\Enums\CallStatus;
-use App\Jobs\ProcessCall;
+use App\Jobs\ProcessMarketingCall;
 use App\Models\Call;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Bus;
@@ -55,7 +55,7 @@ final class ProcessScheduledCall extends Command
                                         'initiated_at' => now(),
                                     ]);
 
-                                $jobs = $calls->map(fn ($call) => new ProcessCall($call->id));
+                                $jobs = $calls->map(fn ($call) => new ProcessMarketingCall($call->id)->onQueue('marketing'));
 
                                 $batch = Bus::batch($jobs->toArray())
                                     ->name('Scheduled Calls - '.now()->format('Y-m-d H:i:s'))
