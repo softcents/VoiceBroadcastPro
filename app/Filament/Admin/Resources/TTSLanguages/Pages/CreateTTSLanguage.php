@@ -10,4 +10,6 @@ use Filament\Resources\Pages\CreateRecord;
 final class CreateTTSLanguage extends CreateRecord
 {
     protected static string $resource = TTSLanguageResource::class;
+
+    protected static ?string $title = 'Add Language';
 }

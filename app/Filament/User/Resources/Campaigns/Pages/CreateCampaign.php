@@ -33,9 +33,22 @@ final class CreateCampaign extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        $this->preparedCalls = $this->prepareCallsForCampaign($data);
+        try {
+            $this->preparedCalls = $this->prepareCallsForCampaign($data);
 
-        return $data;
+            return $data;
+        }catch (Throwable $e) {
+            Notification::make()
+                ->danger()
+                ->title('Error preparing campaign calls')
+//                ->body('There was an error preparing the calls for this campaign. Please review your input and try again.')
+                    ->body($e->getMessage())
+                ->send();
+
+            throw ValidationException::withMessages([
+                'source' => 'Failed to prepare calls for the campaign. Please check your input.',
+            ]);
+        }
     }
 
     /**
@@ -44,7 +57,9 @@ final class CreateCampaign extends CreateRecord
     protected function handleRecordCreation(array $data): Model
     {
         return DB::transaction(function () use ($data) {
-            $campaign = auth()->user()->campaigns()->create($data);
+            $campaign = auth()->user()->campaigns()->create([
+                ''
+            ]);
 
             try {
                 // Use prepared calls or prepare them if strictly necessary (fallback)
@@ -54,12 +69,6 @@ final class CreateCampaign extends CreateRecord
                 $calls->chunk(self::BATCH_SIZE)->each(function ($chunk) use ($campaign) {
                     $campaign->calls()->createMany($chunk->toArray());
                 });
-
-                Notification::make()
-                    ->success()
-                    ->title('Campaign created successfully')
-                    ->body("Created {$calls->count()} calls.")
-                    ->send();
 
             } catch (Throwable $e) {
                 // Log the error and provide user-friendly message
@@ -209,8 +218,8 @@ final class CreateCampaign extends CreateRecord
                     $validCalls->push([
                         'user_id' => $userId,
                         'contact_id' => $contact->id,
+                        'audio_id' => $data['audio_id'],
                         'phone_number' => $normalizedNumber,
-                        'contact_name' => mb_trim($contact->first_name.' '.$contact->last_name) ?: null,
                         'status' => CallStatus::Pending,
                         'created_at' => $now,
                         'updated_at' => $now,

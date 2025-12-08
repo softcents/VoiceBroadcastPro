@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\TTSEngine;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,6 +23,13 @@ final class TTSLanguage extends Model
         'engine',
         'enabled',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'engine' => TTSEngine::class
+        ];
+    }
 
     public function ttsArtists(): HasMany
     {

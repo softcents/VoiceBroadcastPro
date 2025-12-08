@@ -158,7 +158,7 @@ final class GenerateAudio implements ShouldQueue
         $engine = $language->engine;
 
         /** @var TTSDriver $driver */
-        $driver = $ttsManager->driver($engine);
+        $driver = $ttsManager->driver($engine->value);
 
         return $driver->speak(
             text: $audio->message,

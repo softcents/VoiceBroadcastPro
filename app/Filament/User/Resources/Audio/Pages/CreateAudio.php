@@ -17,17 +17,7 @@ final class CreateAudio extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        unset($data['gender']);
         return auth()->user()->audio()->create($data);
-    }
-
-    protected function afterCreate(): void
-    {
-        /* @var Audio $audio */
-        $audio = $this->record;
-
-        if ($audio->type === AudioType::Upload) {
-            // Dispatch job to convert audio for Asterisk
-            ConvertAudio::dispatch($audio->id);
-        }
     }
 }

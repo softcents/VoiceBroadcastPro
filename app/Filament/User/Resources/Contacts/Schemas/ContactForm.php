@@ -25,7 +25,7 @@ final class ContactForm
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->default(request()->integer('phonebook_id') ?? null),
+                            ->default(request()->input('phonebook_id')),
                         TextInput::make('first_name')
                             ->label('First Name')
                             ->required(),

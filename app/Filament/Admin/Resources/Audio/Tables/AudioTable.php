@@ -88,7 +88,7 @@ final class AudioTable
                         ->media(fn (Audio $record) => Storage::disk('public')->url($record->original_path))
                         ->mediaType(MediaAction::TYPE_AUDIO)
                         ->autoplay()
-                        ->visible(fn (Audio $record) => $record->type === AudioType::Upload),
+                        ->visible(fn (Audio $record) => $record->original_path),
                 ])
                     ->button()
                     ->outlined()

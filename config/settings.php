@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Settings\CallingSetting;
+use App\Settings\TTSSetting;
 
 return [
 
@@ -12,6 +13,7 @@ return [
      */
     'settings' => [
         CallingSetting::class,
+        TTSSetting::class,
     ],
 
     /*

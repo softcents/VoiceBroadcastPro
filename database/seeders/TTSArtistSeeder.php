@@ -194,37 +194,83 @@ final class TTSArtistSeeder extends Seeder
             'zu-ZA' => ['female' => ['zu-ZA-ThandoNeural'], 'male' => ['zu-ZA-ThembaNeural']],
         ];
 
-        foreach ($artists as $languageCode => $genders) {
-            $language = TTSLanguage::where('code', $languageCode)->first();
-            if (! $language) {
-                continue;
-            }
+        $engines = ['azure', 'frolax'];
+        $now = now();
 
-            foreach ($genders as $gender => $artistNames) {
-                foreach ($artistNames as $artistName) {
-                    TTSArtist::firstOrCreate(
-                        ['code' => $artistName],
-                        [
-                            'tts_language_id' => $language->id,
-                            'name' => (function ($s) {
-                                $s = preg_replace('/^[a-z]{2,3}(-[A-Z]{2,})?-/', '', $s);
-                                $s = str_replace('-', ' ', $s);
-                                $s = preg_replace('/Neural$/', '', $s);
-                                $s = preg_replace('/Multilingual$/', '', $s);
+        $nameFromArtistCode = function (string $s): string {
+            $s = preg_replace('/^[a-z]{2,3}(-[A-Z]{2,})?-/', '', $s);
+            $s = str_replace('-', ' ', $s);
+            $s = preg_replace('/Neural$/', '', $s);
+            $s = preg_replace('/Multilingual$/', '', $s);
 
-                                return mb_trim($s);
-                            })($artistName),
-                            'gender' => $gender,
-                            'enabled' => false,
-                        ]
-                    );
+            // Laravel has Str::of($s)->trim(), but keeping your mb_trim style:
+            return function_exists('mb_trim') ? mb_trim($s) : trim($s);
+        };
+
+        /**
+         * 1) Load all needed languages for both engines in ONE query,
+         *    then build a map: [engine][code] => id
+         */
+        $languageCodes = array_keys($artists);
+
+        $languages = TTSLanguage::query()
+            ->whereIn('engine', $engines)
+            ->whereIn('code', $languageCodes)
+            ->get(['id', 'code', 'engine']);
+
+        $langIdByEngineAndCode = [];
+        foreach ($languages as $lang) {
+            $langIdByEngineAndCode[$lang->engine->value][$lang->code] = $lang->id;
+        }
+
+        /**
+         * 2) Build all artist rows for both engines (only where language exists)
+         */
+        $rows = [];
+        foreach ($engines as $engine) {
+            foreach ($artists as $languageCode => $genders) {
+                $langId = $langIdByEngineAndCode[$engine][$languageCode] ?? null;
+                if (!$langId) {
+                    continue; // language missing for that engine
+                }
+
+                foreach ($genders as $gender => $artistNames) {
+                    foreach ($artistNames as $artistCode) {
+                        $rows[] = [
+                            'code'            => $artistCode,
+                            'tts_language_id' => $langId,
+                            'name'            => $nameFromArtistCode($artistCode),
+                            'gender'          => $gender,
+                            'enabled'         => true,
+                            'created_at'      => $now,
+                            'updated_at'      => $now,
+                        ];
+                    }
                 }
             }
         }
 
-        TTSArtist::whereIn('code', [
-            'bn-BD-NabanitaNeural',
-            'bn-BD-PradeepNeural',
-        ])->update(['enabled' => true]);
+        /**
+         * 3) Insert ONLY missing artists (no updates)
+         *    We dedupe by existing `code` in DB, and also dedupe within $rows itself.
+         */
+        $uniqueRowsByCode = [];
+        foreach ($rows as $r) {
+            $uniqueRowsByCode[$r['code']] = $r; // last wins; all should be identical anyway
+        }
+        $rows = array_values($uniqueRowsByCode);
+
+        $existingCodes = TTSArtist::query()
+            ->whereIn('code', array_column($rows, 'code'))
+            ->pluck('code')
+            ->all();
+
+        $existingLookup = array_flip($existingCodes);
+
+        $toInsert = array_values(array_filter($rows, fn ($r) => !isset($existingLookup[$r['code']])));
+
+        if (!empty($toInsert)) {
+            TTSArtist::insert($toInsert);
+        }
     }
 }

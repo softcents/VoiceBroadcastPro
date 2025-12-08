@@ -49,4 +49,10 @@ return [
         ],
     ],
 
+    'frolax' => [
+        'tts' => [
+            'base_url' => env('FROLAX_TTS_BASE_URL', 'https://tts.frolax.agency'),
+            'api_key' => env('FROLAX_TTS_API_KEY'),
+        ],
+    ]
 ];

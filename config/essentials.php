@@ -151,7 +151,7 @@ return [
     |
     */
 
-    NunoMaduro\Essentials\Configurables\ShouldBeStrict::class => true,
+    NunoMaduro\Essentials\Configurables\ShouldBeStrict::class => false,
 
     /*
     |--------------------------------------------------------------------------

@@ -12,6 +12,8 @@ final class ListTTSLanguages extends ListRecords
 {
     protected static string $resource = TTSLanguageResource::class;
 
+    protected static ?string $title = 'Languages';
+
     protected function getHeaderActions(): array
     {
         return [

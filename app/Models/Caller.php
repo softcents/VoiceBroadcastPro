@@ -25,6 +25,8 @@ final class Caller extends Model
         'enabled',
     ];
 
+    protected $appends = ['name'];
+
     public function server(): BelongsTo
     {
         return $this->belongsTo(Server::class);

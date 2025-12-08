@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\TTSEngine;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,9 +20,9 @@ final class TTSLanguageFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->languageCode(),
-            'code' => $this->faker->unique()->languageCode().'-'.$this->faker->countryCode(),
-            'engine' => 'neural',
+            'name' => fake()->languageCode(),
+            'code' => fake()->unique()->languageCode().'-'.fake()->countryCode(),
+            'engine' => fake()->randomElement(TTSEngine::cases()),
             'enabled' => true,
         ];
     }

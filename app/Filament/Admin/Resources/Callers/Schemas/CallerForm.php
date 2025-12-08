@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Callers\Schemas;
 
+use App\Enums\UserType;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
 
 final class CallerForm
 {
@@ -31,7 +33,9 @@ final class CallerForm
                             ->label('Caller Number')
                             ->required(),
                         Select::make('users')
-                            ->relationship('users', 'name')
+                            ->relationship('users', 'name', modifyQueryUsing: function (Builder $query) {
+                                return $query->where('type', UserType::User);
+                            })
                             ->label('Assigned Users')
                             ->multiple()
                             ->preload()

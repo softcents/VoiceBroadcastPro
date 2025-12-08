@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\TTSLanguages\Schemas;
 
+use App\Enums\TTSEngine;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -34,9 +35,7 @@ final class TTSLanguageForm
                             ),
                         Select::make('engine')
                             ->label('Engine')
-                            ->options([
-                                'azure' => 'Azure',
-                            ])
+                            ->options(TTSEngine::class)
                             ->default('azure')
                             ->searchable()
                             ->selectablePlaceholder(false)

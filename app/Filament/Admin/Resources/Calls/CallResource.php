@@ -46,7 +46,6 @@ final class CallResource extends Resource
     {
         return [
             'index' => ListCalls::route('/'),
-            'create' => CreateCall::route('/create'),
         ];
     }
 

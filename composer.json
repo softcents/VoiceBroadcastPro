@@ -13,6 +13,7 @@
         "ext-pcntl": "*",
         "ext-pdo": "*",
         "ext-posix": "*",
+        "afaya/edge-tts": "^1.6",
         "andreia/filament-nord-theme": "^2.0",
         "filament/filament": "^4.2",
         "filament/spatie-laravel-settings-plugin": "^4.2",

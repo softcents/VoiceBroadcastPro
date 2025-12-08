@@ -16,7 +16,8 @@ return new class extends Migration
         Schema::create('campaigns', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('audio_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('audio_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('caller_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('phonebook_id')->nullable()->constrained()->nullOnDelete();
 
             $table->string('title');

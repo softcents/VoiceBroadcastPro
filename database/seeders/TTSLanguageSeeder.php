@@ -171,17 +171,35 @@ final class TTSLanguageSeeder extends Seeder
             'isiZulu (South Africa)' => 'zu-ZA',
         ];
 
-        foreach ($languages as $key => $value) {
-            TTSLanguage::firstOrCreate(
-                ['code' => $value],
-                [
-                    'name' => $key,
-                    'enabled' => false,
-                    'engine' => 'azure',
-                ]
-            );
+        $now = now();
+        $rows = [];
+        foreach (['azure', 'frolax'] as $engine) {
+            foreach ($languages as $name => $code) {
+                $rows[] = [
+                    'code'       => $code,
+                    'name'       => $name,
+                    'enabled'    => true,
+                    'engine'     => $engine,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
         }
 
-        TTSLanguage::whereIn('code', ['en-US', 'bn-BD'])->update(['enabled' => true]);
+        // Insert ONLY missing rows (no updates)
+        $existingKeys = TTSLanguage::query()
+            ->whereIn('engine', ['azure', 'frolax'])
+            ->whereIn('code', array_values($languages))
+            ->get(['code', 'engine'])
+            ->map(fn ($r) => $r->engine . '|' . $r->code)
+            ->flip(); // for O(1) lookup
+
+        $toInsert = array_values(array_filter($rows, function ($row) use ($existingKeys) {
+            return !isset($existingKeys[$row['engine'] . '|' . $row['code']]);
+        }));
+
+        if (!empty($toInsert)) {
+            TTSLanguage::insert($toInsert);
+        }
     }
 }

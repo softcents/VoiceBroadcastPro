@@ -39,7 +39,7 @@ final class TTSArtistsTable
                     ->wrap(),
                 TextColumn::make('gender')
                     ->label('Gender')
-                    ->formatStateUsing(fn ($state) => $state->name)
+                    ->badge()
                     ->sortable(),
                 IconColumn::make('enabled')
                     ->label('Enabled')

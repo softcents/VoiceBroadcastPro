@@ -6,6 +6,8 @@ namespace App\Filament\User\Resources\Campaigns\Schemas;
 
 use App\Enums\AudioApproval;
 use App\Enums\CampaignSource;
+use App\Models\Caller;
+use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
@@ -16,6 +18,8 @@ use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use LaraZeus\Tabler\Tabler;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
@@ -47,7 +51,7 @@ final class CampaignForm
                                     ->schema([
                                         Select::make('audio_id')
                                             ->label('Audio File')
-                                            ->relationship('audio', 'title', modifyQueryUsing: fn ($query) => $query->where('approval', AudioApproval::Approved))
+                                            ->relationship('audio', 'title', modifyQueryUsing: fn($query) => $query->where('approval', AudioApproval::Approved))
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -56,20 +60,30 @@ final class CampaignForm
 
                                 Select::make('phonebook_id')
                                     ->label('Contact List')
-                                    ->relationship('phonebook', 'name')
+                                    ->relationship('phonebook', 'name', modifyQueryUsing: function ($query) {
+                                        return $query->whereHas('contacts');
+                                    })
+                                    ->getOptionLabelFromRecordUsing(function ($record) {
+                                        return $record->name . ' (' . $record->contacts()->count() . ' contacts)';
+                                    })
                                     ->searchable()
                                     ->preload()
                                     ->prefixIcon(Tabler::AddressBook)
-                                    ->visible(fn ($get) => $get('source') === CampaignSource::Phonebook)
-                                    ->required(fn ($get) => $get('source') === CampaignSource::Phonebook),
+                                    ->visible(fn($get) => $get('source') === CampaignSource::Phonebook)
+                                    ->required(fn($get) => $get('source') === CampaignSource::Phonebook),
 
                                 FileUpload::make('file_path')
                                     ->label('Contact List (CSV)')
                                     ->disk('local') // Adjust disk as needed
                                     ->directory('campaign-files')
                                     ->acceptedFileTypes(['text/csv', 'text/plain', '.csv'])
-                                    ->visible(fn ($get) => $get('source') === CampaignSource::Import)
-                                    ->required(fn ($get) => $get('source') === CampaignSource::Import),
+                                    ->visible(fn($get) => $get('source') === CampaignSource::Import)
+                                    ->required(fn($get) => $get('source') === CampaignSource::Import)
+                                    ->hintAction(Action::make('sample_file')
+                                        ->label('Download Sample File')
+                                        ->url(url('samples/contacts.csv'))
+                                        ->openUrlInNewTab()
+                                        ->icon(Tabler::Download)),
 
                                 Repeater::make('manual_numbers')
                                     ->label('Manual Numbers')
@@ -85,8 +99,8 @@ final class CampaignForm
                                     ->minItems(1)
                                     ->grid(2)
                                     ->compact()
-                                    ->visible(fn ($get) => $get('source') === CampaignSource::Manual)
-                                    ->required(fn ($get) => $get('source') === CampaignSource::Manual),
+                                    ->visible(fn($get) => $get('source') === CampaignSource::Manual)
+                                    ->required(fn($get) => $get('source') === CampaignSource::Manual),
                             ]),
                     ]),
 
@@ -96,6 +110,25 @@ final class CampaignForm
                         Section::make('Settings')
                             ->icon(Tabler::Settings)
                             ->schema([
+                                Select::make('caller_id')
+                                    ->label('Caller ID')
+                                    ->relationship(
+                                        name: 'caller',
+                                        titleAttribute: 'caller_number',
+                                        modifyQueryUsing: function (Builder $query): Builder {
+                                            return $query->whereHas('users', function (Builder $q) {
+                                                $q->where('id', Auth::id());
+                                            });
+                                        }
+                                    )
+                                    ->getOptionLabelFromRecordUsing(function ($record) {
+                                        return $record->name;
+                                    })
+                                    ->preload()
+                                    ->searchable(['caller_name', 'caller_number'])
+                                    ->native(false)
+                                    ->selectablePlaceholder(false)
+                                    ->required(),
                                 Select::make('source')
                                     ->label('Source')
                                     ->options(CampaignSource::class)
@@ -108,6 +141,7 @@ final class CampaignForm
 
                                 DateTimePicker::make('scheduled_at')
                                     ->label('Launch Date')
+                                    ->helperText('Leave empty to launch immediately')
                                     ->prefixIcon(Tabler::Calendar)
                                     ->native(false)
                                     ->minDate(now()->addMinutes(5))

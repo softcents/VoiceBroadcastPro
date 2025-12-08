@@ -7,7 +7,9 @@ namespace App\Models;
 use App\Enums\CampaignSource;
 use App\Enums\CampaignStatus;
 use App\Models\Scopes\OwnedByAuthUser;
+use App\Observers\CampaignObserver;
 use Database\Factories\CampaignFactory;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -15,22 +17,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ScopedBy(OwnedByAuthUser::class)]
+#[ObservedBy(CampaignObserver::class)]
 final class Campaign extends Model
 {
     /** @use HasFactory<CampaignFactory> */
     use HasFactory;
 
-    protected $fillable = [
-        'user_id',
-        'audio_id',
-        'phonebook_id',
-        'title',
-        'description',
-        'source',
-        'file_path',
-        'status',
-        'scheduled_at',
-    ];
+    protected $guarded = [];
 
     public function user(): BelongsTo
     {
@@ -40,6 +33,11 @@ final class Campaign extends Model
     public function audio(): BelongsTo
     {
         return $this->belongsTo(Audio::class);
+    }
+
+    public function caller(): BelongsTo
+    {
+        return $this->belongsTo(Caller::class);
     }
 
     public function phonebook(): BelongsTo

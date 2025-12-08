@@ -4,16 +4,16 @@ declare(strict_types=1);
 
 namespace Database\Seeders;
 
-use App\Enums\CampaignSource;
+use App\Enums\AudioApproval;
+use App\Enums\AudioType;
+use App\Jobs\ConvertAudio;
+use App\Jobs\GenerateAudio;
 use App\Models\Audio;
-use App\Models\Call;
-use App\Models\Campaign;
-use App\Models\Contact;
-use App\Models\Deposit;
 use App\Models\Phonebook;
-use App\Models\Transaction;
+use App\Models\TTSArtist;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Bus;
 
 final class DemoSeeder extends Seeder
 {
@@ -24,62 +24,44 @@ final class DemoSeeder extends Seeder
     {
         $user = User::find(2);
 
-        if (! $user) {
-            return;
+        $phonebook = Phonebook::factory()->create();
+
+        $contacts = [
+            [
+                'first_name' => 'Bishwajit',
+                'last_name' => 'Grameenphone',
+                'phone_number' => '+8801322635808',
+            ],
+            [
+                'first_name' => 'Bishwajit',
+                'last_name' => 'Teletalk',
+                'phone_number' => '+8801712345678',
+            ]
+        ];
+
+        foreach ($contacts as $contact) {
+            $phonebook->contacts()->create($contact);
         }
 
-        // Phonebooks and Contacts
-        $phonebooks = Phonebook::factory(10)
-            ->for($user)
-            ->create();
+        Audio::factory(3)
+            ->afterCreating(function (Audio $audio) {
+                $audio->update([
+                    'approval' => AudioApproval::Approved,
+                ]);
 
-        foreach ($phonebooks as $phonebook) {
-            Contact::factory(50)
-                ->for($phonebook)
-                ->create();
-        }
-
-        // Audios
-        $audios = Audio::factory(20)
-            ->for($user)
-            ->create();
-
-        // Campaigns and Calls
-        // Campaigns (Source: Phonebook)
-        $campaignsPhonebook = Campaign::factory(25)
-            ->for($user)
-            ->recycle($audios)
-            ->recycle($phonebooks)
+                Bus::chain([
+                    new GenerateAudio($audio->id),
+                    new ConvertAudio($audio->id),
+                ])->dispatch();
+            })
             ->create([
-                'source' => CampaignSource::Phonebook->value,
+                'user_id' => $user->id,
+                'approval' => AudioApproval::Pending,
+                'type' => AudioType::TTS,
+                'tts_artist_id' => TTSArtist::whereCode('bn-BD-PradeepNeural')
+                    ->whereHas('ttsLanguage', function ($query) {
+                        $query->where('engine', 'frolax');
+                    })->first()->id,
             ]);
-
-        // Campaigns (Source: Manual)
-        $campaignsManual = Campaign::factory(25)
-            ->for($user)
-            ->recycle($audios)
-            ->create([
-                'source' => CampaignSource::Manual->value,
-                'phonebook_id' => null,
-            ]);
-
-        $campaigns = $campaignsPhonebook->merge($campaignsManual);
-
-        foreach ($campaigns as $campaign) {
-            Call::factory(rand(20, 100))
-                ->for($user)
-                ->for($campaign)
-                ->create();
-        }
-
-        // Deposits
-        Deposit::factory(20)
-            ->for($user)
-            ->create();
-
-        // Transactions
-        Transaction::factory(20)
-            ->for($user)
-            ->create();
     }
 }

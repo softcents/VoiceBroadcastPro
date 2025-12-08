@@ -12,6 +12,8 @@ use Filament\Actions\ViewAction;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 
@@ -30,7 +32,8 @@ final class TTSLanguagesTable
                     ->searchable(),
                 TextColumn::make('engine')
                     ->label('Engine')
-                    ->searchable(),
+                    ->searchable()
+                    ->badge(),
                 TextColumn::make('tts_artists_count')
                     ->label('Artists')
                     ->counts('ttsArtists')
@@ -52,7 +55,13 @@ final class TTSLanguagesTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('engine')
+                    ->label('Engine')
+                    ->searchable()
+                    ->options([
+                        'azure' => 'Azure',
+                        'frolax' => 'Frolax',
+                    ]),
             ])
             ->recordActions([
                 ViewAction::make(),

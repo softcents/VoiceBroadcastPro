@@ -37,7 +37,7 @@ final class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Orange,
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
@@ -67,18 +67,21 @@ final class AdminPanelProvider extends PanelProvider
                 NavigationGroup::make()
                     ->label('Financial')
                     ->icon(Heroicon::OutlinedCurrencyBangladeshi)
-                    ->collapsible(),
+                    ->collapsible()
+                    ->collapsed(),
                 NavigationGroup::make()
                     ->label('Text to Speech')
                     ->icon(Heroicon::OutlinedMicrophone)
-                    ->collapsible(),
+                    ->collapsible()
+                    ->collapsed(),
                 NavigationGroup::make()
                     ->label('Settings')
                     ->icon(Heroicon::OutlinedCog)
-                    ->collapsible(),
+                    ->collapsible()
+                    ->collapsed(),
             ])
             ->plugins([
-                FilamentNordThemePlugin::make(),
+                //FilamentNordThemePlugin::make(),
             ])
             ->spa();
     }

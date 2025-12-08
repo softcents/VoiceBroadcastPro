@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\TTS\Drivers;
 
 use App\Services\TTS\Contracts\TTSDriver;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
 use RuntimeException;
 
@@ -12,23 +13,22 @@ final class FrolaxTTSDriver implements TTSDriver
 {
     public function __construct() {}
 
+    /**
+     * @throws ConnectionException
+     */
     public function speak(string $text, string $language, string $gender, string $artist, string $format = 'mp3'): string
     {
-        $url = 'http://localhost:8000/generate';
+        $url = config('services.frolax.tts.base_url');
 
-        $response = Http::withHeaders([
-            'Content-Type' => 'application/json',
-        ])
-            ->post($url, [
-                'text' => $text,
-                'lang' => $language,
-                'gender' => $gender,
-                'artist' => $artist,
-                'slow' => false,
+        $response = Http::withToken(config('services.frolax.tts.api_key'))
+            ->baseUrl($url)
+            ->post('audio/speech', [
+                'input' => $text,
+                'voice' => $artist,
             ]);
 
         if ($response->failed()) {
-            throw new RuntimeException("Azure TTS failed: {$response->body()}");
+            throw new RuntimeException("Frolax TTS failed: {$response->body()}");
         }
 
         return $response->body();

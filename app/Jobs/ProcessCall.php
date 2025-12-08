@@ -47,7 +47,8 @@ final class ProcessCall implements ShouldQueue
         )
             ->baseUrl($this->call->caller->server->domain)
             ->post('ari/channels', [
-                'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->caller_number}",
+//                'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->caller_number}",
+                'endpoint' => "PJSIP/100@100",
                 'priority' => 1,
                 'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
                 'app' => 'originate',

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Afaya\EdgeTTS\Service\EdgeTTS;
 use App\Http\Controllers\Payment\PipraPayController;
 use App\Http\Controllers\Webhook\AsteriskController;
 use App\Livewire\Payments\Cancel;
@@ -33,16 +34,4 @@ use App\Services\TTS\TTSManager;
 
 Route::get('tts', function () {
 
-    $ttsManager = app(TTSManager::class);
-    $driver = $ttsManager->driver('frolax');
-
-    /** @var TTSDriver $driver */
-    $file = $driver->speak(
-        text: 'Hello, this is a test message from the TTS system.',
-        language: 'en',
-        gender: 'male',
-        artist: 'John'
-    );
-
-    return response($file)->header('Content-Type', 'audio/mp3');
 });

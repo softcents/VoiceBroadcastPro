@@ -9,6 +9,7 @@ use App\Enums\TTSArtistGender;
 use App\Models\Audio;
 use App\Models\TTSArtist;
 use App\Models\TTSLanguage;
+use App\Settings\TTSSetting;
 use Auth;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -78,7 +79,11 @@ final class AudioForm
                             ->schema([
                                 Select::make('language_id')
                                     ->label('Language')
-                                    ->options(TTSLanguage::enabled()->pluck('name', 'id'))
+                                    ->options(function (){
+                                        return TTSLanguage::enabled()
+                                            ->whereEngine(app(TTSSetting::class)->engine)
+                                            ->pluck('name', 'id');
+                                    })
                                     ->searchable()
                                     ->disabledOn(['edit', 'view'])
                                     ->preload()
