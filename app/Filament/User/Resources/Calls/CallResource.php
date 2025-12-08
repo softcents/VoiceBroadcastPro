@@ -22,6 +22,7 @@ final class CallResource extends Resource
     protected static ?string $recordTitleAttribute = 'phone_number';
 
     protected static string|BackedEnum|null $navigationIcon = Tabler::PhoneCall;
+    protected static ?int $navigationSort = 15;
 
     public static function form(Schema $schema): Schema
     {

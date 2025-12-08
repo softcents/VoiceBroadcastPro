@@ -24,6 +24,7 @@ final class AudioResource extends Resource
     protected static ?string $model = Audio::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+    protected static ?int $navigationSort = 30;
 
     protected static ?string $recordTitleAttribute = 'name';
 

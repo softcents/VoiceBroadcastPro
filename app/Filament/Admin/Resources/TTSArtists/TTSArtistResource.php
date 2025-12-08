@@ -20,6 +20,7 @@ final class TTSArtistResource extends Resource
     protected static ?string $model = TTSArtist::class;
 
     protected static string|UnitEnum|null $navigationGroup = 'Text to Speech';
+    protected static ?int $navigationSort = 31;
 
     protected static ?string $navigationLabel = 'Artists';
 

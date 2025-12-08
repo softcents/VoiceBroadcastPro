@@ -21,6 +21,7 @@ final class DepositResource extends Resource
     protected static ?string $model = Deposit::class;
 
     protected static string|UnitEnum|null $navigationGroup = 'Financial';
+    protected static ?int $navigationSort = 61;
 
     protected static ?string $recordTitleAttribute = 'transaction_id';
 

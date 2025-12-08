@@ -26,6 +26,7 @@ final class CustomerResource extends Resource
     protected static ?string $navigationLabel = 'Customers';
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
+    protected static ?int $navigationSort = 50;
 
     protected static ?string $recordTitleAttribute = 'name';
 
