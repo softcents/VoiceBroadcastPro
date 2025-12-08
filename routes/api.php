@@ -5,6 +5,7 @@ declare(strict_types=1);
 use App\Http\Controllers\Api\AccountController;
 use App\Http\Controllers\Api\AudioController;
 use App\Http\Controllers\Api\BalanceController;
+use App\Http\Controllers\Api\CallController;
 use App\Http\Controllers\Api\CallerController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\ContactController;
@@ -31,6 +32,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('templates', TemplateController::class);
     Route::apiResource('callers', CallerController::class)->only('index');
     Route::apiResource('campaigns', CampaignController::class);
+    Route::apiResource('calls', CallController::class);
 
     Route::apiResource('otp', OtpController::class)->only('index', 'store');
 

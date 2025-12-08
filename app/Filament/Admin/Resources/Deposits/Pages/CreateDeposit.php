@@ -16,12 +16,12 @@ final class CreateDeposit extends CreateRecord
         $deposit = $this->record;
 
         if ($deposit->status === \App\Enums\DepositStatus::Completed) {
-            $deposit->user->increment('balance', $deposit->amount * 100);
+            $deposit->user->increment('balance', $deposit->amount);
 
             \App\Models\Transaction::create([
                 'user_id' => $deposit->user_id,
                 'type' => \App\Enums\TransactionType::Deposit,
-                'amount' => $deposit->amount * 100, // Store in cents
+                'amount' => $deposit->amount,
                 'currency' => $deposit->currency,
                 'description' => 'Deposit via '.ucfirst($deposit->gateway),
                 'reference_type' => \App\Models\Deposit::class,

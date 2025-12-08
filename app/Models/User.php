@@ -14,7 +14,6 @@ use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -46,6 +45,15 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
 
         'password',
         'email_verified_at',
+    ];
+
+    protected $casts = [
+        'type' => UserType::class,
+        'audio_type' => UserAudioType::class,
+        'email_verified_at' => 'datetime',
+        'password' => 'hashed',
+        'balance' => 'float',
+        'rate' => 'float',
     ];
 
     /**
@@ -125,37 +133,6 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
     public function isAdmin(): bool
     {
         return $this->type === UserType::Admin;
-    }
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
-        return [
-            'type' => UserType::class,
-            'audio_type' => UserAudioType::class,
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
-    }
-
-    protected function balance(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value / 100,
-            set: fn ($value) => $value * 100,
-        );
-    }
-
-    protected function rate(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value / 100,
-            set: fn ($value) => $value * 100,
-        );
     }
 
     #[Scope]

@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('deposits', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->integer('amount')->default(0); // Amount in cents
+            $table->decimal('amount', 15, 4)->default(0);
             $table->string('currency')->default('BDT');
             $table->string('gateway');
             $table->string('transaction_id')->nullable();

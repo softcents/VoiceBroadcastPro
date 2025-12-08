@@ -34,10 +34,16 @@ final class UpdateProfileRequest extends FormRequest
                 'max:255',
                 Rule::unique('users')->ignore($this->user()?->id),
             ],
+            'phone' => [
+                'nullable',
+                'phone:BD',
+                'regex:/^([0-9\s\-\+\(\)]*)$/',
+                Rule::unique('users')->ignore($this->user()?->id),
+            ]
         ];
     }
 
-    public function bodyParameters()
+    public function bodyParameters(): array
     {
         return [
             'name' => [
@@ -47,6 +53,10 @@ final class UpdateProfileRequest extends FormRequest
             'email' => [
                 'description' => 'The email of the user.',
                 'example' => 'johndoe@example.com',
+            ],
+            'phone' => [
+                'description' => 'The phone number of the user.',
+                'example' => '+8801XXXXXXXXX',
             ],
         ];
     }

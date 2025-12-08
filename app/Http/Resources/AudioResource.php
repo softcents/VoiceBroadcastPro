@@ -6,6 +6,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Support\Facades\Storage;
 
 final class AudioResource extends JsonResource
 {
@@ -24,11 +25,10 @@ final class AudioResource extends JsonResource
             'approval' => $this->approval,
             'message' => $this->message,
             'tts_artist' => $this->whenLoaded('ttsArtist'),
-            'original_path' => $this->original_path ? \Illuminate\Support\Facades\Storage::url($this->original_path) : null,
-            'converted_path' => $this->converted_path ? \Illuminate\Support\Facades\Storage::url($this->converted_path) : null,
+            'original_url' => $this->original_path ? Storage::url($this->original_path) : null,
+            'converted_url' => $this->converted_path ? Storage::url($this->converted_path) : null,
             'duration' => $this->duration,
             'size' => $this->size,
-            'mime_type' => $this->mime_type,
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
         ];

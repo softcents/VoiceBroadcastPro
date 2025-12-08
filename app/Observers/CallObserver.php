@@ -43,7 +43,7 @@ final class CallObserver
 
             $cost = $durationInMinutes * $settings->rate_per_minute;
 
-            $user->decrement('balance', $cost * 100); // Storage is in cents
+            $user->decrement('balance', $cost); // Balance is float now
         }
     }
 

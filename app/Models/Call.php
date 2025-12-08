@@ -11,7 +11,6 @@ use App\Observers\CallObserver;
 use Database\Factories\CallFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
-use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -35,6 +34,7 @@ final class Call extends Model
         'answered_at' => 'datetime',
         'ended_at' => 'datetime',
         'scheduled_at' => 'datetime',
+        'duration' => 'float',
     ];
 
     public function user(): BelongsTo
@@ -60,13 +60,5 @@ final class Call extends Model
     public function audio(): BelongsTo
     {
         return $this->belongsTo(Audio::class);
-    }
-
-    protected function duration(): Attribute
-    {
-        return Attribute::make(
-            get: fn($value) => $value / 100,
-            set: fn($value) => $value * 100,
-        );
     }
 }

@@ -52,6 +52,6 @@ final class PaymentService
             'reference_id' => $deposit->id,
         ]);
 
-        $deposit->user->increment('balance', $deposit->amount * 100);
+        $deposit->user->increment('balance', $deposit->amount);
     }
 }

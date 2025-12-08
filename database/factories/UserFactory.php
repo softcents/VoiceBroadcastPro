@@ -32,8 +32,12 @@ final class UserFactory extends Factory
             'email' => fake()->unique()->email(),
             'type' => fake()->randomElement(UserType::cases()),
             'phone' => '+88017'.fake()->numerify('#######'),
+            'balance' => fake()->randomFloat(2, 0, 1000),
+            'rate' => fake()->randomFloat(2, 0.50, 1.5),
+
             'password' => self::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),
+
             'email_verified_at' => now(),
         ];
     }

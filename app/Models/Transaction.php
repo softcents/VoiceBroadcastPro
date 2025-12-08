@@ -42,14 +42,9 @@ final class Transaction extends Model
     {
         return [
             'type' => TransactionType::class,
+            'amount' => 'float',
         ];
     }
 
-    protected function amount(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value / 100,
-            set: fn ($value) => $value * 100,
-        );
-    }
+
 }

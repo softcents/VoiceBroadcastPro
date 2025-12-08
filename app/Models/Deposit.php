@@ -29,6 +29,7 @@ final class Deposit extends Model
     protected $casts = [
         'status' => DepositStatus::class,
         'meta_data' => 'array',
+        'amount' => 'float',
     ];
 
     public function user(): BelongsTo
@@ -36,11 +37,5 @@ final class Deposit extends Model
         return $this->belongsTo(User::class);
     }
 
-    protected function amount(): Attribute
-    {
-        return Attribute::make(
-            get: fn ($value) => $value / 100,
-            set: fn ($value) => $value * 100,
-        );
-    }
+
 }

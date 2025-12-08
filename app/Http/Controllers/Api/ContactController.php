@@ -11,6 +11,7 @@ use App\Http\Resources\ContactResource;
 use App\Models\Contact;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
@@ -26,20 +27,17 @@ final class ContactController extends Controller
     #[Endpoint(title: 'List Contacts', description: 'Retrieve a list of contacts for the current user.')]
     #[ResponseFromApiResource(name: ContactResource::class, model: User::class, collection: true, paginate: 15)]
     #[QueryParam(name: 'phonebook_id', type: 'integer', description: 'Filter by phonebook ID', required: false)]
-    #[QueryParam(name: 'page', type: 'integer', description: 'The page number.', required: false)]
-    #[QueryParam(name: 'per_page', type: 'integer', description: 'Number of items per page.', required: false)]
-    public function index(#[CurrentUser] User $user): ResourceCollection
+    public function index(#[CurrentUser] User $user, Request $request): ResourceCollection
     {
-        $query = Contact::query()
+        $contacts = Contact::query()
             ->whereHas('phonebook', function ($query) use ($user) {
                 $query->where('user_id', $user->id);
-            });
-
-        if (request()->has('phonebook_id')) {
-            $query->where('phonebook_id', request('phonebook_id'));
-        }
-
-        $contacts = $query->latest()->paginate();
+            })
+            ->when($request->filled('phonebook_id'), function ($query) use ($request) {
+                $query->where('phonebook_id', $request->integer('phonebook_id'));
+            })
+            ->latest()
+            ->paginate();
 
         return ContactResource::collection($contacts);
     }

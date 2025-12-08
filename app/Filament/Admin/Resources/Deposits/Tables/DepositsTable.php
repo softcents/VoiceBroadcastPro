@@ -99,12 +99,12 @@ final class DepositsTable
 
                             // If transitioning to completed, add funds
                             if ($newStatus === DepositStatus::Completed && $record->status !== DepositStatus::Completed) {
-                                $record->user->increment('balance', $record->amount * 100);
+                                $record->user->increment('balance', $record->amount);
 
                                 \App\Models\Transaction::create([
                                     'user_id' => $record->user_id,
                                     'type' => \App\Enums\TransactionType::Deposit,
-                                    'amount' => $record->amount * 100, // Store in cents
+                                    'amount' => $record->amount,
                                     'currency' => $record->currency,
                                     'description' => 'Deposit via '.ucfirst($record->gateway),
                                     'reference_type' => Deposit::class,

@@ -43,7 +43,7 @@ final class CampaignController extends Controller
         required: false,
         example: ['+88017XXXXXXXX', '+88016XXXXXXXX'])
     ]
-    public function store(#[CurrentUser] User $user, StoreCampaignRequest $request)
+    public function store(#[CurrentUser] User $user, StoreCampaignRequest $request, \App\Actions\Campaign\CreateCampaignAction $createCampaignAction)
     {
         $data = $request->validated();
         $data['status'] = \App\Enums\CampaignStatus::Pending;
@@ -51,13 +51,12 @@ final class CampaignController extends Controller
         if ($request->hasFile('file')) {
             $path = $request->file('file')->store('campaigns');
             $data['file_path'] = $path;
+            $data['source'] = \App\Enums\CampaignSource::Import->value; // Force source if file is present?
+            // Or assume source is part of request.
+            // If API uploads file, usually source=import is implied or required validation.
         }
 
-        $campaign = $user->campaigns()->create($data);
-
-        $phoneNumbers = $request->input('phone_numbers');
-
-        \App\Jobs\ProcessCampaign::dispatch($campaign, $phoneNumbers);
+        $campaign = $createCampaignAction->execute($user, $data);
 
         return new CampaignResource($campaign->load(['audio', 'phonebook']));
     }

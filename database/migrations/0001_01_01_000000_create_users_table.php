@@ -23,8 +23,8 @@ return new class extends Migration
             $table->enum('type', ['admin', 'user'])->default('user');
             $table->string('audio_type')->default('upload');
 
-            $table->integer('balance')->default(0);
-            $table->decimal('rate')->default(0);
+            $table->decimal('balance', 15, 4)->default(0);
+            $table->decimal('rate', 15, 4)->default(0);
 
             $table->string('password');
             $table->rememberToken();

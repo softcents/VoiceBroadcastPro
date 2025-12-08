@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\TTS;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\TTSArtistResource;
+use App\Http\Resources\TTSArtistResource;
 use App\Models\TTSArtist;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;

@@ -6,6 +6,7 @@ namespace App\Http\Requests\Contact;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class StoreContactRequest extends FormRequest
 {
@@ -28,7 +29,13 @@ final class StoreContactRequest extends FormRequest
             'phonebook_id' => ['required', 'integer', 'exists:phonebooks,id'],
             'first_name' => ['nullable', 'string', 'max:255'],
             'last_name' => ['nullable', 'string', 'max:255'],
-            'phone_number' => ['required', 'string', 'phone:E.164,BD'],
+            'phone_number' => [
+                'required',
+                'string',
+                'phone',
+                Rule::unique('contacts', 'phone_number')
+                    ->where('phonebook_id', $this->input('phonebook_id'))
+            ],
         ];
     }
 

@@ -30,7 +30,7 @@ return new class extends Migration
             // Asterisk
             $table->string('unique_id')->nullable()->index();
 
-            $table->integer('duration')->default(0);
+            $table->decimal('duration')->default(0);
             $table->string('hangup_cause')->nullable();
 
             $table->timestamp('called_at')->nullable();

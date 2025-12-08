@@ -28,6 +28,7 @@ final class ChangePasswordRequest extends FormRequest
         return [
             'current_password' => ['required', 'current_password'],
             'password' => ['required', 'confirmed', Password::defaults()],
+            'password_confirmation' => ['required'],
         ];
     }
 
@@ -36,9 +37,14 @@ final class ChangePasswordRequest extends FormRequest
         return [
             'current_password' => [
                 'description' => 'Current password',
+                'example' => 'current_password',
             ],
             'password' => [
                 'description' => 'New password',
+                'example' => 'password',
+            ],
+            'password_confirmation' => [
+                'description' => 'Confirmation of the new password',
                 'example' => 'password',
             ],
         ];

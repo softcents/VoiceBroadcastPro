@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\Api\TTS;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\V1\TTSLanguageResource;
+use App\Http\Resources\TTSLanguageResource;
 use App\Models\TTSLanguage;
 use Illuminate\Http\Request;
 

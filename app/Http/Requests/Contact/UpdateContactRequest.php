@@ -6,6 +6,7 @@ namespace App\Http\Requests\Contact;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 final class UpdateContactRequest extends FormRequest
 {
@@ -28,7 +29,14 @@ final class UpdateContactRequest extends FormRequest
             'phonebook_id' => ['sometimes', 'integer', 'exists:phonebooks,id'],
             'first_name' => ['sometimes', 'string', 'max:255'],
             'last_name' => ['sometimes', 'string', 'max:255'],
-            'phone_number' => ['sometimes', 'string', 'phone:E.164,BD'],
+            'phone_number' => [
+                'sometimes',
+                'string',
+                'phone',
+                Rule::unique('contacts', 'phone_number')
+                    ->where('phonebook_id', $this->route('contact')?->phonebook_id)
+                    ->ignore($this->route('contact')?->id)
+            ],
         ];
     }
 
