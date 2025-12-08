@@ -7,6 +7,7 @@ namespace App\Filament\User\Resources\Campaigns\Tables;
 use App\Enums\CampaignSource;
 use App\Enums\CampaignStatus;
 use App\Models\Campaign;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
@@ -76,8 +77,11 @@ final class CampaignsTable
                 //
             ])
             ->recordActions([
-                ViewAction::make(),
-                EditAction::make(),
+                ActionGroup::make([
+                    ViewAction::make(),
+                    EditAction::make()
+                        ->visible(fn (Campaign $record) => $record->status === CampaignStatus::Pending && $record->scheduled_at),
+                ])
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

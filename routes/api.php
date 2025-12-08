@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\CallerController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DepositController;
+use App\Http\Controllers\Api\OtpController;
 use App\Http\Controllers\Api\PhonebookController;
 use App\Http\Controllers\Api\TemplateController;
 use App\Http\Controllers\Api\TTS\ArtistController;
@@ -30,6 +31,8 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('templates', TemplateController::class);
     Route::apiResource('callers', CallerController::class)->only('index');
     Route::apiResource('campaigns', CampaignController::class);
+
+    Route::apiResource('otp', OtpController::class)->only('index', 'store');
 
     Route::post('deposits/{deposit}/verify', [DepositController::class, 'verify'])->name('deposits.verify');
     Route::apiResource('deposits', DepositController::class)->only(['index', 'store', 'show']);

@@ -14,7 +14,7 @@ use Throwable;
 
 final class ProcessScheduledCampaign extends Command
 {
-    protected $signature = 'app:process-scheduled-campaign
+    protected $signature = 'schedule:process-campaigns
                             {--limit=10 : Maximum number of campaigns to process per chunk}
                             {--delay=5 : Delay in seconds between chunks}';
 
@@ -36,6 +36,7 @@ final class ProcessScheduledCampaign extends Command
         try {
             Campaign::where('status', CampaignStatus::Pending)
                 ->whereNotNull('scheduled_at')
+                ->wherePast('scheduled_at')
                 ->where('scheduled_at', '<=', now())
                 ->chunkById($limit, function ($campaigns) use ($delay, &$processedChunks, &$totalCampaigns) {
 
@@ -47,8 +48,7 @@ final class ProcessScheduledCampaign extends Command
                                 try {
                                     // Update campaign status
                                     $campaign->update([
-                                        'status' => CampaignStatus::Processing,
-                                        'queued_at' => now(),
+                                        'status' => CampaignStatus::Processing
                                     ]);
 
                                     // Dispatch the campaign processing job

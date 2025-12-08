@@ -81,6 +81,8 @@ final class ProcessCampaign implements ShouldQueue
                     $decaySeconds = 10
                 );
             });
+
+        $campaign->update(['status' => CampaignStatus::Completed]);
     }
 
     public function failed(Throwable $exception): void

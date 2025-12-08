@@ -21,9 +21,11 @@ final class ServerFactory extends Factory
     {
         return [
             'name' => fake()->company(),
-            'ari_domain' => 'http://'.fake()->ipv4().':8088',
-            'ari_username' => fake()->userName(),
-            'ari_password' => fake()->password(),
+            'scheme' => fake()->randomElement(['http', 'https']),
+            'host' => fake()->ipv4(),
+            'port' => 8088,
+            'username' => fake()->userName(),
+            'password' => fake()->password(),
             'database_host' => fake()->ipv4(),
             'database_port' => 3306,
             'database_name' => 'asteriskcdrdb',

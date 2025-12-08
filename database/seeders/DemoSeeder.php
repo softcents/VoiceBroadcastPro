@@ -24,7 +24,10 @@ final class DemoSeeder extends Seeder
     {
         $user = User::find(2);
 
-        $phonebook = Phonebook::factory()->create();
+        $phonebook = Phonebook::factory()->create([
+            'user_id' => $user->id,
+            'name' => 'Demo Phonebook',
+        ]);
 
         $contacts = [
             [
@@ -63,5 +66,7 @@ final class DemoSeeder extends Seeder
                         $query->where('engine', 'frolax');
                     })->first()->id,
             ]);
+
+        $user->callers()->sync([1]);
     }
 }

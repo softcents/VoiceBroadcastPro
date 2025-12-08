@@ -16,7 +16,7 @@ use Throwable;
 
 final class ProcessScheduledCall extends Command
 {
-    protected $signature = 'app:process-scheduled-call
+    protected $signature = 'schedule:process-calls
                             {--limit=50 : Maximum number of calls to process per chunk}
                             {--delay=10 : Delay in seconds between chunks}';
 

@@ -14,7 +14,7 @@ class CampaignObserver implements ShouldHandleEventsAfterCommit
      */
     public function created(Campaign $campaign): void
     {
-        if($campaign->scheduled_at !== null){
+        if(!$campaign->scheduled_at){
             $campaign->update([
                 'status' => CampaignStatus::Processing
             ]);

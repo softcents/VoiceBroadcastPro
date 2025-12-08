@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\CallStatus;
+use App\Enums\CallType;
 use App\Models\Scopes\OwnedByAuthUser;
 use App\Observers\CallObserver;
 use Database\Factories\CallFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,6 +25,17 @@ final class Call extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'status' => CallStatus::class,
+        'type' => CallType::class,
+        'phone_number' => E164PhoneNumberCast::class,
+        'called_at' => 'datetime',
+        'ringing_at' => 'datetime',
+        'answered_at' => 'datetime',
+        'ended_at' => 'datetime',
+        'scheduled_at' => 'datetime',
+    ];
 
     public function user(): BelongsTo
     {
@@ -49,16 +62,11 @@ final class Call extends Model
         return $this->belongsTo(Audio::class);
     }
 
-    protected function casts(): array
+    protected function duration(): Attribute
     {
-        return [
-            'status' => CallStatus::class,
-            'phone_number' => E164PhoneNumberCast::class,
-            'called_at' => 'datetime',
-            'ringing_at' => 'datetime',
-            'answered_at' => 'datetime',
-            'ended_at' => 'datetime',
-            'scheduled_at' => 'datetime',
-        ];
+        return Attribute::make(
+            get: fn($value) => $value / 100,
+            set: fn($value) => $value * 100,
+        );
     }
 }

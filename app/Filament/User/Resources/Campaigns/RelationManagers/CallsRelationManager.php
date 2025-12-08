@@ -10,6 +10,7 @@ use Filament\Forms;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Schema;
 use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
 final class CallsRelationManager extends RelationManager
@@ -31,12 +32,20 @@ final class CallsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('phone_number')
             ->columns([
-                Tables\Columns\TextColumn::make('phone_number'),
+                Tables\Columns\TextColumn::make('phone_number')
+                    ->label('Phone Number'),
                 Tables\Columns\TextColumn::make('status')
+                    ->label('Status')
                     ->badge(),
+                TextColumn::make('duration')
+                    ->label('Duration')
+                    ->sortable()
+                    ->formatStateUsing(fn(int$state) => secondsToHuman($state)),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Created At')
                     ->dateTime()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 //

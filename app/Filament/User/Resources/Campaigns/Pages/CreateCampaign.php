@@ -58,7 +58,13 @@ final class CreateCampaign extends CreateRecord
     {
         return DB::transaction(function () use ($data) {
             $campaign = auth()->user()->campaigns()->create([
-                ''
+                'audio_id' => $data['audio_id'],
+                'phonebook_id' => $data['phonebook_id'],
+                'caller_id' => $data['caller_id'],
+                'title' => $data['title'],
+                'description' => $data['description'],
+                'source' => $data['source'],
+                'scheduled_at' => $data['scheduled_at'],
             ]);
 
             try {
@@ -152,6 +158,8 @@ final class CreateCampaign extends CreateRecord
 
                 $validCalls->push([
                     'user_id' => $userId,
+                    'audio_id' => $data['audio_id'],
+                    'caller_id' => $data['caller_id'],
                     'phone_number' => $normalizedNumber,
                     'status' => CallStatus::Pending,
                     'created_at' => $now,
@@ -219,6 +227,7 @@ final class CreateCampaign extends CreateRecord
                         'user_id' => $userId,
                         'contact_id' => $contact->id,
                         'audio_id' => $data['audio_id'],
+                        'caller_id' => $data['caller_id'],
                         'phone_number' => $normalizedNumber,
                         'status' => CallStatus::Pending,
                         'created_at' => $now,
@@ -333,6 +342,8 @@ final class CreateCampaign extends CreateRecord
                         $normalizedNumber = $this->normalizePhoneNumber($number);
                         $numbers[] = [
                             'user_id' => $userId,
+                            'audio_id' => $data['audio_id'],
+                            'caller_id' => $data['caller_id'],
                             'phone_number' => $normalizedNumber,
                             'status' => CallStatus::Pending,
                             'created_at' => $now,

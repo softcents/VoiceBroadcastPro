@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Ratchet\RFC6455\Messaging\Message;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
 use Throwable;
@@ -23,8 +24,6 @@ final class AsteriskAriDaemon extends Command
     protected $signature = 'asterisk:ari-listen';
 
     protected $description = 'Multi-server Asterisk ARI Listener Manager (Async)';
-
-    // Active connections: [server_id => \Ratchet\Client\WebSocket]
     private array $connections = [];
 
     public function handle(): int
@@ -125,10 +124,10 @@ final class AsteriskAriDaemon extends Command
         });
     }
 
-    private function handleMessage($message, Server $server): void
+    private function handleMessage(Message $message, Server $server): void
     {
         try {
-            $event = json_decode($message, true);
+            $event = json_decode($message->getPayload(), true);
             if (! $event) {
                 return;
             }

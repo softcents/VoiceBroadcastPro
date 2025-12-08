@@ -23,12 +23,14 @@ return new class extends Migration
 
             $table->string('phone_number');
             $table->text('content')->nullable();
-            $table->string('status')->nullable();
+            $table->string('status')->default('pending')->index();
+            $table->string('type')->default('marketing'); // otp, marketing.
+            $table->integer('otp')->nullable();
 
             // Asterisk
             $table->string('unique_id')->nullable()->index();
 
-            $table->float('duration')->default(0);
+            $table->integer('duration')->default(0);
             $table->string('hangup_cause')->nullable();
 
             $table->timestamp('called_at')->nullable();
