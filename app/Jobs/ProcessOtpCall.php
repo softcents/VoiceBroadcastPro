@@ -13,6 +13,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 
 final class ProcessOtpCall implements ShouldQueue
 {
@@ -41,17 +42,23 @@ final class ProcessOtpCall implements ShouldQueue
             return;
         }
 
+        $recipientNumber = $this->call->phone_number;
+        $trunkName = $this->call->caller->trunk_name;
+        $callerNumber = $this->call->caller->caller_number;
+        $callerName = $this->call->caller->caller_name;
+        $otp = $this->call->otp;
+
         $response = Http::withBasicAuth(
             username: $this->call->caller->server->username,
             password: $this->call->caller->server->password
         )
             ->baseUrl($this->call->caller->server->domain)
             ->post('ari/channels', [
-                'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->trunk_name}",
+                'endpoint' => "PJSIP/{$recipientNumber}@{$trunkName}",
                 'priority' => 1,
-                'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
+                'callerId' => "{$callerName} <{$callerNumber}>",
                 'app' => 'originate',
-                'appArgs' => "otp,".$this->call->otp,
+                'appArgs' => "otp,$otp",
             ]);
 
         if ($response->failed()) {
