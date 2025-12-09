@@ -72,10 +72,10 @@ final class CallsPerDayChart extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Calls',
-                    'data' => $trend->map(fn(TrendValue $value) => $value->aggregate),
+                    'data' => $trend->map(fn (TrendValue $value) => $value->aggregate),
                 ],
             ],
-            'labels' => $trend->map(fn(TrendValue $value) => $value->date),
+            'labels' => $trend->map(fn (TrendValue $value) => $value->date),
         ];
     }
 

@@ -72,12 +72,12 @@ final class CostPerDayChart extends ChartWidget
             'datasets' => [
                 [
                     'label' => 'Cost (BDT)',
-                    'data' => $trend->map(fn(TrendValue $value) => $value->aggregate),
+                    'data' => $trend->map(fn (TrendValue $value) => $value->aggregate),
                     'backgroundColor' => '#EA580C', // Orange-600 (adjust as needed to match theme)
                     'borderColor' => '#EA580C',
                 ],
             ],
-            'labels' => $trend->map(fn(TrendValue $value) => $value->date),
+            'labels' => $trend->map(fn (TrendValue $value) => $value->date),
         ];
     }
 

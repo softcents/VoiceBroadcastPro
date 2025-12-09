@@ -1,14 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\ApiTokenResource\Pages;
 
-use App\Filament\User\Resources\ApiTokenResource;
+use App\Filament\User\Resources\ApiTokenResource\ApiTokenResource;
 use Filament\Actions;
-use Filament\Resources\Pages\ManageRecords;
 use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
+use Filament\Resources\Pages\ManageRecords;
 
-class ManageApiTokens extends ManageRecords
+final class ManageApiTokens extends ManageRecords
 {
     protected static string $resource = ApiTokenResource::class;
 
@@ -26,7 +27,7 @@ class ManageApiTokens extends ManageRecords
                 ->action(function (array $data) {
                     $user = auth()->user();
                     $token = $user->createToken($data['name']);
-                    
+
                     $this->replaceMountedAction('showToken', [
                         'token' => $token->plainTextToken,
                     ]);
@@ -42,7 +43,7 @@ class ManageApiTokens extends ManageRecords
                         ->label('API Token')
                         ->default(fn ($arguments) => $arguments['token'])
                         ->readonly()
-                        ->extraInputAttributes(['onclick' => 'this.select()']), 
+                        ->extraInputAttributes(['onclick' => 'this.select()']),
                 ])
                 ->mountUsing(fn () => null), // Hack to make it mountable via replaceMountedAction
         ];

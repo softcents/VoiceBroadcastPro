@@ -1,27 +1,35 @@
 <?php
 
-namespace App\Filament\User\Resources;
+declare(strict_types=1);
 
-use App\Filament\User\Resources\ApiTokenResource\Pages;
+namespace App\Filament\User\Resources\ApiTokenResource;
+
+use BackedEnum;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Laravel\Sanctum\PersonalAccessToken;
 use Illuminate\Database\Eloquent\Builder;
+use Laravel\Sanctum\PersonalAccessToken;
+use UnitEnum;
 
-class ApiTokenResource extends Resource
+final class ApiTokenResource extends Resource
 {
     protected static ?string $model = PersonalAccessToken::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-key';
+    protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-key';
 
-    protected static ?string $navigationGroup = 'Developers';
+    protected static string|UnitEnum|null $navigationGroup = 'Developers';
+
+    protected static ?string $slug = 'api-tokens';
 
     protected static ?string $label = 'API Token';
 
     public static function getEloquentQuery(): Builder
     {
-         // Scope to the authenticated user
+        // Scope to the authenticated user
         return parent::getEloquentQuery()->where('tokenable_id', auth()->id())->where('tokenable_type', \App\Models\User::class);
     }
 
@@ -43,12 +51,12 @@ class ApiTokenResource extends Resource
             ->filters([
                 //
             ])
-            ->actions([
-                Tables\Actions\DeleteAction::make(),
+            ->recordActions([
+                DeleteAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
+            ->toolbarActions([
+                BulkActionGroup::make([
+                    DeleteBulkAction::make(),
                 ]),
             ]);
     }

@@ -6,7 +6,6 @@ namespace App\Providers\Filament;
 
 use App\Filament\User\Pages\Dashboard;
 use App\Http\Middleware\UserMiddleware;
-use Filament\Actions\Action;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -83,7 +82,8 @@ final class UserPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('docs')
-                    ->label('Developers')
+                    ->group('Developers')
+                    ->label('Documentation')
                     ->url('/docs', true)
                     ->icon('heroicon-o-book-open')
                     ->sort(100),
