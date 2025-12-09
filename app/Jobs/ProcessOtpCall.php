@@ -6,7 +6,6 @@ namespace App\Jobs;
 
 use App\Enums\CallStatus;
 use App\Models\Call;
-use App\Settings\CallingSetting;
 use Carbon\CarbonImmutable;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;

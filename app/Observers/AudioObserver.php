@@ -50,6 +50,8 @@ final class AudioObserver implements ShouldHandleEventsAfterCommit
                     new GenerateAudio($audio->id),
                     new ConvertAudio($audio->id),
                 ])->dispatch();
+            } elseif($audio->type === AudioType::Upload && $audio->conversion_status !== AudioTTSStatus::Completed) {
+                ConvertAudio::dispatch($audio->id);
             }
         }
     }
