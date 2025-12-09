@@ -34,4 +34,22 @@ final class StoreOtpRequest extends FormRequest
             'recipient' => ['required', 'string', 'max:15'],
         ];
     }
+
+    public function bodyParameters(): array
+    {
+        return [
+            'caller_id' => [
+                'description' => 'The ID of the caller to be used for sending the OTP.',
+                'example' => 1,
+            ],
+            'code' => [
+                'description' => 'The OTP code to be sent to the recipient.',
+                'example' => 123456,
+            ],
+            'recipient' => [
+                'description' => 'The phone number of the recipient who will receive the OTP.',
+                'example' => '+1234567890',
+            ]
+        ];
+    }
 }
