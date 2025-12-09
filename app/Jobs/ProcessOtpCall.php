@@ -33,9 +33,8 @@ final class ProcessOtpCall implements ShouldQueue
     public function handle(): void
     {
         $user = $this->call->user;
-        $settings = app(CallingSetting::class);
 
-        if (! $user || $user->balance < $settings->rate_per_minute) {
+        if (! $user || $user->balance < $user->pulse_rate) {
             $this->call->update(['status' => CallStatus::Failed]);
 
             return;
