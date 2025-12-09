@@ -8,7 +8,7 @@ return new class extends SettingsMigration
 {
     public function up(): void
     {
-        $this->migrator->add('calling.pulse_rate', 0.10);
+        $this->migrator->add('calling.pulse_rate', 0.50);
         $this->migrator->add('calling.pulse_duration', 10);
     }
 };

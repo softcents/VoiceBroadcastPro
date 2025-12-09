@@ -34,12 +34,16 @@ final class UserPanelProvider extends PanelProvider
             ->id('user')
             ->path('')
             ->login()
+            ->profile()
             ->registration()
             ->passwordReset()
             ->emailVerification()
-            ->emailChangeVerification()
-            ->profile()
             ->databaseNotifications()
+            ->emailChangeVerification()
+            ->sidebarCollapsibleOnDesktop()
+            ->favicon(url('favicon.png'))
+            ->brandLogoHeight('45px')
+            ->brandLogo(url('logo.png'))
             ->colors([
                 'primary' => Color::Green,
             ])
@@ -50,8 +54,28 @@ final class UserPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/User/Widgets'), for: 'App\Filament\User\Widgets')
             ->widgets([
-                AccountWidget::class,
+                // AccountWidget::class,
                 // FilamentInfoWidget::class,
+            ])
+            ->navigationGroups([
+                NavigationGroup::make()
+                    ->label('Financial')
+                    ->icon(Heroicon::OutlinedCreditCard)
+                    ->collapsible()
+                    ->collapsed(),
+                NavigationGroup::make()
+                    ->label('Developers')
+                    ->icon(Heroicon::OutlinedCodeBracket)
+                    ->collapsible()
+                    ->collapsed(),
+            ])
+            ->navigationItems([
+                NavigationItem::make('docs')
+                    ->group('Developers')
+                    ->label('Documentation')
+                    ->url('/docs', true)
+                    ->icon('heroicon-o-book-open')
+                    ->sort(100),
             ])
             ->middleware([
                 EncryptCookies::class,
@@ -72,22 +96,8 @@ final class UserPanelProvider extends PanelProvider
                 name: PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
                 hook: fn (): View => view('filament.user.hooks.balance')
             )
-            ->sidebarCollapsibleOnDesktop()
-            ->navigationGroups([
-                NavigationGroup::make()
-                    ->label('Financial')
-                    ->icon(Heroicon::OutlinedCreditCard)
-                    ->collapsible()
-                    ->collapsed(),
-            ])
-            ->navigationItems([
-                NavigationItem::make('docs')
-                    ->group('Developers')
-                    ->label('Documentation')
-                    ->url('/docs', true)
-                    ->icon('heroicon-o-book-open')
-                    ->sort(100),
-            ])
-            ->spa();
+            ->viteTheme('resources/css/app.css')
+            ->spa()
+            ->unsavedChangesAlerts();
     }
 }

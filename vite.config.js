@@ -6,9 +6,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: [
-                'resources/css/app.css',
-                'resources/js/app.js',
-                'vendor/andreia/filament-nord-theme/resources/css/theme.css'
+                'resources/css/app.css'
             ],
             refresh: true,
         }),

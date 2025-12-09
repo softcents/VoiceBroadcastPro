@@ -20,6 +20,7 @@
         "lara-zeus/tabler-icons-enum": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.40",
+        "laravel/pulse": "*",
         "laravel/sanctum": "^4.0",
         "laravel/telescope": "^5.15",
         "laravel/tinker": "^2.10.1",
@@ -32,6 +33,7 @@
         "spatie/laravel-ray": "^1.43",
         "spatie/laravel-settings": "^3.6",
         "stechstudio/filament-impersonate": "^4.0",
+        "webbingbrasil/filament-copyactions": "^4.0",
         "ysfkaya/filament-phone-input": "^4.0"
     },
     "require-dev": {
