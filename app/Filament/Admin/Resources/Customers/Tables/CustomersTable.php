@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Customers\Tables;
 
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
@@ -55,9 +56,10 @@ final class CustomersTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    EditAction::make(),
                     Impersonate::make()
                         ->label('Login'),
+                    EditAction::make(),
+                    DeleteAction::make(),
                 ]),
             ])
             ->toolbarActions([

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Campaigns;
 
-use App\Filament\Admin\Resources\Campaigns\Pages\CreateCampaign;
-use App\Filament\Admin\Resources\Campaigns\Pages\EditCampaign;
 use App\Filament\Admin\Resources\Campaigns\Pages\ListCampaigns;
 use App\Filament\Admin\Resources\Campaigns\Schemas\CampaignForm;
 use App\Filament\Admin\Resources\Campaigns\Schemas\CampaignInfolist;
@@ -24,7 +22,7 @@ final class CampaignResource extends Resource
     protected static ?string $model = Campaign::class;
 
     protected static string|BackedEnum|null $navigationIcon = Tabler::Speakerphone;
-    protected static ?int $navigationSort = 10;
+    protected static ?int $navigationSort = 12;
 
     protected static ?string $recordTitleAttribute = 'title';
 
@@ -54,9 +52,7 @@ final class CampaignResource extends Resource
     {
         return [
             'index' => ListCampaigns::route('/'),
-            'create' => CreateCampaign::route('/create'),
             'view' => Pages\ViewCampaign::route('/{record}'),
-            'edit' => EditCampaign::route('/{record}/edit'),
         ];
     }
 

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Calls;
 
-use App\Filament\Admin\Resources\Calls\Pages\CreateCall;
 use App\Filament\Admin\Resources\Calls\Pages\ListCalls;
 use App\Filament\Admin\Resources\Calls\Schemas\CallForm;
 use App\Filament\Admin\Resources\Calls\Tables\CallsTable;
@@ -24,7 +23,7 @@ final class CallResource extends Resource
     protected static ?string $recordTitleAttribute = 'phone_number';
 
     protected static string|BackedEnum|null $navigationIcon = Tabler::PhoneCall;
-    protected static ?int $navigationSort = 40;
+    protected static ?int $navigationSort = 13;
 
     public static function form(Schema $schema): Schema
     {

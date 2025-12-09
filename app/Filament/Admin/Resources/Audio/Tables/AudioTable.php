@@ -19,6 +19,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Support\Enums\Size;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Hugomyb\FilamentMediaAction\Actions\MediaAction;
@@ -92,6 +93,7 @@ final class AudioTable
                 ])
                     ->button()
                     ->outlined()
+                    ->size(Size::ExtraSmall)
                     ->label('Play')
                     ->icon(Tabler::Music),
                 ActionGroup::make([

@@ -25,7 +25,7 @@ final class PhonebookResource extends Resource
     protected static ?string $model = Phonebook::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedBookOpen;
-    protected static ?int $navigationSort = 20;
+    protected static ?int $navigationSort = 7;
 
     protected static ?string $recordTitleAttribute = 'name';
 
