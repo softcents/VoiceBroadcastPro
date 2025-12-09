@@ -36,11 +36,17 @@ final class StatsOverview extends BaseWidget
                 ->description('Calls made today')
                 ->icon(Tabler::PhoneCalling),
 
-            Stat::make('Revenue (Today)', Number::currency(Call::whereDate('created_at', now())->sum('cost'), 'BDT'))
+            Stat::make('Revenue (Today)', function (){
+                $cost = Call::whereDate('created_at', now())->sum('cost');
+                return Number::currency(floatval($cost), 'BDT');
+            })
                 ->description('Total revenue generated today')
                 ->icon(Tabler::Businessplan),
 
-            Stat::make('Total User Balance', Number::currency(User::sum('balance'), 'BDT'))
+            Stat::make('Total User Balance', function (){
+                $balance = User::sum('balance');
+                return Number::currency(floatval($balance), 'BDT');
+            })
                 ->description('Total wallet balance of all users')
                 ->icon(Tabler::Wallet),
 
