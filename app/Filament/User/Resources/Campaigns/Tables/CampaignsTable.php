@@ -81,7 +81,7 @@ final class CampaignsTable
                     ViewAction::make(),
                     EditAction::make()
                         ->visible(fn (Campaign $record) => $record->status === CampaignStatus::Pending && $record->scheduled_at),
-                ])
+                ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

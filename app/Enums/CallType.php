@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use BackedEnum;
@@ -8,7 +10,7 @@ use Filament\Support\Contracts\HasIcon;
 use Filament\Support\Contracts\HasLabel;
 use LaraZeus\Tabler\Tabler;
 
-enum CallType: string implements HasLabel, HasIcon, HasColor
+enum CallType: string implements HasColor, HasIcon, HasLabel
 {
     case Marketing = 'marketing';
     case OTP = 'otp';

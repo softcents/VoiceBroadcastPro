@@ -6,10 +6,10 @@ namespace App\Observers;
 
 use App\Enums\CallStatus;
 use App\Enums\CallType;
+use App\Enums\TransactionType;
 use App\Jobs\ProcessMarketingCall;
 use App\Jobs\ProcessOtpCall;
 use App\Models\Call;
-use App\Settings\CallingSetting;
 
 final class CallObserver
 {
@@ -19,7 +19,7 @@ final class CallObserver
     public function created(Call $call): void
     {
         if ($call->campaign_id === null && $call->scheduled_at === null) {
-            if ($call->type === CallType::OTP){
+            if ($call->type === CallType::OTP) {
                 ProcessOtpCall::dispatch($call->id)
                     ->onQueue('otp');
             } else {
@@ -41,17 +41,28 @@ final class CallObserver
                 return;
             }
 
-            $settings = app(CallingSetting::class);
-            $durationInMinutes = ceil($call->duration / 60);
+            // Pulse Billing Logic
+            $pulseDuration = $user->pulse_duration;
+            $pulseRate = $user->pulse_rate;
 
-            // Rate is typically in dollars, balance is in cents (integer)
-            // But checking User model, balance uses a cast to divide/multiply by 100.
-            // So accessing $user->balance gives float (dollars).
-            // We should just subtract the cost.
+            if ($pulseDuration > 0 && $call->duration > 0) {
+                $pulses = ceil($call->duration / $pulseDuration);
+                $cost = $pulses * $pulseRate;
 
-            $cost = $durationInMinutes * $settings->rate_per_minute;
+                $user->decrement('balance', $cost);
 
-            $user->decrement('balance', $cost); // Balance is float now
+                $call->cost = $cost;
+                $call->saveQuietly();
+
+                $user->transactions()->create([
+                    'type' => TransactionType::Call,
+                    'amount' => $cost,
+                    'currency' => 'BDT',
+                    'description' => "Charge for call ID {$call->id} ({$call->duration}s, {$pulses} pulses @ {$pulseRate}/pulse)",
+                    'reference_type' => Call::class,
+                    'reference_id' => $call->id,
+                ]);
+            }
         }
     }
 

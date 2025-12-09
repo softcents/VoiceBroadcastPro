@@ -39,7 +39,7 @@ final class UpdateProfileRequest extends FormRequest
                 'phone:BD',
                 'regex:/^([0-9\s\-\+\(\)]*)$/',
                 Rule::unique('users')->ignore($this->user()?->id),
-            ]
+            ],
         ];
     }
 

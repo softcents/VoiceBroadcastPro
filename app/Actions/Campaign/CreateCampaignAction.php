@@ -23,6 +23,7 @@ use Throwable;
 final class CreateCampaignAction
 {
     private const int BATCH_SIZE = 500;
+
     private const int MAX_CALLS_PER_CAMPAIGN = 10000;
 
     /**
@@ -83,7 +84,7 @@ final class CreateCampaignAction
                 ? $data['source']
                 : CampaignSource::tryFrom($data['source']);
 
-            if (!$source) {
+            if (! $source) {
                 throw new InvalidArgumentException("Invalid campaign source: {$data['source']}");
             }
 
@@ -101,7 +102,7 @@ final class CreateCampaignAction
 
             if ($calls->count() > self::MAX_CALLS_PER_CAMPAIGN) {
                 throw ValidationException::withMessages([
-                    'source' => 'Too many calls. Maximum allowed is ' . self::MAX_CALLS_PER_CAMPAIGN . ' per campaign.',
+                    'source' => 'Too many calls. Maximum allowed is '.self::MAX_CALLS_PER_CAMPAIGN.' per campaign.',
                 ]);
             }
 
@@ -118,7 +119,7 @@ final class CreateCampaignAction
         }
     }
 
-    protected function prepareManualCalls(User $user, array $data): Collection
+    private function prepareManualCalls(User $user, array $data): Collection
     {
         // Support both Filament format (array of keyed arrays) and API format (simple array of strings or keyed)
         // Filament: 'manual_numbers' => [['number' => '...+'], ...]
@@ -137,7 +138,7 @@ final class CreateCampaignAction
         foreach ($numbersInput as $item) {
             // Handle both array/object wrapper and direct string
             $rawNumber = is_array($item) ? ($item['number'] ?? '') : $item;
-            $number = mb_trim((string)$rawNumber);
+            $number = mb_trim((string) $rawNumber);
 
             if (empty($number)) {
                 continue;
@@ -168,7 +169,7 @@ final class CreateCampaignAction
         return $validCalls->unique('phone_number')->values();
     }
 
-    protected function preparePhonebookCalls(User $user, array $data): Collection
+    private function preparePhonebookCalls(User $user, array $data): Collection
     {
         if (empty($data['phonebook_id'])) {
             throw ValidationException::withMessages([
@@ -223,12 +224,12 @@ final class CreateCampaignAction
             throw $e;
         } catch (Throwable $e) {
             throw ValidationException::withMessages([
-                'phonebook_id' => 'Failed to load phonebook contacts: ' . $e->getMessage(),
+                'phonebook_id' => 'Failed to load phonebook contacts: '.$e->getMessage(),
             ]);
         }
     }
 
-    protected function prepareImportCalls(User $user, array $data): Collection
+    private function prepareImportCalls(User $user, array $data): Collection
     {
         if (empty($data['file_path'])) {
             throw ValidationException::withMessages([
@@ -241,7 +242,7 @@ final class CreateCampaignAction
         // API might pass raw file content or temp path?
         // Filament passes path relative to storage usually.
 
-        if (!file_exists($fullPath)) {
+        if (! file_exists($fullPath)) {
             // Try storage path if direct path fails
             if (Storage::exists($filePath)) {
                 $fullPath = Storage::path($filePath);
@@ -268,7 +269,9 @@ final class CreateCampaignAction
                 }
 
                 $number = mb_trim($row[0] ?? '');
-                if ($number === '') continue;
+                if ($number === '') {
+                    continue;
+                }
 
                 try {
                     $normalizedNumber = $this->normalizePhoneNumber($number);

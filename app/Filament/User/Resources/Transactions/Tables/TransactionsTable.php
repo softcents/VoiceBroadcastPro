@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\User\Resources\Transactions\Tables;
 
 use App\Filament\User\Resources\Deposits\DepositResource;
+use App\Models\Call;
 use App\Models\Deposit;
 use App\Models\Transaction;
 use Filament\Tables\Columns\TextColumn;
@@ -30,8 +31,13 @@ final class TransactionsTable
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('reference_type')
-                    ->label('Reference Type')
-                    ->searchable(),
+                    ->label('Reference')
+                    ->searchable()
+                    ->formatStateUsing(fn (Transaction $record) => match ($record->reference_type) {
+                        Deposit::class => 'Deposit',
+                        Call::class => 'Call',
+                        default => 'N/A',
+                    }),
                 TextColumn::make('reference_id')
                     ->label('Reference ID')
                     ->numeric()

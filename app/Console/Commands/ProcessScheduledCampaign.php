@@ -48,7 +48,7 @@ final class ProcessScheduledCampaign extends Command
                                 try {
                                     // Update campaign status
                                     $campaign->update([
-                                        'status' => CampaignStatus::Processing
+                                        'status' => CampaignStatus::Processing,
                                     ]);
 
                                     // Dispatch the campaign processing job

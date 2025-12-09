@@ -38,7 +38,7 @@ final class CallController extends Controller
     #[ResponseFromApiResource(CallResource::class, Call::class, status: 201)]
     public function store(#[CurrentUser] User $user, StoreCallRequest $request)
     {
-        $call =$user->calls()->create($request->validated());
+        $call = $user->calls()->create($request->validated());
 
         return new CallResource($call);
     }

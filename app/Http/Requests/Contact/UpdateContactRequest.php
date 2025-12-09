@@ -35,7 +35,7 @@ final class UpdateContactRequest extends FormRequest
                 'phone',
                 Rule::unique('contacts', 'phone_number')
                     ->where('phonebook_id', $this->route('contact')?->phonebook_id)
-                    ->ignore($this->route('contact')?->id)
+                    ->ignore($this->route('contact')?->id),
             ],
         ];
     }

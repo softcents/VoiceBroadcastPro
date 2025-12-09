@@ -23,8 +23,19 @@ final class Calling extends SettingsPage
             ->components([
                 Section::make()
                     ->schema([
-                        TextInput::make('rate_per_minute')
+                        TextInput::make('pulse_rate')
+                            ->label('Pulse Rate')
+                            ->prefix('BDT')
                             ->numeric()
+                            ->minValue(0)
+                            ->step(0.1)
+                            ->required(),
+                        TextInput::make('pulse_duration')
+                            ->label('Pulse Duration')
+                            ->suffix('seconds')
+                            ->numeric()
+                            ->minValue(1)
+                            ->step(1)
                             ->required(),
                     ]),
             ]);

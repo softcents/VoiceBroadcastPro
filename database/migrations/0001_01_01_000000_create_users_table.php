@@ -24,7 +24,8 @@ return new class extends Migration
             $table->string('audio_type')->default('upload');
 
             $table->decimal('balance', 15, 4)->default(0);
-            $table->decimal('rate', 15, 4)->default(0);
+            $table->decimal('pulse_rate', 15, 4)->default(0.10);
+            $table->unsignedInteger('pulse_duration')->default(10);
 
             $table->string('password');
             $table->rememberToken();

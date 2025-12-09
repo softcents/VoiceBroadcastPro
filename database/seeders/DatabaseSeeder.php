@@ -38,13 +38,14 @@ final class DatabaseSeeder extends Seeder
             'email_verified_at' => now(),
             'balance' => 500,
             'audio_type' => UserAudioType::Both,
-            'rate' => 0.5,
+            'pulse_rate' => 0.50,
+            'pulse_duration' => 30,
         ]);
 
         $this->call([
             ServerSeeder::class,
             CallerSeeder::class,
-             DemoSeeder::class,
+            DemoSeeder::class,
         ]);
     }
 }

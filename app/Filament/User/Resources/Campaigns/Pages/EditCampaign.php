@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Campaigns\Pages;
 
-use App\Enums\CampaignStatus;
 use App\Filament\User\Resources\Campaigns\CampaignResource;
 use App\Models\Campaign;
 use Filament\Actions\DeleteAction;
@@ -20,7 +19,7 @@ final class EditCampaign extends EditRecord
     /* @var  $record Campaign */
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
-        if ($record->scheduled_at === null){
+        if ($record->scheduled_at === null) {
             Notification::make()
                 ->title('Cannot edit a campaign that is not pending and has no scheduled time.')
                 ->danger()

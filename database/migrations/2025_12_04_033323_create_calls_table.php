@@ -31,6 +31,7 @@ return new class extends Migration
             $table->string('unique_id')->nullable()->index();
 
             $table->decimal('duration')->default(0);
+            $table->decimal('cost', 10, 4)->default(0);
             $table->string('hangup_cause')->nullable();
 
             $table->timestamp('called_at')->nullable();

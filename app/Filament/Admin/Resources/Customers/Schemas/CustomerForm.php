@@ -37,13 +37,20 @@ final class CustomerForm
                             ->onlyCountries(['BD'])
                             ->defaultCountry('BD')
                             ->rules(['phone:BD']),
-                        TextInput::make('rate')
-                            ->label('Call Rate (per minute)')
+                        TextInput::make('pulse_rate')
+                            ->label('Pulse Rate')
                             ->prefix('BDT')
                             ->numeric()
                             ->minValue(0)
                             ->step(0.1)
-                            ->default(app(CallingSetting::class)->rate_per_minute)
+                            ->default(app(CallingSetting::class)->pulse_rate)
+                            ->required(),
+                        TextInput::make('pulse_duration')
+                            ->label('Pulse Duration (seconds)')
+                            ->numeric()
+                            ->minValue(1)
+                            ->step(1)
+                            ->default(app(CallingSetting::class)->pulse_duration)
                             ->required(),
                         TextInput::make('password')
                             ->label('Password')

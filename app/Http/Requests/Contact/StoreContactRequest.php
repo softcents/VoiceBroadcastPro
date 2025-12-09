@@ -34,7 +34,7 @@ final class StoreContactRequest extends FormRequest
                 'string',
                 'phone',
                 Rule::unique('contacts', 'phone_number')
-                    ->where('phonebook_id', $this->input('phonebook_id'))
+                    ->where('phonebook_id', $this->input('phonebook_id')),
             ],
         ];
     }

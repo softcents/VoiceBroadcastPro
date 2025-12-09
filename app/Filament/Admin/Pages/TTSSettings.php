@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Pages;
 
 use App\Enums\TTSEngine;
@@ -10,7 +12,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use UnitEnum;
 
-class TTSSettings extends SettingsPage
+final class TTSSettings extends SettingsPage
 {
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
 
@@ -31,7 +33,7 @@ class TTSSettings extends SettingsPage
                             ->searchable()
                             ->selectablePlaceholder(false)
                             ->required(),
-                    ])
+                    ]),
             ]);
     }
 }

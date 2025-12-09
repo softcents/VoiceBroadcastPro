@@ -10,6 +10,7 @@ use App\Http\Requests\Account\UpdateProfileRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Hash;
 use Knuckles\Scribe\Attributes\Authenticated;
@@ -17,7 +18,6 @@ use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
-use Illuminate\Http\JsonResponse;
 
 #[Group('Account', 'Manage user account')]
 #[Authenticated]
@@ -38,8 +38,8 @@ final class AccountController extends Controller
             'errors' => [
                 'name' => ['The name field is required.'],
                 'email' => ['The email has already been taken.'],
-                'phone' => ['The phone must be a valid phone number.', 'The phone field format is invalid.']
-            ]
+                'phone' => ['The phone must be a valid phone number.', 'The phone field format is invalid.'],
+            ],
         ],
         status: 422
     )]
@@ -60,8 +60,8 @@ final class AccountController extends Controller
             'message' => 'The given data was invalid.',
             'errors' => [
                 'current_password' => ['The current password is incorrect.'],
-                'password' => ['The password must be at least 8 characters.']
-            ]
+                'password' => ['The password must be at least 8 characters.'],
+            ],
         ],
         status: 422
     )]

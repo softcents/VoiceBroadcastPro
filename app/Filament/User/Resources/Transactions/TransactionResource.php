@@ -19,6 +19,7 @@ final class TransactionResource extends Resource
     protected static ?string $model = Transaction::class;
 
     protected static string|UnitEnum|null $navigationGroup = 'Financial';
+
     protected static ?int $navigationSort = 60;
 
     protected static ?string $recordTitleAttribute = 'id';

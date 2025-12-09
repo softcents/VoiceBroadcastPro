@@ -8,7 +8,6 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
@@ -33,7 +32,7 @@ final class ServerForm
                             ->required(),
 
                         Select::make('enabled')
-                        ->label('Status')
+                            ->label('Status')
                             ->boolean()
                             ->default(true)
                             ->native(false)
@@ -89,7 +88,7 @@ final class ServerForm
                                             ->modal()
                                             ->outlined()
                                             ->iconButton()
-                                            ->visible(fn($operation) => $operation === 'create')
+                                            ->visible(fn ($operation) => $operation === 'create')
                                             ->icon(Tabler::HelpCircle)
                                             ->size(Size::Small)
                                             ->tooltip('How to create CDR database user?')
@@ -101,32 +100,32 @@ final class ServerForm
                                                 TextInput::make('username')
                                                     ->label('Username')
                                                     ->default('softcents')
-                                                    ->afterStateUpdated(fn(Get $get, Set $set)  => $set('command', self::generateCommand($get('username'), $get('password'), $get('ip_address'))))
+                                                    ->afterStateUpdated(fn (Get $get, Set $set) => $set('command', self::generateCommand($get('username'), $get('password'), $get('ip_address'))))
                                                     ->required(),
                                                 TextInput::make('password')
                                                     ->label('Password')
                                                     ->debounce()
                                                     ->default(Str::password(16))
-                                                    ->afterStateUpdated(fn(Get $get, Set $set)  => $set('command', self::generateCommand($get('username'), $get('password'), $get('ip_address'))))
+                                                    ->afterStateUpdated(fn (Get $get, Set $set) => $set('command', self::generateCommand($get('username'), $get('password'), $get('ip_address'))))
                                                     ->required(),
                                                 TextInput::make('ip_address')
                                                     ->label('IP Address')
                                                     ->default($_SERVER['SERVER_ADDR'] ?? '127.0.0.1')
                                                     ->live()
-                                                    ->afterStateUpdated(fn(Get $get, Set $set)  => $set('command', self::generateCommand($get('username'), $get('password'), $get('ip_address'))))
+                                                    ->afterStateUpdated(fn (Get $get, Set $set) => $set('command', self::generateCommand($get('username'), $get('password'), $get('ip_address'))))
                                                     ->required(),
                                                 Textarea::make('command')
                                                     ->label('MySQL Command')
                                                     ->rows(3)
                                                     ->columnSpanFull()
-                                                    ->default(fn(Get $get) => self::generateCommand($get('username'), $get('password'), $get('ip_address')))
+                                                    ->default(fn (Get $get) => self::generateCommand($get('username'), $get('password'), $get('ip_address')))
                                                     ->disabled(),
                                             ]),
                                         Action::make('db_on_edit')
                                             ->modal()
                                             ->outlined()
                                             ->iconButton()
-                                            ->visible(fn($operation) => $operation === 'edit')
+                                            ->visible(fn ($operation) => $operation === 'edit')
                                             ->icon(Tabler::HelpCircle)
                                             ->size(Size::Small)
                                             ->tooltip('How to create CDR database user?')
@@ -134,13 +133,13 @@ final class ServerForm
                                             ->modalDescription('Copy the MySQL command below to create a CDR database user with appropriate privileges based on the current configuration.')
                                             ->modalSubmitActionLabel('Copy Command')
                                             ->modalSubmitAction(fn (Action $action) => $action->hidden())
-                                            ->schema(function ($record){
+                                            ->schema(function ($record) {
                                                 return [
                                                     Textarea::make('command')
                                                         ->label('MySQL Command')
                                                         ->rows(3)
                                                         ->columnSpanFull()
-                                                        ->default(fn(Get $get) => self::generateCommand($record->database_username, $record->database_password, $record->database_host))
+                                                        ->default(fn (Get $get) => self::generateCommand($record->database_username, $record->database_password, $record->database_host))
                                                         ->disabled(),
                                                 ];
                                             }),
@@ -177,6 +176,7 @@ final class ServerForm
         $command = "CREATE USER '{$username}'@'{$ip}' IDENTIFIED BY '{$password}';\n";
         $command .= "GRANT ALL PRIVILEGES ON asteriskcdrdb.* TO '{$username}'@'{$ip}';\n";
         $command .= 'FLUSH PRIVILEGES;';
+
         return $command;
     }
 }

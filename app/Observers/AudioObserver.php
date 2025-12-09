@@ -27,7 +27,7 @@ final class AudioObserver implements ShouldHandleEventsAfterCommit
         $admins = User::admin()->get();
         Notification::make()
             ->title('Audio')
-            ->body("New audio has been created")
+            ->body('New audio has been created')
             ->success()
             ->actions([
                 Action::make('view')

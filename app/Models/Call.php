@@ -35,6 +35,7 @@ final class Call extends Model
         'ended_at' => 'datetime',
         'scheduled_at' => 'datetime',
         'duration' => 'float',
+        'cost' => 'float',
     ];
 
     public function user(): BelongsTo

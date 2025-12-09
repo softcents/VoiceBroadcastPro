@@ -32,16 +32,16 @@ final class CallsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('phone_number')
             ->columns([
-                Tables\Columns\TextColumn::make('phone_number')
+                TextColumn::make('phone_number')
                     ->label('Phone Number'),
-                Tables\Columns\TextColumn::make('status')
+                TextColumn::make('status')
                     ->label('Status')
                     ->badge(),
                 TextColumn::make('duration')
                     ->label('Duration')
                     ->sortable()
-                    ->formatStateUsing(fn(int$state) => secondsToHuman($state)),
-                Tables\Columns\TextColumn::make('created_at')
+                    ->formatStateUsing(fn (int $state) => secondsToHuman($state)),
+                TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()
                     ->sortable()

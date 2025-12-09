@@ -22,6 +22,7 @@ final class CampaignResource extends Resource
     protected static ?string $model = Campaign::class;
 
     protected static string|BackedEnum|null $navigationIcon = Tabler::Speakerphone;
+
     protected static ?int $navigationSort = 12;
 
     protected static ?string $recordTitleAttribute = 'title';

@@ -20,6 +20,7 @@ final class ServerResource extends Resource
     protected static ?string $model = Server::class;
 
     protected static string|null|UnitEnum $navigationGroup = 'Settings';
+
     protected static ?int $navigationSort = 70;
 
     protected static ?string $recordTitleAttribute = 'name';

@@ -22,6 +22,7 @@ final class TTSLanguageResource extends Resource
     protected static ?string $model = TTSLanguage::class;
 
     protected static string|UnitEnum|null $navigationGroup = 'Text to Speech';
+
     protected static ?int $navigationSort = 32;
 
     protected static ?string $navigationLabel = 'Languages';

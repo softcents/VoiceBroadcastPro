@@ -33,7 +33,8 @@ final class UserFactory extends Factory
             'type' => fake()->randomElement(UserType::cases()),
             'phone' => '+88017'.fake()->numerify('#######'),
             'balance' => fake()->randomFloat(2, 0, 1000),
-            'rate' => fake()->randomFloat(2, 0.50, 1.5),
+            'pulse_rate' => fake()->randomFloat(2, 0.10, 1.0),
+            'pulse_duration' => fake()->randomElement([10, 30, 60]),
 
             'password' => self::$password ??= Hash::make('password'),
             'remember_token' => Str::random(10),

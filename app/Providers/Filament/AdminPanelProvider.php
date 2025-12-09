@@ -82,7 +82,7 @@ final class AdminPanelProvider extends PanelProvider
                     ->collapsed(),
             ])
             ->plugins([
-                //FilamentNordThemePlugin::make(),
+                // FilamentNordThemePlugin::make(),
             ])
             ->spa();
     }

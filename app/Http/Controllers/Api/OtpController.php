@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers\Api;
 
 use App\Enums\CallStatus;
@@ -21,7 +23,7 @@ use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 #[Authenticated]
 #[Response(status: 401, description: 'Unauthenticated')]
 #[Response(status: 403, description: 'Unauthorized')]
-class OtpController extends Controller
+final class OtpController extends Controller
 {
     #[Endpoint(title: 'List OTP Calls')]
     #[ResponseFromApiResource(CallResource::class, Call::class, collection: true, paginate: 15)]

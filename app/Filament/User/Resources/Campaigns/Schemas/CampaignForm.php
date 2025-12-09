@@ -6,7 +6,6 @@ namespace App\Filament\User\Resources\Campaigns\Schemas;
 
 use App\Enums\AudioApproval;
 use App\Enums\CampaignSource;
-use App\Models\Caller;
 use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
@@ -51,7 +50,7 @@ final class CampaignForm
                                     ->schema([
                                         Select::make('audio_id')
                                             ->label('Audio File')
-                                            ->relationship('audio', 'title', modifyQueryUsing: fn($query) => $query->where('approval', AudioApproval::Approved))
+                                            ->relationship('audio', 'title', modifyQueryUsing: fn ($query) => $query->where('approval', AudioApproval::Approved))
                                             ->searchable()
                                             ->preload()
                                             ->required()
@@ -64,21 +63,21 @@ final class CampaignForm
                                         return $query->whereHas('contacts');
                                     })
                                     ->getOptionLabelFromRecordUsing(function ($record) {
-                                        return $record->name . ' (' . $record->contacts()->count() . ' contacts)';
+                                        return $record->name.' ('.$record->contacts()->count().' contacts)';
                                     })
                                     ->searchable()
                                     ->preload()
                                     ->prefixIcon(Tabler::AddressBook)
-                                    ->visible(fn($get) => $get('source') === CampaignSource::Phonebook)
-                                    ->required(fn($get) => $get('source') === CampaignSource::Phonebook),
+                                    ->visible(fn ($get) => $get('source') === CampaignSource::Phonebook)
+                                    ->required(fn ($get) => $get('source') === CampaignSource::Phonebook),
 
                                 FileUpload::make('file_path')
                                     ->label('Contact List (CSV)')
                                     ->disk('local') // Adjust disk as needed
                                     ->directory('campaign-files')
                                     ->acceptedFileTypes(['text/csv', 'text/plain', '.csv'])
-                                    ->visible(fn($get) => $get('source') === CampaignSource::Import)
-                                    ->required(fn($get) => $get('source') === CampaignSource::Import)
+                                    ->visible(fn ($get) => $get('source') === CampaignSource::Import)
+                                    ->required(fn ($get) => $get('source') === CampaignSource::Import)
                                     ->hintAction(Action::make('sample_file')
                                         ->label('Download Sample File')
                                         ->url(url('samples/contacts.csv'))
@@ -99,8 +98,8 @@ final class CampaignForm
                                     ->minItems(1)
                                     ->grid(2)
                                     ->compact()
-                                    ->visible(fn($get) => $get('source') === CampaignSource::Manual)
-                                    ->required(fn($get) => $get('source') === CampaignSource::Manual),
+                                    ->visible(fn ($get) => $get('source') === CampaignSource::Manual)
+                                    ->required(fn ($get) => $get('source') === CampaignSource::Manual),
                             ]),
                     ]),
 

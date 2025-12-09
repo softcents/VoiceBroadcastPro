@@ -8,7 +8,9 @@ use Spatie\LaravelSettings\Settings;
 
 final class CallingSetting extends Settings
 {
-    public float $rate_per_minute;
+    public int $pulse_duration = 10;
+
+    public float $pulse_rate = 0.10;
 
     public static function group(): string
     {

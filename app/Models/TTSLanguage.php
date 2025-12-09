@@ -24,16 +24,16 @@ final class TTSLanguage extends Model
         'enabled',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'engine' => TTSEngine::class
-        ];
-    }
-
     public function ttsArtists(): HasMany
     {
         return $this->hasMany(TTSArtist::class, 'tts_language_id');
+    }
+
+    protected function casts(): array
+    {
+        return [
+            'engine' => TTSEngine::class,
+        ];
     }
 
     #[Scope]

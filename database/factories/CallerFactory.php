@@ -23,7 +23,8 @@ final class CallerFactory extends Factory
         return [
             'server_id' => Server::factory(),
             'caller_name' => fake()->name(),
-            'caller_number' => fake()->e164PhoneNumber(),
+            'caller_number' => $this->faker->e164PhoneNumber(),
+            'trunk_name' => $this->faker->word(),
             'enabled' => fake()->boolean(),
         ];
     }

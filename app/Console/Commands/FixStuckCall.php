@@ -25,7 +25,7 @@ final class FixStuckCall extends Command
             ->where('created_at', '<', now()->subHour())
             ->update(['status' => CallStatus::Failed]);
 
-        if ($count){
+        if ($count) {
             $this->info("Fixed {$count} stuck calls.");
         }
     }

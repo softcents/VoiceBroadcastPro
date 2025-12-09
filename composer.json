@@ -1,6 +1,6 @@
 {
     "$schema": "https://getcomposer.org/schema.json",
-    "name": "laravel/laravel",
+    "name": "bishwajitcadhikary/voice",
     "type": "project",
     "description": "The skeleton application for the Laravel framework.",
     "keywords": [
@@ -15,6 +15,7 @@
         "ext-posix": "*",
         "filament/filament": "^4.2",
         "filament/spatie-laravel-settings-plugin": "^4.2",
+        "flowframe/laravel-trend": "^0.4.0",
         "hugomyb/filament-media-action": "^4.1",
         "lara-zeus/tabler-icons-enum": "^1.0",
         "laravel/framework": "^12.0",

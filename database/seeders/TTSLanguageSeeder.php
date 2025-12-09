@@ -174,10 +174,10 @@ final class TTSLanguageSeeder extends Seeder
         foreach (['azure', 'frolax'] as $engine) {
             foreach ($languages as $name => $code) {
                 TTSLanguage::create([
-                    'code'       => $code,
-                    'name'       => $name,
-                    'enabled'    => true,
-                    'engine'     => $engine,
+                    'code' => $code,
+                    'name' => $name,
+                    'enabled' => true,
+                    'engine' => $engine,
                 ]);
             }
         }

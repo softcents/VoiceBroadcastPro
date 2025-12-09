@@ -20,6 +20,7 @@ final class CallerResource extends Resource
     protected static ?string $model = Caller::class;
 
     protected static string|null|UnitEnum $navigationGroup = 'Settings';
+
     protected static ?int $navigationSort = 15;
 
     protected static ?string $recordTitleAttribute = 'caller_name';

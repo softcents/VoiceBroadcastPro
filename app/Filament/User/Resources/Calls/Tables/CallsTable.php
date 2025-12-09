@@ -6,14 +6,11 @@ namespace App\Filament\User\Resources\Calls\Tables;
 
 use App\Enums\CallStatus;
 use App\Enums\CallType;
-use App\Filament\User\Resources\Campaigns\CampaignResource;
-use App\Models\Call;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use LaraZeus\Tabler\Tabler;
 
 final class CallsTable
 {

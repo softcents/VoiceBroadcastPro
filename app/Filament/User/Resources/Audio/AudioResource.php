@@ -17,13 +17,13 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
-use UnitEnum;
 
 final class AudioResource extends Resource
 {
     protected static ?string $model = Audio::class;
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedRectangleStack;
+
     protected static ?int $navigationSort = 30;
 
     protected static ?string $recordTitleAttribute = 'name';

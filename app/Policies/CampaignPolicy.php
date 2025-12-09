@@ -1,12 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Policies;
 
 use App\Models\Campaign;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
-class CampaignPolicy
+final class CampaignPolicy
 {
     /**
      * Determine whether the user can view any models.
@@ -41,7 +42,7 @@ class CampaignPolicy
             return false;
         }
 
-        return !$campaign->scheduled_at->isPast();
+        return ! $campaign->scheduled_at->isPast();
     }
 
     /**

@@ -1,10 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Requests\Otp;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class ListOtpRequest extends FormRequest
+final class ListOtpRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

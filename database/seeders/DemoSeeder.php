@@ -38,7 +38,7 @@ final class DemoSeeder extends Seeder
                 'first_name' => 'Bishwajit',
                 'last_name' => 'Teletalk',
                 'phone_number' => '+8801712345678',
-            ]
+            ],
         ];
 
         foreach ($contacts as $contact) {

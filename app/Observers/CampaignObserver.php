@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Observers;
 
 use App\Enums\CampaignStatus;
@@ -7,16 +9,16 @@ use App\Jobs\ProcessCampaign;
 use App\Models\Campaign;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 
-class CampaignObserver implements ShouldHandleEventsAfterCommit
+final class CampaignObserver implements ShouldHandleEventsAfterCommit
 {
     /**
      * Handle the Campaign "created" event.
      */
     public function created(Campaign $campaign): void
     {
-        if(!$campaign->scheduled_at){
+        if (! $campaign->scheduled_at) {
             $campaign->update([
-                'status' => CampaignStatus::Processing
+                'status' => CampaignStatus::Processing,
             ]);
 
             ProcessCampaign::dispatch($campaign->id);

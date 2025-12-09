@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Afaya\EdgeTTS\Service\EdgeTTS;
 use App\Http\Controllers\Payment\PipraPayController;
 use App\Http\Controllers\Webhook\AsteriskController;
 use App\Livewire\Payments\Cancel;
@@ -29,9 +28,4 @@ Route::group(['prefix' => 'webhooks', 'as' => 'webhooks.'], function () {
     Route::post('pipra-pay/{deposit}', [PipraPayController::class, 'ipn'])->name('piprapay');
 });
 
-use App\Services\TTS\Contracts\TTSDriver;
-use App\Services\TTS\TTSManager;
-
-Route::get('tts', function () {
-
-});
+Route::get('tts', function () {});

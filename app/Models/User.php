@@ -41,7 +41,8 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         'audio_type',
 
         'balance',
-        'rate',
+        'pulse_rate',
+        'pulse_duration',
 
         'password',
         'email_verified_at',
@@ -53,6 +54,8 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'balance' => 'float',
+        'pulse_rate' => 'float',
+        'pulse_duration' => 'integer',
         'rate' => 'float',
     ];
 

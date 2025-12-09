@@ -79,7 +79,7 @@ final class AudioForm
                             ->schema([
                                 Select::make('language_id')
                                     ->label('Language')
-                                    ->options(function (){
+                                    ->options(function () {
                                         return TTSLanguage::enabled()
                                             ->whereEngine(app(TTSSetting::class)->engine)
                                             ->pluck('name', 'id');

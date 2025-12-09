@@ -25,6 +25,7 @@ final class ContactResource extends Resource
     protected static ?string $model = Contact::class;
 
     protected static string|BackedEnum|null $navigationIcon = Tabler::AddressBook;
+
     protected static ?int $navigationSort = 10;
 
     protected static ?string $recordTitleAttribute = 'name';

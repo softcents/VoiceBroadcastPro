@@ -16,8 +16,11 @@ final class UserObserver
     public function created(User $user): void
     {
         if ($user->type === UserType::User) {
+            $settings = app(CallingSetting::class);
+
             $user->update([
-                'rate' => app(CallingSetting::class)->rate_per_minute,
+                'pulse_rate' => $settings->pulse_rate,
+                'pulse_duration' => $settings->pulse_duration,
             ]);
         }
     }

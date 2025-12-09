@@ -22,6 +22,7 @@ final class AudioResource extends Resource
     protected static ?string $model = Audio::class;
 
     protected static string|BackedEnum|null $navigationIcon = Tabler::Music;
+
     protected static ?int $navigationSort = 30;
 
     protected static ?string $recordTitleAttribute = 'title';
