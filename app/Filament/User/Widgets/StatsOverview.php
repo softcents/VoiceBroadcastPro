@@ -18,25 +18,21 @@ final class StatsOverview extends StatsOverviewWidget
         return [
             Stat::make('Account Balance', Number::currency(auth()->user()->balance, 'BDT'))
                 ->description('Current balance in your account')
-                ->icon(Tabler::PigMoney)
-                ->color('primary'),
+                ->icon(Tabler::PigMoney),
 
             // Estimated Remaining Calls
             Stat::make('Remaining Calls', '2500')
                 ->description('Estimated number of calls')
-                ->icon(Tabler::PhoneCalling)
-                ->color('success'),
+                ->icon(Tabler::PhoneCalling),
 
             // Pulse Rate
             Stat::make('Pulse Rate', Number::currency(auth()->user()->pulse_rate, 'BDT'))
                 ->description('Cost per pulse')
-                ->icon(Tabler::HeartRateMonitor)
-                ->color('warning'),
+                ->icon(Tabler::HeartRateMonitor),
 
             Stat::make('Pulse Duration', auth()->user()->pulse_duration.' seconds')
                 ->description('Duration of one pulse')
-                ->icon(Tabler::Clock)
-                ->color('danger'),
+                ->icon(Tabler::Clock),
         ];
     }
 }
