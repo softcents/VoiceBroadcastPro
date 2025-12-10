@@ -43,7 +43,8 @@ final class UserPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->favicon(url('favicon.png'))
             ->brandLogoHeight('45px')
-            ->brandLogo(url('logo.png'))
+            ->brandLogo(url('logo-dark.svg'))
+            ->darkModeBrandLogo(url('logo-white.svg'))
             ->colors([
                 'primary' => Color::Green,
             ])

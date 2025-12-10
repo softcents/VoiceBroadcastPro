@@ -34,7 +34,8 @@ final class AdminPanelProvider extends PanelProvider
             ->sidebarCollapsibleOnDesktop()
             ->databaseNotifications()
             ->brandLogoHeight('45px')
-            ->brandLogo(url('logo.png'))
+            ->brandLogo(url('logo-dark.svg'))
+            ->darkModeBrandLogo(url('logo-white.svg'))
             ->favicon(url('favicon.png'))
             ->colors([
                 'primary' => Color::Rose,
