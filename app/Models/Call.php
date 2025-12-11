@@ -76,6 +76,12 @@ final class Call extends Model
     public function retry(): void
     {
         if ($this->canRetry) {
+            $this->update([
+                'called_at' => null,
+                'ringing_at' => null,
+                'answered_at' => null,
+                'ended_at' => null,
+            ]);
             $this->increment('retries');
 
             $this->type === CallType::Marketing
