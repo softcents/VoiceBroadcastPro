@@ -22,7 +22,7 @@ final class FixStuckCall extends Command
                 CallStatus::Ringing,
                 CallStatus::Answered,
             ])
-            ->where('created_at', '<', now()->subHour())
+            ->where('created_at', '<', now()->subMinutes(5))
             ->get();
 
         $count = $calls->count();

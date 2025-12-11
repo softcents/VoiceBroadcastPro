@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Enums\CallStatus;
+use App\Enums\TransactionType;
 use App\Models\Call;
 use Carbon\CarbonImmutable;
+use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -14,7 +16,7 @@ use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
-use App\Enums\TransactionType;
+use Throwable;
 
 final class ProcessOtpCall implements ShouldQueue
 {
@@ -30,7 +32,7 @@ final class ProcessOtpCall implements ShouldQueue
     /**
      * Execute the job.
      *
-     * @throws ConnectionException
+     * @throws Throwable
      */
     public function handle(): void
     {
@@ -38,7 +40,7 @@ final class ProcessOtpCall implements ShouldQueue
 
         $pulseRate = $user->pulse_rate;
 
-        if (!$user || $user->balance < $pulseRate) {
+        if (! $user || $user->balance < $pulseRate) {
             $this->call->update(['status' => CallStatus::Failed]);
 
             return;
@@ -65,7 +67,7 @@ final class ProcessOtpCall implements ShouldQueue
             $this->call->saveQuietly();
 
             DB::commit();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             DB::rollBack();
             Log::error("Failed to deduct balance for OTP Call ID: {$this->call->id}. Error: {$e->getMessage()}");
             $this->call->update(['status' => CallStatus::Failed]);

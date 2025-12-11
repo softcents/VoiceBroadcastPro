@@ -10,11 +10,13 @@ use App\Jobs\ProcessMarketingCall;
 use App\Jobs\ProcessOtpCall;
 use App\Models\Call;
 use Filament\Actions\Action;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Collection;
 use LaraZeus\Tabler\Tabler;
 
 final class CallsTable
@@ -64,7 +66,9 @@ final class CallsTable
                 Action::make('retry')
                     ->label('Retry')
                     ->icon(Tabler::Refresh)
+                    ->color('danger')
                     ->visible(fn (Call $record) => $record->status === CallStatus::Failed)
+                    ->requiresConfirmation()
                     ->action(function (Call $record) {
                         $record->type === CallType::Marketing
                             ? ProcessMarketingCall::dispatch($record->id)
@@ -73,6 +77,19 @@ final class CallsTable
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('retry')
+                        ->label('Retry selected')
+                        ->icon(Tabler::Refresh)
+                        ->color('danger')
+                        ->requiresConfirmation()
+                        ->action(function (Collection $records) {
+                            $records->where('status', CallStatus::Failed)
+                                ->each(function (Call $record) {
+                                    $record->type === CallType::Marketing
+                                        ? ProcessMarketingCall::dispatch($record->id)
+                                        : ProcessOtpCall::dispatch($record->id);
+                                });
+                        }),
                     DeleteBulkAction::make(),
                 ]),
             ]);

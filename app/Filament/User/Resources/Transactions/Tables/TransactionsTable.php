@@ -10,6 +10,7 @@ use App\Models\Deposit;
 use App\Models\Transaction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use LaraZeus\Tabler\Tabler;
 
 final class TransactionsTable
 {
@@ -29,6 +30,9 @@ final class TransactionsTable
                 TextColumn::make('description')
                     ->label('Description')
                     ->searchable()
+                    ->tooltip(fn (Transaction $record): string => $record->description)
+                    ->icon(Tabler::InfoCircle)
+                    ->formatStateUsing(fn () => 'View')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('reference_type')
                     ->label('Reference')
@@ -50,7 +54,7 @@ final class TransactionsTable
                     ->label('Created At')
                     ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('updated_at')
                     ->label('Updated At')
                     ->dateTime()

@@ -10,6 +10,6 @@ Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
 
-Schedule::command('fix:stuck-calls')->hourly();
+Schedule::command('fix:stuck-calls')->everyMinute();
 Schedule::command('schedule:process-campaigns')->everyMinute();
 Schedule::command('schedule:process-calls')->everyMinute();

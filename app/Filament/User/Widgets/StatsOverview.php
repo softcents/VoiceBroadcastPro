@@ -21,7 +21,7 @@ final class StatsOverview extends StatsOverviewWidget
                 ->icon(Tabler::PigMoney),
 
             // Estimated Remaining Calls
-            Stat::make('Remaining Calls', '2500')
+            Stat::make('Remaining Calls', (string) (auth()->user()->pulse_rate > 0 ? floor(auth()->user()->balance / auth()->user()->pulse_rate) : 0))
                 ->description('Estimated number of calls')
                 ->icon(Tabler::PhoneCalling),
 
@@ -30,7 +30,7 @@ final class StatsOverview extends StatsOverviewWidget
                 ->description('Cost per pulse')
                 ->icon(Tabler::HeartRateMonitor),
 
-            Stat::make('Pulse Duration', auth()->user()->pulse_duration.' seconds')
+            Stat::make('Pulse Duration', auth()->user()->pulse_duration . ' seconds')
                 ->description('Duration of one pulse')
                 ->icon(Tabler::Clock),
         ];
