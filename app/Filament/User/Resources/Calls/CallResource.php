@@ -6,7 +6,9 @@ namespace App\Filament\User\Resources\Calls;
 
 use App\Filament\User\Resources\Calls\Pages\CreateCall;
 use App\Filament\User\Resources\Calls\Pages\ListCalls;
+use App\Filament\User\Resources\Calls\Pages\ViewCall;
 use App\Filament\User\Resources\Calls\Schemas\CallForm;
+use App\Filament\User\Resources\Calls\Schemas\CallInfolist;
 use App\Filament\User\Resources\Calls\Tables\CallsTable;
 use App\Models\Call;
 use BackedEnum;
@@ -35,11 +37,9 @@ final class CallResource extends Resource
         return CallsTable::configure($table);
     }
 
-    public static function getRelations(): array
+    public static function infolist(Schema $schema): Schema
     {
-        return [
-            //
-        ];
+        return CallInfolist::configure($schema);
     }
 
     public static function getPages(): array
@@ -47,6 +47,7 @@ final class CallResource extends Resource
         return [
             'index' => ListCalls::route('/'),
             'create' => CreateCall::route('/create'),
+            'view' => ViewCall::route('/{record}'),
         ];
     }
 }

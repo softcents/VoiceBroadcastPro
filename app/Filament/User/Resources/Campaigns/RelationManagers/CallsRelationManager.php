@@ -32,6 +32,11 @@ final class CallsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('phone_number')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->width(0)
+                    ->alignCenter(),
                 TextColumn::make('phone_number')
                     ->label('Phone Number'),
                 TextColumn::make('status')

@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Transactions\Schemas;
 
+use App\Filament\User\Resources\Calls\CallResource;
+use App\Filament\User\Resources\Deposits\DepositResource;
+use App\Models\Call;
+use App\Models\Deposit;
+use App\Models\Transaction;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -41,7 +46,7 @@ final class TransactionInfolist
                                             ->label('Amount')
                                             ->size(TextSize::Large)
                                             ->weight(FontWeight::Bold)
-                                            ->numeric(),
+                                            ->money('BDT'),
 
                                         TextEntry::make('description')
                                             ->columnSpanFull(),
@@ -57,11 +62,21 @@ final class TransactionInfolist
                                             ->icon(Tabler::User),
                                         TextEntry::make('reference_type')
                                             ->label('Reference')
-                                            ->formatStateUsing(fn (string $state) => class_basename($state))
+                                            ->formatStateUsing(fn(string $state) => class_basename($state))
                                             ->placeholder('-'),
                                         TextEntry::make('reference_id')
                                             ->label('Reference ID')
                                             ->numeric()
+                                            ->url(function (Transaction $record) {
+                                                if ($record->reference_type === Deposit::class && $record->reference) {
+                                                    return DepositResource::getUrl('view', ['record' => $record->reference_id]);
+                                                }
+                                                if ($record->reference_type === Call::class && $record->reference) {
+                                                    return CallResource::getUrl('view', ['record' => $record->reference_id]);
+                                                }
+
+                                                return 'javascript:void(0);';
+                                            })
                                             ->placeholder('-'),
                                         TextEntry::make('currency')
                                             ->badge()

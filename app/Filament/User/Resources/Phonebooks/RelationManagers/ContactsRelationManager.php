@@ -30,6 +30,11 @@ final class ContactsRelationManager extends RelationManager
             ->components([
                 Section::make()
                     ->schema([
+                        TextColumn::make('id')
+                            ->label('ID')
+                            ->sortable()
+                            ->width(0)
+                            ->alignCenter(),
                         TextInput::make('first_name')
                             ->label('First Name')
                             ->required(),

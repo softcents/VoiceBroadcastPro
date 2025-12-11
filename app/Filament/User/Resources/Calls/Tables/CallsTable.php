@@ -26,6 +26,11 @@ final class CallsTable
         return $table
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->width(0)
+                    ->alignCenter(),
                 TextColumn::make('phone_number')
                     ->label('Phone Number')
                     ->searchable()
@@ -39,7 +44,7 @@ final class CallsTable
                 TextColumn::make('duration')
                     ->label('Duration')
                     ->placeholder('-')
-                    ->formatStateUsing(fn (int $state) => secondsToHuman($state))
+                    ->formatStateUsing(fn(int $state) => secondsToHuman($state))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created At')
@@ -67,7 +72,7 @@ final class CallsTable
                     ->label('Retry')
                     ->icon(Tabler::Refresh)
                     ->color('danger')
-                    ->visible(fn (Call $record) => $record->status === CallStatus::Failed)
+                    ->visible(fn(Call $record) => $record->status === CallStatus::Failed)
                     ->requiresConfirmation()
                     ->action(function (Call $record) {
                         $record->type === CallType::Marketing

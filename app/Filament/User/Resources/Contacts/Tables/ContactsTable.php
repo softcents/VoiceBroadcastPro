@@ -21,6 +21,11 @@ final class ContactsTable
         return $table
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->width(0)
+                    ->alignCenter(),
                 TextColumn::make('phonebook.name')
                     ->searchable()
                     ->url(fn ($record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),

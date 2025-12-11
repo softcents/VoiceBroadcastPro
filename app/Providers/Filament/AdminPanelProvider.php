@@ -38,7 +38,7 @@ final class AdminPanelProvider extends PanelProvider
             ->darkModeBrandLogo(url('logo-white.svg'))
             ->favicon(url('favicon.png'))
             ->colors([
-                'primary' => Color::Rose,
+                'primary' => Color::Fuchsia,
             ])
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')

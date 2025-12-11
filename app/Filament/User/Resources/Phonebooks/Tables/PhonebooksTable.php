@@ -20,6 +20,11 @@ final class PhonebooksTable
         return $table
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->width(0)
+                    ->alignCenter(),
                 TextColumn::make('name')
                     ->label('Name')
                     ->searchable(),

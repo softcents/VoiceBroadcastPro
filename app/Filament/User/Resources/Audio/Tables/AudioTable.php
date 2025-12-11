@@ -27,6 +27,11 @@ final class AudioTable
         return $table
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->width(0)
+                    ->alignCenter(),
                 TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable(),

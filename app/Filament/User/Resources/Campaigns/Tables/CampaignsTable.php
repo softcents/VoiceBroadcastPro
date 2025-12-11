@@ -23,6 +23,11 @@ final class CampaignsTable
         return $table
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->width(0)
+                    ->alignCenter(),
                 TextColumn::make('title')
                     ->label('Title')
                     ->searchable()
