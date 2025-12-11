@@ -46,7 +46,7 @@ final class CallInfolist
                                         ->size('lg'),
                                     TextEntry::make('duration')
                                         ->icon('heroicon-m-clock')
-                                        ->formatStateUsing(fn ($state) => secondsToHuman($state))
+                                        ->formatStateUsing(fn($state) => secondsToHuman($state))
                                         ->label('Duration'),
                                     TextEntry::make('retries')
                                         ->icon(Tabler::Repeat)
@@ -57,22 +57,58 @@ final class CallInfolist
 
                         Section::make('Timestamps')
                             ->schema([
-                                Grid::make(4)
+                                Grid::make(1)
                                     ->schema([
-                                        TextEntry::make('scheduled_at')
-                                            ->dateTime()
-                                            ->placeholder('Not Scheduled'),
-                                        TextEntry::make('called_at')
-                                            ->dateTime()
-                                            ->placeholder('-')
-                                            ->dateTime()
-                                            ->placeholder('-'),
-                                        TextEntry::make('answered_at')
-                                            ->dateTime()
-                                            ->placeholder('-'),
-                                        TextEntry::make('ended_at')
-                                            ->dateTime()
-                                            ->placeholder('-'),
+                                        Group::make()
+                                            ->columns(4)
+                                            ->schema([
+                                                TextEntry::make('scheduled_at')
+                                                    ->icon(Tabler::Stopwatch)
+                                                    ->iconColor('gray')
+                                                    ->label('Scheduled At')
+                                                    ->dateTime()
+                                                    ->placeholder('Not Scheduled'),
+                                                TextEntry::make('created_at')
+                                                    ->icon(Tabler::CalendarPlus)
+                                                    ->label('Created At')
+                                                    ->dateTime(),
+                                                TextEntry::make('updated_at')
+                                                    ->icon(Tabler::CalendarUp)
+                                                    ->label('Updated At')
+                                                    ->dateTime(),
+                                            ]),
+                                        Group::make()
+                                            ->columns(4)
+                                            ->schema([
+                                                TextEntry::make('called_at')
+                                                    ->icon(Tabler::PhoneIncoming)
+                                                    ->iconColor('info')
+                                                    ->label('Called At')
+                                                    ->dateTime()
+                                                    ->placeholder('-')
+                                                    ->dateTime()
+                                                    ->placeholder('-'),
+                                                TextEntry::make('ringing_at')
+                                                    ->icon(Tabler::PhoneRinging)
+                                                    ->iconColor('warning')
+                                                    ->label('Ringing At')
+                                                    ->dateTime()
+                                                    ->placeholder('-')
+                                                    ->dateTime()
+                                                    ->placeholder('-'),
+                                                TextEntry::make('answered_at')
+                                                    ->icon(Tabler::PhoneSpark)
+                                                    ->iconColor('success')
+                                                    ->label('Answered At')
+                                                    ->dateTime()
+                                                    ->placeholder('-'),
+                                                TextEntry::make('ended_at')
+                                                    ->icon(Tabler::PhoneOff)
+                                                    ->iconColor('danger')
+                                                    ->label('Ended At')
+                                                    ->dateTime()
+                                                    ->placeholder('-'),
+                                            ])
                                     ]),
                             ]),
 
@@ -84,13 +120,13 @@ final class CallInfolist
                                             ->icon(Tabler::Speakerphone)
                                             ->label('Campaign')
                                             ->placeholder('Not Assigned')
-                                            ->url(fn (Call $record) => $record->campaign ? CampaignResource::getUrl('view', ['record' => $record->campaign_id]) : null),
+                                            ->url(fn(Call $record) => $record->campaign ? CampaignResource::getUrl('view', ['record' => $record->campaign_id]) : null),
                                         TextEntry::make('contact.nameOrNumber')
                                             ->icon(Tabler::AddressBook)
                                             ->label('Contact')
                                             ->placeholder('Not Assigned')
-                                            ->tooltip(fn (Call $record) => $record->phone_number ?? '-')
-                                            ->url(fn (Call $record) => $record->contact ? ContactResource::getUrl('view', ['record' => $record->contact_id]) : null),
+                                            ->tooltip(fn(Call $record) => $record->phone_number ?? '-')
+                                            ->url(fn(Call $record) => $record->contact ? ContactResource::getUrl('view', ['record' => $record->contact_id]) : null),
                                         TextEntry::make('caller.name')
                                             ->label('Caller')
                                             ->placeholder('Not Assigned'),
