@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Models\Campaign;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Str;
 
 final class CampaignStatusChart extends ChartWidget
 {
@@ -22,7 +23,9 @@ final class CampaignStatusChart extends ChartWidget
             ->toArray();
 
         // Enum/Label mapping
-        $labels = array_keys($data);
+        $labels = collect($data)
+            ->keys()
+            ->map(fn ($key) => Str::headline($key));
         $values = array_values($data);
 
         return [

@@ -31,7 +31,7 @@ final class CostPerDayChart extends ChartWidget
     {
         $activeFilter = $this->filter;
 
-        $query = Call::where('user_id', auth()->id());
+        $query = Call::query()->where('user_id', auth()->id());
 
         $trend = match ($activeFilter) {
             'today' => Trend::model(Call::class)

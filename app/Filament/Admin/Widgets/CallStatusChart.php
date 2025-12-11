@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Models\Call;
 use Filament\Widgets\ChartWidget;
+use Illuminate\Support\Str;
 
 final class CallStatusChart extends ChartWidget
 {
@@ -22,7 +23,9 @@ final class CallStatusChart extends ChartWidget
             ->toArray();
 
         // Enum/Label mapping
-        $labels = array_keys($data);
+        $labels = collect($data)
+            ->keys()
+            ->map(fn ($key) => Str::headline($key));
         $values = array_values($data);
 
         return [

@@ -30,7 +30,7 @@ final class StatsOverview extends StatsOverviewWidget
                 ->description('Cost per pulse')
                 ->icon(Tabler::HeartRateMonitor),
 
-            Stat::make('Pulse Duration', auth()->user()->pulse_duration . ' seconds')
+            Stat::make('Pulse Duration', auth()->user()->pulse_duration.' seconds')
                 ->description('Duration of one pulse')
                 ->icon(Tabler::Clock),
         ];

@@ -49,7 +49,7 @@ final class StoreOtpRequest extends FormRequest
             'recipient' => [
                 'description' => 'The phone number of the recipient who will receive the OTP.',
                 'example' => '+1234567890',
-            ]
+            ],
         ];
     }
 }

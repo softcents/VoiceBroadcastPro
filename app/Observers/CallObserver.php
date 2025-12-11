@@ -37,7 +37,7 @@ final class CallObserver
         if ($call->wasChanged('status')) {
             $user = $call->user;
 
-            if (!$user) {
+            if (! $user) {
                 return;
             }
 
