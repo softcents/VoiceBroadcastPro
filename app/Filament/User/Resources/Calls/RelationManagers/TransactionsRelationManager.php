@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Resources\Calls\RelationManagers;
 
 use App\Enums\TransactionType;
@@ -18,7 +20,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 
-class TransactionsRelationManager extends RelationManager
+final class TransactionsRelationManager extends RelationManager
 {
     protected static string $relationship = 'transactions';
 

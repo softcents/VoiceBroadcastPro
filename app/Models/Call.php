@@ -101,7 +101,7 @@ final class Call extends Model
     protected function isRetryable(): Attribute
     {
         return Attribute::make(
-            get: fn() => in_array($this->status, [
+            get: fn () => in_array($this->status, [
                 CallStatus::Busy,
                 CallStatus::NotAnswered,
                 CallStatus::Failed,
@@ -112,7 +112,7 @@ final class Call extends Model
     protected function canRetry(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->isRetryable && $this->retries < app(CallingSetting::class)->max_retry_attempts,
+            get: fn () => $this->isRetryable && $this->retries < app(CallingSetting::class)->max_retry_attempts,
         );
     }
 }

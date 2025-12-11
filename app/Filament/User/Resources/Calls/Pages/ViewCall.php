@@ -21,9 +21,9 @@ final class ViewCall extends ViewRecord
                 ->label('Retry')
                 ->icon(Tabler::RepeatOnce)
                 ->color('danger')
-                ->visible(fn(Call $record) => $record->can_retry)
+                ->visible(fn (Call $record) => $record->can_retry)
                 ->requiresConfirmation()
-                ->action(fn(Call $record) => $record->retry()),
+                ->action(fn (Call $record) => $record->retry()),
         ];
     }
 }

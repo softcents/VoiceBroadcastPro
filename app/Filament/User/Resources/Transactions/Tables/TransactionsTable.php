@@ -12,7 +12,6 @@ use App\Models\Transaction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use LaraZeus\Tabler\Tabler;
 
 final class TransactionsTable
 {
@@ -78,7 +77,7 @@ final class TransactionsTable
                         Deposit::class => 'Deposit',
                         Call::class => 'Call',
                     ])
-                    ->searchable()
+                    ->searchable(),
             ])
             ->recordActions([
             ])
