@@ -7,8 +7,6 @@ namespace App\Jobs;
 use App\Enums\CallStatus;
 use App\Enums\TransactionType;
 use App\Models\Call;
-use App\Observers\CallObserver;
-use App\Settings\CallingSetting;
 use Carbon\CarbonImmutable;
 use Exception;
 use Illuminate\Bus\Batchable;
@@ -42,7 +40,7 @@ final class ProcessMarketingCall implements ShouldQueue
         $user = $this->call->user;
 
         $pulseRate = $user->pulse_rate;
-        $pulseDuration = app(CallingSetting::class)->pulse_duration;
+        $pulseDuration = $user->pulse_duration;
         $audioDuration = $this->call->audio->duration;
 
         $totalPulses = ceil($audioDuration / $pulseDuration);
