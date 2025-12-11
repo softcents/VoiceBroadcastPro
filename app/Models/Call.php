@@ -81,8 +81,9 @@ final class Call extends Model
             $this->type === CallType::Marketing
                 ? ProcessMarketingCall::dispatch($this->id)
                 : ProcessOtpCall::dispatch($this->id);
+        } else {
+            throw new RuntimeException('Call cannot be retried.');
         }
-        throw new RuntimeException('Call cannot be retried.');
     }
 
     protected function isRetryable(): Attribute
