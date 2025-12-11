@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Audio;
 
+use App\Enums\AudioApproval;
 use App\Filament\Admin\Resources\Audio\Pages\ListAudio;
 use App\Filament\Admin\Resources\Audio\Pages\ViewAudio;
 use App\Filament\Admin\Resources\Audio\Schemas\AudioInfolist;
@@ -14,6 +15,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
@@ -22,6 +24,13 @@ final class AudioResource extends Resource
     protected static ?string $model = Audio::class;
 
     protected static string|BackedEnum|null $navigationIcon = Tabler::Music;
+
+    public static function getNavigationBadge(): ?string
+    {
+        $count = Audio::whereApproval(AudioApproval::Pending)->count();
+
+        return $count > 0 ? (string)$count : null;
+    }
 
     protected static ?int $navigationSort = 30;
 
