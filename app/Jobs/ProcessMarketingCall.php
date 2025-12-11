@@ -7,6 +7,8 @@ namespace App\Jobs;
 use App\Enums\CallStatus;
 use App\Enums\TransactionType;
 use App\Models\Call;
+use App\Observers\CallObserver;
+use App\Settings\CallingSetting;
 use Carbon\CarbonImmutable;
 use Exception;
 use Illuminate\Bus\Batchable;
@@ -40,14 +42,17 @@ final class ProcessMarketingCall implements ShouldQueue
         $user = $this->call->user;
 
         $pulseRate = $user->pulse_rate;
+        $pulseDuration = app(CallingSetting::class)->pulse_duration;
+        $audioDuration = $this->call->audio->duration;
 
-        if (! $user || $user->balance < $pulseRate) {
+        $totalPulses = ceil($audioDuration / $pulseDuration);
+        $cost = $totalPulses * $pulseRate;
+
+        if (! $user || $user->balance < $cost) {
             $this->call->update(['status' => CallStatus::Failed]);
 
             return;
         }
-
-        $cost = $pulseRate;
 
         // Deduct balance and create transaction
         try {
@@ -59,7 +64,7 @@ final class ProcessMarketingCall implements ShouldQueue
                 'type' => TransactionType::Debit,
                 'amount' => $cost,
                 'currency' => 'BDT',
-                'description' => "Initial charge for call ID {$this->call->id}",
+                'description' => "Initial charge for call ID {$this->call->id} ($totalPulses pulses)",
                 'reference_type' => Call::class,
                 'reference_id' => $this->call->id,
             ]);
