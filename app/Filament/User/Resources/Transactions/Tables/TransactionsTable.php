@@ -32,7 +32,7 @@ final class TransactionsTable
                     ->searchable()
                     ->icon(Tabler::InfoCircle)
                     ->wrap()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(),
                 TextColumn::make('reference_type')
                     ->label('Reference')
                     ->searchable()
