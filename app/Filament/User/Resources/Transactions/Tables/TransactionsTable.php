@@ -30,9 +30,8 @@ final class TransactionsTable
                 TextColumn::make('description')
                     ->label('Description')
                     ->searchable()
-                    ->tooltip(fn (Transaction $record): string => $record->description)
                     ->icon(Tabler::InfoCircle)
-                    ->formatStateUsing(fn () => 'View')
+                    ->wrap()
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('reference_type')
                     ->label('Reference')
