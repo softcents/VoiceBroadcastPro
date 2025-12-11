@@ -62,7 +62,7 @@ final class TransactionInfolist
                                             ->icon(Tabler::User),
                                         TextEntry::make('reference_type')
                                             ->label('Reference')
-                                            ->formatStateUsing(fn(string $state) => class_basename($state))
+                                            ->formatStateUsing(fn (string $state) => class_basename($state))
                                             ->placeholder('-'),
                                         TextEntry::make('reference_id')
                                             ->label('Reference ID')

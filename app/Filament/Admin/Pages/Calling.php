@@ -37,6 +37,13 @@ final class Calling extends SettingsPage
                             ->minValue(1)
                             ->step(1)
                             ->required(),
+                        TextInput::make('max_retry_attempts')
+                            ->label('Max Retry Attempts')
+                            ->suffix('times')
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(1)
+                            ->required(),
                     ]),
             ]);
     }

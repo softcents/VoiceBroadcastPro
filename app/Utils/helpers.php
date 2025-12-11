@@ -9,7 +9,7 @@ function secondsToHuman(int|float $seconds): string
     try {
         return CarbonInterval::seconds($seconds)->cascade()->forHumans();
     } catch (Exception $e) {
-        return (string)$seconds;
+        return (string) $seconds;
     }
 }
 

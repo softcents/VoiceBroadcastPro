@@ -12,6 +12,8 @@ final class CallingSetting extends Settings
 
     public float $pulse_rate = 0.10;
 
+    public int $max_retry_attempts = 3;
+
     public static function group(): string
     {
         return 'calling';

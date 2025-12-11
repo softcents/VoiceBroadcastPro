@@ -40,8 +40,8 @@ final class ContactInfolist
                             ->icon(Tabler::CalendarUp)
                             ->label('Last Updated')
                             ->dateTime()
-                            ->placeholder('-')
-                    ])
+                            ->placeholder('-'),
+                    ]),
             ]);
     }
 }

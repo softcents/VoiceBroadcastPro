@@ -46,7 +46,7 @@ final class CallInfolist
                                         ->size('lg'),
                                     TextEntry::make('duration')
                                         ->icon('heroicon-m-clock')
-                                        ->formatStateUsing(fn($state) => secondsToHuman($state))
+                                        ->formatStateUsing(fn ($state) => secondsToHuman($state))
                                         ->label('Duration'),
                                 ]),
                             ]),
@@ -80,13 +80,13 @@ final class CallInfolist
                                             ->icon(Tabler::Speakerphone)
                                             ->label('Campaign')
                                             ->placeholder('Not Assigned')
-                                            ->url(fn(Call $record) => $record->campaign ? CampaignResource::getUrl('view', ['record' => $record->campaign_id]) : null),
+                                            ->url(fn (Call $record) => $record->campaign ? CampaignResource::getUrl('view', ['record' => $record->campaign_id]) : null),
                                         TextEntry::make('contact.nameOrNumber')
                                             ->icon(Tabler::AddressBook)
                                             ->label('Contact')
                                             ->placeholder('Not Assigned')
-                                            ->tooltip(fn(Call $record) => $record->phone_number ?? '-')
-                                            ->url(fn(Call $record) => $record->contact ? ContactResource::getUrl('view', ['record' => $record->contact_id]) : null),
+                                            ->tooltip(fn (Call $record) => $record->phone_number ?? '-')
+                                            ->url(fn (Call $record) => $record->contact ? ContactResource::getUrl('view', ['record' => $record->contact_id]) : null),
                                         TextEntry::make('caller.name')
                                             ->label('Caller')
                                             ->placeholder('Not Assigned'),
@@ -95,7 +95,7 @@ final class CallInfolist
                                             ->placeholder('Not Assigned'),
                                     ]),
                             ]),
-                    ])
+                    ]),
 
             ]);
     }

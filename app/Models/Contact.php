@@ -37,7 +37,7 @@ final class Contact extends Model
     protected function nameOrNumber(): Attribute
     {
         return Attribute::make(
-            get: fn() => $this->name ?: $this->phone_number,
+            get: fn () => $this->name ?: $this->phone_number,
         );
     }
 }

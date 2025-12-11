@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Enums;
 
 use BackedEnum;
@@ -9,7 +11,7 @@ use Filament\Support\Contracts\HasLabel;
 use Illuminate\Contracts\Support\Htmlable;
 use LaraZeus\Tabler\Tabler;
 
-enum CallFromInterface: string implements HasLabel, HasIcon, HasColor
+enum CallFromInterface: string implements HasColor, HasIcon, HasLabel
 {
     case Web = 'web';
     case Mobile = 'mobile';

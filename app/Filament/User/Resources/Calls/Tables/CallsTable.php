@@ -7,8 +7,6 @@ namespace App\Filament\User\Resources\Calls\Tables;
 use App\Enums\CallFromInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
-use App\Jobs\ProcessMarketingCall;
-use App\Jobs\ProcessOtpCall;
 use App\Models\Call;
 use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
@@ -49,7 +47,7 @@ final class CallsTable
                 TextColumn::make('duration')
                     ->label('Duration')
                     ->placeholder('-')
-                    ->formatStateUsing(fn(int $state) => secondsToHuman($state))
+                    ->formatStateUsing(fn (int $state) => secondsToHuman($state))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created At')
@@ -81,13 +79,9 @@ final class CallsTable
                     ->label('Retry')
                     ->icon(Tabler::Refresh)
                     ->color('danger')
-                    ->visible(fn(Call $record) => $record->status === CallStatus::Failed)
+                    ->visible(fn (Call $record) => $record->can_retry)
                     ->requiresConfirmation()
-                    ->action(function (Call $record) {
-                        $record->type === CallType::Marketing
-                            ? ProcessMarketingCall::dispatch($record->id)
-                            : ProcessOtpCall::dispatch($record->id);
-                    }),
+                    ->action(fn (Call $record) => $record->retry()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -98,11 +92,7 @@ final class CallsTable
                         ->requiresConfirmation()
                         ->action(function (Collection $records) {
                             $records->where('status', CallStatus::Failed)
-                                ->each(function (Call $record) {
-                                    $record->type === CallType::Marketing
-                                        ? ProcessMarketingCall::dispatch($record->id)
-                                        : ProcessOtpCall::dispatch($record->id);
-                                });
+                                ->each(fn (Call $record) => $record->retry());
                         }),
                     DeleteBulkAction::make(),
                 ]),

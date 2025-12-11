@@ -14,7 +14,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('calls', function (Blueprint $table) {
-            $table->string('from_interface')->default('web')->after('type');
+            $table->unsignedInteger('retries')->default(0)->after('cost');
         });
     }
 
@@ -24,7 +24,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('calls', function (Blueprint $table) {
-            $table->dropColumn('from_interface');
+            $table->dropColumn('retries');
         });
     }
 };
