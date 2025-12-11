@@ -2,30 +2,15 @@
 
 declare(strict_types=1);
 
-function secondsToHuman(int $seconds): string
+use Carbon\CarbonInterval;
+
+function secondsToHuman(int|float $seconds): string
 {
-    $days = intdiv($seconds, 86400);
-    $seconds %= 86400;
-    $hours = intdiv($seconds, 3600);
-    $seconds %= 3600;
-    $mins = intdiv($seconds, 60);
-    $secs = $seconds % 60;
-
-    $parts = [];
-    if ($days) {
-        $parts[] = "$days day".($days > 1 ? 's' : '');
+    try {
+        return CarbonInterval::seconds($seconds)->cascade()->forHumans();
+    } catch (Exception $e) {
+        return (string)$seconds;
     }
-    if ($hours) {
-        $parts[] = "$hours hour".($hours > 1 ? 's' : '');
-    }
-    if ($mins) {
-        $parts[] = "$mins min".($mins > 1 ? 's' : '');
-    }
-    if ($secs || ! $parts) {
-        $parts[] = "$secs sec".($secs > 1 ? 's' : '');
-    }
-
-    return implode(' ', $parts);
 }
 
 function bytesToHuman(int|float $bytes, int $precision = 2, bool $binary = false): string

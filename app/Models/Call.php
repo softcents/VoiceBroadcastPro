@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\CallFromInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
 use App\Models\Scopes\OwnedByAuthUser;
@@ -28,6 +29,7 @@ final class Call extends Model
     protected $casts = [
         'status' => CallStatus::class,
         'type' => CallType::class,
+        'from_interface' => CallFromInterface::class,
         'phone_number' => E164PhoneNumberCast::class,
         'called_at' => 'datetime',
         'ringing_at' => 'datetime',

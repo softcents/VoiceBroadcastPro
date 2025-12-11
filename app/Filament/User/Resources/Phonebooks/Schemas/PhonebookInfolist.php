@@ -14,14 +14,24 @@ final class PhonebookInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->columns(1)
             ->components([
                 Section::make()
-                    ->columns()
                     ->schema([
                         TextEntry::make('name')
                             ->icon(Tabler::H1)
                             ->label('Name'),
+                        TextEntry::make('description')
+                            ->icon(Tabler::TextCaption)
+                            ->placeholder('-')
+                            ->columnSpanFull(),
+                    ]),
+                Section::make()
+                    ->schema([
+                        TextEntry::make('contacts_count')
+                            ->counts('contacts')
+                            ->icon(Tabler::AddressBook)
+                            ->label('Contacts')
+                            ->placeholder('-'),
                         TextEntry::make('created_at')
                             ->icon(Tabler::ClockPlus)
                             ->dateTime()
@@ -30,10 +40,6 @@ final class PhonebookInfolist
                             ->icon(Tabler::ClockEdit)
                             ->dateTime()
                             ->placeholder('-'),
-                        TextEntry::make('description')
-                            ->icon(Tabler::TextCaption)
-                            ->placeholder('-')
-                            ->columnSpanFull(),
                     ]),
             ]);
     }

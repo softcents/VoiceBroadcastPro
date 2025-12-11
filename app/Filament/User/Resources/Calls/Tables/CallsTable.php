@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Calls\Tables;
 
+use App\Enums\CallFromInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
 use App\Jobs\ProcessMarketingCall;
@@ -24,6 +25,7 @@ final class CallsTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->poll()
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
                 TextColumn::make('id')
@@ -40,6 +42,9 @@ final class CallsTable
                     ->badge(),
                 TextColumn::make('type')
                     ->label('Type')
+                    ->badge(),
+                TextColumn::make('from_interface')
+                    ->label('From')
                     ->badge(),
                 TextColumn::make('duration')
                     ->label('Duration')
@@ -65,6 +70,10 @@ final class CallsTable
                 SelectFilter::make('type')
                     ->label('Type')
                     ->options(CallType::class)
+                    ->searchable(),
+                SelectFilter::make('from_interface')
+                    ->label('From Interface')
+                    ->options(CallFromInterface::class)
                     ->searchable(),
             ])
             ->recordActions([
