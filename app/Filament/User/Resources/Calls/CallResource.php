@@ -7,6 +7,7 @@ namespace App\Filament\User\Resources\Calls;
 use App\Filament\User\Resources\Calls\Pages\CreateCall;
 use App\Filament\User\Resources\Calls\Pages\ListCalls;
 use App\Filament\User\Resources\Calls\Pages\ViewCall;
+use App\Filament\User\Resources\Calls\RelationManagers\TransactionsRelationManager;
 use App\Filament\User\Resources\Calls\Schemas\CallForm;
 use App\Filament\User\Resources\Calls\Schemas\CallInfolist;
 use App\Filament\User\Resources\Calls\Tables\CallsTable;
@@ -15,7 +16,6 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use LaraZeus\Tabler\Tabler;
 
 final class CallResource extends Resource
@@ -41,6 +41,13 @@ final class CallResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return CallInfolist::configure($schema);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            TransactionsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array

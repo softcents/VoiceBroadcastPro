@@ -19,6 +19,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
 use RuntimeException;
 
@@ -70,6 +71,11 @@ final class Call extends Model
         return $this->belongsTo(Audio::class);
     }
 
+    public function transactions(): MorphMany
+    {
+        return $this->morphMany(Transaction::class, 'reference');
+    }
+
     /**
      * Retry the call if eligible.
      */
@@ -95,7 +101,7 @@ final class Call extends Model
     protected function isRetryable(): Attribute
     {
         return Attribute::make(
-            get: fn () => in_array($this->status, [
+            get: fn() => in_array($this->status, [
                 CallStatus::Busy,
                 CallStatus::NotAnswered,
                 CallStatus::Failed,
@@ -106,7 +112,7 @@ final class Call extends Model
     protected function canRetry(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->isRetryable && $this->retries < app(CallingSetting::class)->max_retry_attempts,
+            get: fn() => $this->isRetryable && $this->retries < app(CallingSetting::class)->max_retry_attempts,
         );
     }
 }

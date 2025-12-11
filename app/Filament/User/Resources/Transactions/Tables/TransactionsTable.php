@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Transactions\Tables;
 
+use App\Enums\TransactionType;
 use App\Filament\User\Resources\Deposits\DepositResource;
 use App\Models\Call;
 use App\Models\Deposit;
 use App\Models\Transaction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use LaraZeus\Tabler\Tabler;
 
@@ -36,7 +38,6 @@ final class TransactionsTable
                 TextColumn::make('description')
                     ->label('Description')
                     ->searchable()
-                    ->icon(Tabler::InfoCircle)
                     ->wrap()
                     ->toggleable(),
                 TextColumn::make('reference_type')
@@ -67,7 +68,17 @@ final class TransactionsTable
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('type')
+                    ->label('Type')
+                    ->options(TransactionType::class)
+                    ->searchable(),
+                SelectFilter::make('reference_type')
+                    ->label('Reference Type')
+                    ->options([
+                        Deposit::class => 'Deposit',
+                        Call::class => 'Call',
+                    ])
+                    ->searchable()
             ])
             ->recordActions([
             ])
