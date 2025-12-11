@@ -6,11 +6,16 @@ namespace App\Filament\User\Resources\Calls\Tables;
 
 use App\Enums\CallStatus;
 use App\Enums\CallType;
+use App\Jobs\ProcessMarketingCall;
+use App\Jobs\ProcessOtpCall;
+use App\Models\Call;
+use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use LaraZeus\Tabler\Tabler;
 
 final class CallsTable
 {
@@ -56,7 +61,15 @@ final class CallsTable
                     ->searchable(),
             ])
             ->recordActions([
-
+                Action::make('retry')
+                    ->label('Retry')
+                    ->icon(Tabler::Refresh)
+                    ->visible(fn (Call $record) => $record->status === CallStatus::Failed)
+                    ->action(function (Call $record) {
+                        $record->type === CallType::Marketing
+                            ? ProcessMarketingCall::dispatch($record->id)
+                            : ProcessOtpCall::dispatch($record->id);
+                    }),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([

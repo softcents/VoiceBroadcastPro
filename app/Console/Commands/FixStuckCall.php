@@ -16,14 +16,20 @@ final class FixStuckCall extends Command
 
     public function handle(): void
     {
-        $count = Call::query()
+        $calls = Call::query()
             ->whereIn('status', [
                 CallStatus::Initiated,
                 CallStatus::Ringing,
                 CallStatus::Answered,
             ])
             ->where('created_at', '<', now()->subHour())
-            ->update(['status' => CallStatus::Failed]);
+            ->get();
+
+        $count = $calls->count();
+
+        foreach ($calls as $call) {
+            $call->update(['status' => CallStatus::Failed]);
+        }
 
         if ($count) {
             $this->info("Fixed {$count} stuck calls.");

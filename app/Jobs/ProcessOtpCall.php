@@ -11,7 +11,10 @@ use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Http\Client\ConnectionException;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use App\Enums\TransactionType;
 
 final class ProcessOtpCall implements ShouldQueue
 {
@@ -33,7 +36,38 @@ final class ProcessOtpCall implements ShouldQueue
     {
         $user = $this->call->user;
 
-        if (! $user || $user->balance < $user->pulse_rate) {
+        $pulseRate = $user->pulse_rate;
+
+        if (!$user || $user->balance < $pulseRate) {
+            $this->call->update(['status' => CallStatus::Failed]);
+
+            return;
+        }
+
+        $cost = $pulseRate;
+
+        // Deduct balance and create transaction
+        try {
+            DB::beginTransaction();
+
+            $user->decrement('balance', $cost);
+
+            $user->transactions()->create([
+                'type' => TransactionType::Debit,
+                'amount' => $cost,
+                'currency' => 'BDT',
+                'description' => "Initial charge for OTP call ID {$this->call->id}",
+                'reference_type' => Call::class,
+                'reference_id' => $this->call->id,
+            ]);
+
+            $this->call->cost = $cost;
+            $this->call->saveQuietly();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Failed to deduct balance for OTP Call ID: {$this->call->id}. Error: {$e->getMessage()}");
             $this->call->update(['status' => CallStatus::Failed]);
 
             return;
@@ -59,6 +93,23 @@ final class ProcessOtpCall implements ShouldQueue
             ]);
 
         if ($response->failed()) {
+            // Refund balance
+            DB::transaction(function () use ($user, $cost) {
+                $user->increment('balance', $cost);
+
+                $user->transactions()->create([
+                    'type' => TransactionType::Credit,
+                    'amount' => $cost,
+                    'currency' => 'BDT',
+                    'description' => "Refund for failed OTP call initiation ID {$this->call->id}",
+                    'reference_type' => Call::class,
+                    'reference_id' => $this->call->id,
+                ]);
+
+                $this->call->cost = 0;
+                $this->call->saveQuietly();
+            });
+
             throw new ConnectionException("Failed to initiate call for Call ID: {$this->call->id}");
         }
 

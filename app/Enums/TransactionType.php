@@ -11,8 +11,8 @@ use LaraZeus\Tabler\Tabler;
 
 enum TransactionType: string implements HasColor, HasIcon, HasLabel
 {
-    case Deposit = 'deposit';
-    case Call = 'expense';
+    case Credit = 'credit';
+    case Debit = 'debit';
 
     public function getLabel(): string
     {
@@ -22,16 +22,16 @@ enum TransactionType: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::Deposit => 'success',
-            self::Call => 'danger',
+            self::Credit => 'success',
+            self::Debit => 'danger',
         };
     }
 
     public function getIcon(): Tabler
     {
         return match ($this) {
-            self::Deposit => Tabler::CreditCardPay,
-            self::Call => Tabler::PhoneCall,
+            self::Credit => Tabler::CreditCardPay,
+            self::Debit => Tabler::PhoneCall,
         };
     }
 }

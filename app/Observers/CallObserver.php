@@ -34,34 +34,70 @@ final class CallObserver
      */
     public function updated(Call $call): void
     {
-        if ($call->wasChanged('status') && $call->status === CallStatus::Completed) {
+        if ($call->wasChanged('status')) {
             $user = $call->user;
 
-            if (! $user) {
+            if (!$user) {
                 return;
             }
 
-            // Pulse Billing Logic
-            $pulseDuration = $user->pulse_duration;
-            $pulseRate = $user->pulse_rate;
+            // Handle Completion
+            if ($call->status === CallStatus::Completed) {
+                $pulseDuration = $user->pulse_duration;
+                $pulseRate = $user->pulse_rate;
 
-            if ($pulseDuration > 0 && $call->duration > 0) {
-                $pulses = ceil($call->duration / $pulseDuration);
-                $cost = $pulses * $pulseRate;
+                if ($pulseDuration > 0 && $call->duration > 0) {
+                    $pulses = ceil($call->duration / $pulseDuration);
+                    $actualCost = $pulses * $pulseRate;
+                    $reservedCost = $call->cost;
 
-                $user->decrement('balance', $cost);
+                    if ($actualCost > $reservedCost) {
+                        // Deduct extra
+                        $diff = $actualCost - $reservedCost;
+                        $user->decrement('balance', $diff);
+                        $user->transactions()->create([
+                            'type' => TransactionType::Debit,
+                            'amount' => $diff,
+                            'currency' => 'BDT',
+                            'description' => "Additional charge for call ID {$call->id} ({$call->duration}s)",
+                            'reference_type' => Call::class,
+                            'reference_id' => $call->id,
+                        ]);
+                    } elseif ($actualCost < $reservedCost) {
+                        // Refund difference
+                        $diff = $reservedCost - $actualCost;
+                        $user->increment('balance', $diff);
+                        $user->transactions()->create([
+                            'type' => TransactionType::Credit,
+                            'amount' => $diff,
+                            'currency' => 'BDT',
+                            'description' => "Partial refund for call ID {$call->id} ({$call->duration}s)",
+                            'reference_type' => Call::class,
+                            'reference_id' => $call->id,
+                        ]);
+                    }
 
-                $call->cost = $cost;
-                $call->saveQuietly();
+                    $call->cost = $actualCost;
+                    $call->saveQuietly();
+                }
+            }
+            // Handle Failure/Busy/NoAnswer/etc where it ends without success but cost was reserved
+            elseif (in_array($call->status, [CallStatus::Failed, CallStatus::Busy, CallStatus::NotAnswered])) {
+                if ($call->cost > 0) {
+                    $refundAmount = $call->cost;
+                    $user->increment('balance', $refundAmount);
+                    $user->transactions()->create([
+                        'type' => TransactionType::Credit,
+                        'amount' => $refundAmount,
+                        'currency' => 'BDT',
+                        'description' => "Full refund for {$call->status->value} call ID {$call->id}",
+                        'reference_type' => Call::class,
+                        'reference_id' => $call->id,
+                    ]);
 
-                $user->transactions()->create([
-                    'type' => TransactionType::Call,
-                    'amount' => $cost,
-                    'currency' => 'BDT',
-                    'description' => "Charge for call ID {$call->id} ({$call->duration}s, {$pulses} pulses @ {$pulseRate}/pulse)",
-                    'reference_type' => Call::class,
-                    'reference_id' => $call->id,
-                ]);
+                    $call->cost = 0;
+                    $call->saveQuietly();
+                }
             }
         }
     }
