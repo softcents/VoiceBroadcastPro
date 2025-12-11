@@ -18,6 +18,7 @@ final class TransactionsTable
     {
         return $table
             ->defaultSort('created_at', direction: 'desc')
+            ->poll('5s')
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')

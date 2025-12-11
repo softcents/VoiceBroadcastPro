@@ -33,4 +33,11 @@ final class Contact extends Model
             get: fn ($value) => $this->first_name.' '.$this->last_name
         );
     }
+
+    protected function nameOrNumber(): Attribute
+    {
+        return Attribute::make(
+            get: fn() => $this->name ?: $this->phone_number,
+        );
+    }
 }

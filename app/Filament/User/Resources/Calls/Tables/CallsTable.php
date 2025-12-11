@@ -25,7 +25,7 @@ final class CallsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->poll()
+            ->poll('5s')
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
                 TextColumn::make('id')
