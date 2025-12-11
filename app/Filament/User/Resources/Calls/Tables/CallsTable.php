@@ -77,7 +77,7 @@ final class CallsTable
             ->recordActions([
                 Action::make('retry')
                     ->label('Retry')
-                    ->icon(Tabler::Refresh)
+                    ->icon(Tabler::RepeatOnce)
                     ->color('danger')
                     ->visible(fn (Call $record) => $record->can_retry)
                     ->requiresConfirmation()

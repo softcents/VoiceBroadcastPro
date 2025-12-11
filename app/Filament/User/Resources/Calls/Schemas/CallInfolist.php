@@ -48,6 +48,10 @@ final class CallInfolist
                                         ->icon('heroicon-m-clock')
                                         ->formatStateUsing(fn ($state) => secondsToHuman($state))
                                         ->label('Duration'),
+                                    TextEntry::make('retries')
+                                        ->icon(Tabler::Repeat)
+                                        ->label('Retries')
+                                        ->suffix(' times'),
                                 ]),
                             ]),
 
