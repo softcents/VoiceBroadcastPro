@@ -54,7 +54,7 @@ final class CampaignInfolist
                                         TextEntry::make('user.name')
                                             ->label('Customer')
                                             ->icon(Tabler::User)
-                                            ->url(fn (Campaign $record) => CustomerResource::getUrl('view', ['record' => $record->user_id])),
+                                            ->url(fn (Campaign $record) => $record->user_id ? CustomerResource::getUrl('view', ['record' => $record->user_id]): null),
 
                                         TextEntry::make('audio.title')
                                             ->label('Audio File')
@@ -65,7 +65,7 @@ final class CampaignInfolist
                                             ->label('Phonebook')
                                             ->icon(Tabler::AddressBook)
                                             ->placeholder('N/A')
-                                            ->url(fn (Campaign $record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
+                                            ->url(fn (Campaign $record) => $record->phonebook_id ? PhonebookResource::getUrl('view', ['record' => $record->phonebook_id]) : null),
                                     ]),
                             ]),
 
