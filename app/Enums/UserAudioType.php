@@ -19,7 +19,7 @@ enum UserAudioType: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::Upload => 'Upload',
-            self::TTS => 'Text to Speech',
+            self::TTS => 'TTS',
             self::Both => 'Both',
         };
     }

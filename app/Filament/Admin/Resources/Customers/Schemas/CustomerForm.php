@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Customers\Schemas;
 
+use App\Enums\UserAudioType;
+use App\Models\Caller;
 use App\Settings\CallingSetting;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -20,6 +23,8 @@ final class CustomerForm
         return $schema
             ->components([
                 Section::make()
+                    ->heading('Customer Information')
+                    ->description('Basic information about the customer.')
                     ->schema([
                         TextInput::make('name')
                             ->label('Name')
@@ -34,25 +39,8 @@ final class CustomerForm
                         PhoneInput::make('phone')
                             ->label('Phone')
                             ->required()
-                            ->onlyCountries(['BD'])
                             ->defaultCountry('BD')
-                            ->rules(['phone:BD']),
-                        TextInput::make('pulse_rate')
-                            ->label('Pulse Rate')
-                            ->prefix('BDT')
-                            ->numeric()
-                            ->minValue(0)
-                            ->step(0.1)
-                            ->default(app(CallingSetting::class)->pulse_rate)
-                            ->required(),
-                        TextInput::make('pulse_duration')
-                            ->label('Pulse Duration')
-                            ->suffix('seconds')
-                            ->numeric()
-                            ->minValue(1)
-                            ->step(1)
-                            ->default(app(CallingSetting::class)->pulse_duration)
-                            ->required(),
+                            ->rules('phone'),
                         TextInput::make('password')
                             ->label('Password')
                             ->hint('Leave empty to keep the current password.')
@@ -69,6 +57,44 @@ final class CustomerForm
                                     $component->state(bin2hex(random_bytes(4)));
                                 })
                             ),
+                    ]),
+                Section::make()
+                    ->heading('Calling Settings')
+                    ->description('Settings related to calling features for the customer.')
+                    ->schema([
+                        Select::make('callers')
+                            ->prefixIcon(Tabler::IdBadge)
+                            ->label('Callers')
+                            ->relationship('callers')
+                            ->searchable(['caller_name', 'caller_number'])
+                            ->getOptionLabelFromRecordUsing(fn (Caller $record): string => $record->name)
+                            ->multiple()
+                            ->preload(),
+                        Select::make('audio_type')
+                            ->prefixIcon(Tabler::MusicBolt)
+                            ->label('Audio Type')
+                            ->options(UserAudioType::class)
+                            ->default('both')
+                            ->required()
+                            ->native(false)
+                            ->selectablePlaceholder(false),
+                        TextInput::make('pulse_rate')
+                            ->label('Pulse Rate')
+                            ->prefix('BDT')
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.1)
+                            ->default(app(CallingSetting::class)->pulse_rate)
+                            ->required(),
+                        TextInput::make('pulse_duration')
+                            ->prefixIcon(Tabler::ClockRecord)
+                            ->label('Pulse Duration')
+                            ->suffix('seconds')
+                            ->numeric()
+                            ->minValue(1)
+                            ->step(1)
+                            ->default(app(CallingSetting::class)->pulse_duration)
+                            ->required(),
                     ]),
             ]);
     }

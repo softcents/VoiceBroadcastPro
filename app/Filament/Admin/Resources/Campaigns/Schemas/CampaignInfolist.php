@@ -54,7 +54,7 @@ final class CampaignInfolist
                                         TextEntry::make('user.name')
                                             ->label('Customer')
                                             ->icon(Tabler::User)
-                                            ->url(fn (Campaign $record) => $record->user_id ? CustomerResource::getUrl('view', ['record' => $record->user_id]): null),
+                                            ->url(fn (Campaign $record) => $record->user_id ? CustomerResource::getUrl('view', ['record' => $record->user_id]) : null),
 
                                         TextEntry::make('audio.title')
                                             ->label('Audio File')

@@ -24,7 +24,7 @@ final class DepositForm
                             ->relationship(
                                 name: 'user',
                                 titleAttribute: 'name',
-                                modifyQueryUsing: fn($query) => $query->where('type', UserType::User))
+                                modifyQueryUsing: fn ($query) => $query->where('type', UserType::User))
                             ->label('User')
                             ->required()
                             ->searchable()

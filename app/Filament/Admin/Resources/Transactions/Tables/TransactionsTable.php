@@ -12,7 +12,6 @@ use App\Models\Deposit;
 use App\Models\Transaction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use NunoMaduro\Collision\Adapters\Phpunit\State;
 
 final class TransactionsTable
 {
