@@ -4,7 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Deposits\Pages;
 
+use App\Enums\DepositStatus;
+use App\Enums\TransactionType;
 use App\Filament\Admin\Resources\Deposits\DepositResource;
+use App\Models\Deposit;
+use App\Models\Transaction;
 use Filament\Resources\Pages\CreateRecord;
 
 final class CreateDeposit extends CreateRecord
@@ -13,18 +17,19 @@ final class CreateDeposit extends CreateRecord
 
     protected function afterCreate(): void
     {
+        /** @var Deposit $deposit */
         $deposit = $this->record;
 
-        if ($deposit->status === \App\Enums\DepositStatus::Completed) {
+        if ($deposit->status === DepositStatus::Completed) {
             $deposit->user->increment('balance', $deposit->amount);
 
-            \App\Models\Transaction::create([
+            Transaction::create([
                 'user_id' => $deposit->user_id,
-                'type' => \App\Enums\TransactionType::Deposit,
+                'type' => TransactionType::Credit,
                 'amount' => $deposit->amount,
                 'currency' => $deposit->currency,
-                'description' => 'Deposit via '.ucfirst($deposit->gateway),
-                'reference_type' => \App\Models\Deposit::class,
+                'description' => 'Deposit via ' . ucfirst($deposit->gateway),
+                'reference_type' => Deposit::class,
                 'reference_id' => $deposit->id,
             ]);
         }

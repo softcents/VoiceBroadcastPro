@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Deposits\Schemas;
 
 use App\Enums\DepositStatus;
+use App\Enums\UserType;
 use Filament\Forms\Components\KeyValue;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -20,7 +21,10 @@ final class DepositForm
                 Section::make()
                     ->schema([
                         Select::make('user_id')
-                            ->relationship('user', 'name')
+                            ->relationship(
+                                name: 'user',
+                                titleAttribute: 'name',
+                                modifyQueryUsing: fn($query) => $query->where('type', UserType::User))
                             ->label('User')
                             ->required()
                             ->searchable()

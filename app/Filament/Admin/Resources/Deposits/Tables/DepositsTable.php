@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Deposits\Tables;
 
 use App\Enums\DepositStatus;
+use App\Enums\TransactionType;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Models\Deposit;
+use App\Models\Transaction;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -30,7 +32,7 @@ final class DepositsTable
                 TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
-                    ->url(fn ($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
+                    ->url(fn($record) => CustomerResource::getUrl('edit', ['record' => $record->user_id])),
                 TextColumn::make('amount')
                     ->label('Amount')
                     ->numeric()
@@ -47,13 +49,13 @@ final class DepositsTable
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn ($state) => ucfirst($state->value))
-                    ->color(fn ($state) => match ($state) {
+                    ->formatStateUsing(fn($state) => ucfirst($state->value))
+                    ->color(fn($state) => match ($state) {
                         DepositStatus::Pending => Color::Yellow,
                         DepositStatus::Completed => Color::Green,
                         DepositStatus::Cancelled => 'danger',
                     })
-                    ->icon(fn ($state) => match ($state) {
+                    ->icon(fn($state) => match ($state) {
                         DepositStatus::Pending => Heroicon::OutlinedClock,
                         DepositStatus::Completed => Heroicon::OutlinedCheckCircle,
                         DepositStatus::Cancelled => Heroicon::OutlinedXCircle,
@@ -74,9 +76,6 @@ final class DepositsTable
             ])
             ->recordActions([
                 ActionGroup::make([
-                    EditAction::make()
-                        ->label('Edit Deposit')
-                        ->disabled(fn ($record) => in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled])),
                     Action::make('edit_status')
                         ->label('Edit Status')
                         ->icon(Heroicon::OutlinedPencil)
@@ -84,16 +83,16 @@ final class DepositsTable
                             Select::make('status')
                                 ->label('Status')
                                 ->options(DepositStatus::class)
-                                ->default(fn ($record) => $record->status)
+                                ->default(fn($record) => $record->status)
                                 ->required()
                                 ->searchable()
                                 ->selectablePlaceholder(false),
                         ])
                         ->modalWidth(Width::Small)
-                        ->disabled(fn ($record) => in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled]))
+                        ->visible(fn($record) => !in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled]))
                         ->action(function (Deposit $record, array $data) {
                             $newStatus = $data['status'];
-                            if (! $newStatus instanceof DepositStatus) {
+                            if (!$newStatus instanceof DepositStatus) {
                                 $newStatus = DepositStatus::tryFrom($newStatus);
                             }
 
@@ -101,12 +100,12 @@ final class DepositsTable
                             if ($newStatus === DepositStatus::Completed && $record->status !== DepositStatus::Completed) {
                                 $record->user->increment('balance', $record->amount);
 
-                                \App\Models\Transaction::create([
+                                Transaction::create([
                                     'user_id' => $record->user_id,
-                                    'type' => \App\Enums\TransactionType::Deposit,
+                                    'type' => TransactionType::Credit,
                                     'amount' => $record->amount,
                                     'currency' => $record->currency,
-                                    'description' => 'Deposit via '.ucfirst($record->gateway),
+                                    'description' => 'Deposit via ' . ucfirst($record->gateway),
                                     'reference_type' => Deposit::class,
                                     'reference_id' => $record->id,
                                 ]);

@@ -4,11 +4,15 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Transactions\Tables;
 
+use App\Filament\Admin\Resources\Calls\CallResource;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Filament\Admin\Resources\Deposits\DepositResource;
+use App\Models\Call;
 use App\Models\Deposit;
+use App\Models\Transaction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use NunoMaduro\Collision\Adapters\Phpunit\State;
 
 final class TransactionsTable
 {
@@ -35,13 +39,28 @@ final class TransactionsTable
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('reference_type')
                     ->label('Reference Type')
-                    ->searchable(),
+                    ->searchable()
+                    ->formatStateUsing(function ($state) {
+                        return match ($state) {
+                            Deposit::class => 'Deposit',
+                            Call::class => 'Call',
+                            default => 'N/A',
+                        };
+                    }),
                 TextColumn::make('reference_id')
                     ->label('Reference ID')
                     ->numeric()
                     ->sortable()
+                    ->formatStateUsing(function (Transaction $record) {
+                        return match ($record->reference_type) {
+                            Deposit::class => "View Deposit #{$record->reference_id}",
+                            Call::class => "View Call #{$record->reference_id}",
+                            default => 'N/A',
+                        };
+                    })
                     ->url(fn ($record) => match ($record->reference_type) {
-                        Deposit::class => DepositResource::getUrl('edit', ['record' => $record->reference_id]),
+                        Deposit::class => DepositResource::getUrl('view', ['record' => $record->reference_id]),
+                        Call::class => CallResource::getUrl('view', ['record' => $record->reference_id]),
                         default => null,
                     }),
                 TextColumn::make('created_at')

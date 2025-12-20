@@ -24,6 +24,8 @@ final class PipraPayController extends Controller
         if ($verified) {
             $this->paymentService->confirm($deposit);
 
+            $deposit->user->increment('balance', $deposit->amount);
+
             return to_route('payments.success');
         }
 

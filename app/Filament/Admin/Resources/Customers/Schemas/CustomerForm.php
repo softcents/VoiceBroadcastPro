@@ -46,7 +46,8 @@ final class CustomerForm
                             ->default(app(CallingSetting::class)->pulse_rate)
                             ->required(),
                         TextInput::make('pulse_duration')
-                            ->label('Pulse Duration (seconds)')
+                            ->label('Pulse Duration')
+                            ->suffix('seconds')
                             ->numeric()
                             ->minValue(1)
                             ->step(1)
@@ -54,6 +55,7 @@ final class CustomerForm
                             ->required(),
                         TextInput::make('password')
                             ->label('Password')
+                            ->hint('Leave empty to keep the current password.')
                             ->password()
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->revealable()

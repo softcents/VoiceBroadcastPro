@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Deposits;
 
 use App\Filament\Admin\Resources\Deposits\Pages\CreateDeposit;
-use App\Filament\Admin\Resources\Deposits\Pages\EditDeposit;
 use App\Filament\Admin\Resources\Deposits\Pages\ListDeposits;
+use App\Filament\Admin\Resources\Deposits\Pages\ViewDeposit;
 use App\Filament\Admin\Resources\Deposits\Schemas\DepositForm;
 use App\Filament\Admin\Resources\Deposits\Schemas\DepositInfolist;
 use App\Filament\Admin\Resources\Deposits\Tables\DepositsTable;
@@ -14,6 +14,7 @@ use App\Models\Deposit;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 final class DepositResource extends Resource
@@ -52,8 +53,13 @@ final class DepositResource extends Resource
     {
         return [
             'index' => ListDeposits::route('/'),
+            'view' => ViewDeposit::route('/{record}'),
             'create' => CreateDeposit::route('/create'),
-            'edit' => EditDeposit::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery();
     }
 }

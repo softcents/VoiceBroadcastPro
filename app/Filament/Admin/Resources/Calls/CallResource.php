@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Calls;
 
 use App\Filament\Admin\Resources\Calls\Pages\ListCalls;
+use App\Filament\Admin\Resources\Calls\Pages\ViewCall;
 use App\Filament\Admin\Resources\Calls\Schemas\CallForm;
+use App\Filament\Admin\Resources\Calls\Schemas\CallInfolist;
 use App\Filament\Admin\Resources\Calls\Tables\CallsTable;
 use App\Models\Call;
 use App\Models\Scopes\OwnedByAuthUser;
@@ -36,17 +38,16 @@ final class CallResource extends Resource
         return CallsTable::configure($table);
     }
 
-    public static function getRelations(): array
+    public static function infolist(Schema $schema): Schema
     {
-        return [
-            //
-        ];
+        return CallInfolist::configure($schema);
     }
 
     public static function getPages(): array
     {
         return [
             'index' => ListCalls::route('/'),
+            'view' => ViewCall::route('/{record}'),
         ];
     }
 
