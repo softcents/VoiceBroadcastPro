@@ -122,6 +122,9 @@ final class Start extends Command
             $this->components->task("Connected to {$server->host}", fn () => true);
             $this->connections[$server->id] = $conn;
 
+            // Update database connection status
+            $this->updateServerConnection($server->id, 'connected');
+
             $conn->on('message', function ($msg) use ($server) {
                 $this->handleMessage($msg, $server);
             });
@@ -129,11 +132,17 @@ final class Start extends Command
             $conn->on('close', function ($code = null, $reason = null) use ($server) {
                 $this->components->warn("Connection closed: {$server->host} (code: {$code})");
                 unset($this->connections[$server->id]);
+
+                // Update database connection status
+                $this->updateServerConnection($server->id, 'disconnected');
             });
 
         }, function ($e) use ($server) {
             $this->components->error("Failed to connect to {$server->host}: {$e->getMessage()}");
             unset($this->connections[$server->id]);
+
+            // Update database connection status
+            $this->updateServerConnection($server->id, 'error');
         });
     }
 
@@ -373,5 +382,24 @@ final class Start extends Command
         $this->checkServers($loop);
 
         $this->components->info('Reload complete');
+    }
+
+    private function updateServerConnection(int $serverId, string $status): void
+    {
+        try {
+            $data = ['connection_status' => $status];
+
+            if ($status === 'connected') {
+                $data['connected_at'] = now();
+            } elseif (in_array($status, ['disconnected', 'error'])) {
+                $data['disconnected_at'] = now();
+            }
+
+            DB::table('servers')
+                ->where('id', $serverId)
+                ->update($data);
+        } catch (Exception $e) {
+            // Silently fail to avoid disrupting daemon
+        }
     }
 }
