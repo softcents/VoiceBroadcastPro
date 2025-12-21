@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Asterisk;
 
 use App\Enums\CallStatus;
 use App\Models\Call;
@@ -19,23 +19,32 @@ use Throwable;
 
 use function Ratchet\Client\connect;
 
-final class AsteriskAriDaemon extends Command
+final class Start extends Command
 {
-    protected $signature = 'asterisk:ari-listen';
+    protected $signature = 'asterisk:start';
 
-    protected $description = 'Multi-server Asterisk ARI Listener Manager (Async)';
+    protected $description = 'Start the Asterisk ARI Listener Manager';
 
     private array $connections = [];
 
     public function handle(): int
     {
-        $this->info('Starting Async Asterisk Manager...');
+        $this->components->info('Starting Asterisk ARI Manager');
+
+        // Write PID to state file
+        $this->writePidFile();
 
         $loop = Loop::get();
 
-        // 1. Signal Handling (Graceful Shutdown)
+        // 1. Signal Handling
         $loop->addSignal(SIGINT, fn () => $this->shutdown($loop));
         $loop->addSignal(SIGTERM, fn () => $this->shutdown($loop));
+
+        // Handle reload signal (SIGUSR1) - like Octane
+        $loop->addSignal(SIGUSR1, function () use ($loop) {
+            $this->components->warn('Reload signal received');
+            $this->reloadConnections($loop);
+        });
 
         // 2. Periodic Server Check (Every 5 seconds)
         $loop->addPeriodicTimer(5.0, function () use ($loop) {
@@ -45,7 +54,8 @@ final class AsteriskAriDaemon extends Command
         // 3. Initial Check
         $this->checkServers($loop);
 
-        $this->info('Event loop running. Press Ctrl+C to stop.');
+        $this->components->info('Event loop running');
+        $this->line('<fg=gray>Press Ctrl+C to stop</>');
         $loop->run();
 
         return 0;
@@ -53,12 +63,14 @@ final class AsteriskAriDaemon extends Command
 
     private function shutdown(LoopInterface $loop): void
     {
-        $this->info('Shutting down...');
+        $this->newLine();
+        $this->components->warn('Shutting down');
         foreach ($this->connections as $serverId => $conn) {
             $conn->close();
         }
+        $this->removePidFile();
         $loop->stop();
-        $this->info('Goodbye.');
+        $this->components->info('Shutdown complete');
     }
 
     private function checkServers(LoopInterface $loop): void
@@ -67,7 +79,7 @@ final class AsteriskAriDaemon extends Command
         try {
             DB::connection()->reconnect();
         } catch (Exception $e) {
-            $this->error('DB Connection failed: '.$e->getMessage());
+            $this->components->error('Database connection failed: '.$e->getMessage());
 
             return;
         }
@@ -86,7 +98,7 @@ final class AsteriskAriDaemon extends Command
         // Cleanup removed servers
         foreach ($this->connections as $serverId => $conn) {
             if (! in_array($serverId, $activeServerIds)) {
-                $this->info("Server {$serverId} removed/disabled. Closing connection.");
+                $this->components->task("Closing connection to server {$serverId}", fn () => true);
                 $conn->close();
                 unset($this->connections[$serverId]);
             }
@@ -95,7 +107,7 @@ final class AsteriskAriDaemon extends Command
 
     private function connectToServer(Server $server, LoopInterface $loop): void
     {
-        $this->info("--> [{$server->host}] Connecting...");
+        $this->line("  <fg=yellow>→</> Connecting to <fg=cyan>{$server->host}</>");
 
         // Placeholder to prevent multiple connection attempts while one is pending
         // We set it to true initially, then replace with actual connection object on success
@@ -107,7 +119,7 @@ final class AsteriskAriDaemon extends Command
         $url = "ws://{$base}/ari/events?api_key={$server->username}:{$server->password}&app={$appName}";
 
         connect($url, [], [], $loop)->then(function ($conn) use ($server) {
-            $this->info("--> [{$server->host}] Connected!");
+            $this->components->task("Connected to {$server->host}", fn () => true);
             $this->connections[$server->id] = $conn;
 
             $conn->on('message', function ($msg) use ($server) {
@@ -115,12 +127,12 @@ final class AsteriskAriDaemon extends Command
             });
 
             $conn->on('close', function ($code = null, $reason = null) use ($server) {
-                $this->warn("--> [{$server->host}] Connection closed ({$code} - {$reason})");
+                $this->components->warn("Connection closed: {$server->host} (code: {$code})");
                 unset($this->connections[$server->id]);
             });
 
         }, function ($e) use ($server) {
-            $this->error("--> [{$server->host}] Could not connect: {$e->getMessage()}");
+            $this->components->error("Failed to connect to {$server->host}: {$e->getMessage()}");
             unset($this->connections[$server->id]);
         });
     }
@@ -136,7 +148,7 @@ final class AsteriskAriDaemon extends Command
             $this->processEvent($event, $server);
 
         } catch (Throwable $e) {
-            $this->error('Error processing message: '.$e->getMessage());
+            $this->components->error('Message processing error: '.$e->getMessage());
         }
     }
 
@@ -168,7 +180,7 @@ final class AsteriskAriDaemon extends Command
         $callType = $event['args'][0] ?? 'marketing';
         $audioOrOtp = $event['args'][1] ?? 'hello-world';
         ray($callType, $audioOrOtp);
-        $this->info("[{$server->host}] StasisStart: {$channelId}");
+        $this->line("  <fg=green>✓</> StasisStart: <fg=gray>{$channelId}</>");
 
         // Using Http Facade here is blocking, but for quick API calls it's "okay" in low volume.
         // For high volume, would need an Async HTTP client too.
@@ -259,10 +271,10 @@ final class AsteriskAriDaemon extends Command
                 ->send($method, $url, ['json' => $data]);
 
             if ($response->failed() && ! in_array($response->status(), $ignoreCodes)) {
-                $this->error("[{$server->host}] API Error: ".$response->body());
+                $this->components->error("ARI API error [{$server->host}]: ".$response->body());
             }
         } catch (Exception $e) {
-            $this->error("[{$server->host}] HTTP Error: ".$e->getMessage());
+            $this->components->error("HTTP error [{$server->host}]: ".$e->getMessage());
         }
     }
 
@@ -273,7 +285,7 @@ final class AsteriskAriDaemon extends Command
         $call = Call::whereUniqueId($channelId)->first();
 
         if (! $call) {
-            $this->warn("Call not found for channel: {$channelId}");
+            $this->components->warn("Call record not found: {$channelId}");
 
             return;
         }
@@ -323,5 +335,43 @@ final class AsteriskAriDaemon extends Command
                 ]);
                 break;
         }
+    }
+
+    private function getPidFilePath(): string
+    {
+        return storage_path('app/private/asterisk-ari.pid');
+    }
+
+    private function writePidFile(): void
+    {
+        $pid = getmypid();
+        file_put_contents($this->getPidFilePath(), $pid);
+        $this->components->twoColumnDetail('Process ID', (string) $pid);
+    }
+
+    private function removePidFile(): void
+    {
+        $pidFile = $this->getPidFilePath();
+        if (file_exists($pidFile)) {
+            unlink($pidFile);
+        }
+    }
+
+    private function reloadConnections(LoopInterface $loop): void
+    {
+        // Close all existing connections
+        foreach ($this->connections as $serverId => $conn) {
+            if (is_object($conn)) {
+                $conn->close();
+            }
+        }
+
+        // Clear connections array
+        $this->connections = [];
+
+        // Reconnect to all servers
+        $this->checkServers($loop);
+
+        $this->components->info('Reload complete');
     }
 }

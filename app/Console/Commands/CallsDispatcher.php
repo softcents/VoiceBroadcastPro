@@ -14,13 +14,13 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\RateLimiter;
 use Throwable;
 
-final class ProcessScheduledCall extends Command
+final class CallsDispatcher extends Command
 {
-    protected $signature = 'schedule:process-calls
+    protected $signature = 'calls:dispatch
                             {--limit=50 : Maximum number of calls to process per chunk}
                             {--delay=10 : Delay in seconds between chunks}';
 
-    protected $description = 'Process scheduled calls with rate limiting';
+    protected $description = 'Dispatch scheduled calls to queue';
 
     /**
      * Execute the console command.
@@ -30,7 +30,8 @@ final class ProcessScheduledCall extends Command
         $limit = (int) $this->option('limit');
         $delay = (int) $this->option('delay');
 
-        $this->info('Starting scheduled call processing...');
+        $this->components->info('Processing scheduled calls');
+        $this->newLine();
 
         $processedChunks = 0;
         $totalCalls = 0;
@@ -71,19 +72,23 @@ final class ProcessScheduledCall extends Command
                             $processedChunks++;
                             $totalCalls += $calls->count();
 
-                            $this->info("Processed chunk {$processedChunks}: {$calls->count()} calls");
+                            $this->components->task("Chunk {$processedChunks}", fn() => true);
+                            $this->components->twoColumnDetail('Calls processed', (string) $calls->count());
                         },
                         $decaySeconds = $delay
                     );
                 });
 
             if ($totalCalls === 0) {
-                $this->info('No scheduled calls found to process.');
+                $this->components->warn('No scheduled calls found');
 
                 return self::SUCCESS;
             }
 
-            $this->info("✓ Successfully processed {$totalCalls} calls in {$processedChunks} chunks");
+            $this->newLine();
+            $this->components->info('Processing complete');
+            $this->components->twoColumnDetail('Total calls', (string) $totalCalls);
+            $this->components->twoColumnDetail('Chunks', (string) $processedChunks);
 
             Log::info('Scheduled call processing completed', [
                 'total_calls' => $totalCalls,
@@ -93,7 +98,7 @@ final class ProcessScheduledCall extends Command
             return self::SUCCESS;
 
         } catch (Throwable $exception) {
-            $this->error('Failed to process scheduled calls: '.$exception->getMessage());
+            $this->components->error('Processing failed: '.$exception->getMessage());
 
             Log::error('Scheduled call processing failed', [
                 'exception' => $exception->getMessage(),
