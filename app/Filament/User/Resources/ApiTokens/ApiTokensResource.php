@@ -6,8 +6,10 @@ namespace App\Filament\User\Resources\ApiTokens;
 
 use App\Filament\User\Resources\ApiTokens\Pages\ListApiTokens;
 use App\Filament\User\Resources\ApiTokens\Tables\ApiTokensTable;
+use App\Models\User;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Laravel\Sanctum\PersonalAccessToken;
 use UnitEnum;
 
@@ -40,5 +42,12 @@ final class ApiTokensResource extends Resource
         return [
             'index' => ListApiTokens::route('/'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('tokenable_type', User::class)
+            ->where('tokenable_id', auth()->id());
     }
 }

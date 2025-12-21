@@ -1,0 +1,230 @@
+#!/bin/bash
+
+# ============================================================================
+# GIT POST-RECEIVE DEPLOYMENT HOOK
+# ============================================================================
+# Improved deployment script with error handling, rollback, and logging
+# 
+# Features:
+# - Comprehensive error handling with automatic rollback
+# - Deployment locking to prevent concurrent deployments
+# - Health checks and validation
+# - Structured logging
+# - Database backups before migrations
+# - Configurable deployment steps
+# - Notification support (Slack/Discord)
+# ============================================================================
+
+set -euo pipefail  # Exit on error, undefined vars, pipe failures
+
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(dirname "$SCRIPT_DIR")"
+
+# Load configuration
+if [ -f "${REPO_ROOT}/../voice/.deployment/deploy-config.sh" ]; then
+    source "${REPO_ROOT}/../voice/.deployment/deploy-config.sh"
+else
+    echo "ERROR: Configuration file not found!"
+    exit 1
+fi
+
+# Load utility functions
+if [ -f "${REPO_ROOT}/../voice/.deployment/deploy-functions.sh" ]; then
+    source "${REPO_ROOT}/../voice/.deployment/deploy-functions.sh"
+else
+    echo "ERROR: Functions file not found!"
+    exit 1
+fi
+
+# Set up error trap
+trap 'handle_error ${LINENO}' ERR
+
+# Add Node.js to PATH
+export PATH="${NODE_PATH}:$PATH"
+
+# ============================================================================
+# DEPLOYMENT STEPS
+# ============================================================================
+
+step_checkout() {
+    log_step "Checking out ${DEPLOY_BRANCH} branch"
+    
+    sudo git --work-tree="$DEPLOY_TARGET" --git-dir="$DEPLOY_GIT_DIR" checkout -f "$DEPLOY_BRANCH"
+    
+    log_success "Code checked out successfully"
+}
+
+step_fix_permissions() {
+    fix_permissions
+}
+
+step_composer_install() {
+    log_step "Installing Composer dependencies"
+    
+    cd "$DEPLOY_TARGET" || exit 1
+    
+    sudo -u "$DEPLOY_USER" "$PHP_BIN" "$COMPOSER_BIN" install $COMPOSER_OPTS 2>&1 | tee -a "$LOG_FILE"
+    
+    if [ ${PIPESTATUS[0]} -eq 0 ]; then
+        log_success "Composer dependencies installed"
+    else
+        log_error "Composer installation failed"
+        return 1
+    fi
+}
+
+step_npm_build() {
+    log_step "Building frontend assets"
+    
+    cd "$DEPLOY_TARGET" || exit 1
+    
+    if [ "$USE_PNPM" = true ]; then
+        sudo -u "$DEPLOY_USER" pnpm install 2>&1 | tee -a "$LOG_FILE"
+        sudo -u "$DEPLOY_USER" pnpm run "$NPM_BUILD_CMD" 2>&1 | tee -a "$LOG_FILE"
+    else
+        sudo -u "$DEPLOY_USER" npm install 2>&1 | tee -a "$LOG_FILE"
+        sudo -u "$DEPLOY_USER" npm run "$NPM_BUILD_CMD" 2>&1 | tee -a "$LOG_FILE"
+    fi
+    
+    if [ ${PIPESTATUS[0]} -eq 0 ]; then
+        log_success "Frontend assets built"
+    else
+        log_error "Frontend build failed"
+        return 1
+    fi
+}
+
+step_clear_cache() {
+    run_artisan "optimize:clear" "Clearing Laravel cache"
+}
+
+step_run_migrations() {
+    run_artisan "migrate --force" "Running database migrations"
+}
+
+step_optimize() {
+    run_artisan "optimize" "Optimizing Laravel"
+}
+
+step_horizon_restart() {
+    run_artisan "horizon:terminate" "Restarting Horizon"
+}
+
+step_asterisk_restart() {
+    run_artisan "asterisk:restart" "Restarting Asterisk ARI daemon"
+}
+
+step_generate_docs() {
+    run_artisan "scribe:generate --quiet" "Generating API documentation"
+}
+
+# ============================================================================
+# MAIN DEPLOYMENT FLOW
+# ============================================================================
+
+deploy() {
+    local start_time=$(date +%s)
+    
+    log ""
+    log "${COLOR_CYAN}════════════════════════════════════════════════════════════${COLOR_NC}"
+    log "${COLOR_CYAN}  DEPLOYMENT STARTED${COLOR_NC}"
+    log "${COLOR_CYAN}════════════════════════════════════════════════════════════${COLOR_NC}"
+    log_info "Branch: ${DEPLOY_BRANCH}"
+    log_info "Target: ${DEPLOY_TARGET}"
+    log_info "Time: $(date '+%Y-%m-%d %H:%M:%S')"
+    log ""
+    
+    # Send start notification
+    send_notification "🚀 Deployment Started" "Deploying ${DEPLOY_BRANCH} to production" "info"
+    
+    # 1. Setup
+    ensure_directories
+    
+    # 2. Acquire lock
+    if ! acquire_lock "$LOCK_FILE" "$LOCK_TIMEOUT"; then
+        log_error "Failed to acquire deployment lock"
+        exit 1
+    fi
+    
+    # 3. Create backup
+    BACKUP_NAME=$(create_backup)
+    
+    # 4. Enable maintenance mode
+    run_artisan "down" "Enabling maintenance mode"
+    
+    # 5. Checkout code
+    [ "$STEP_CHECKOUT" = true ] && step_checkout
+    
+    # 6. Fix permissions
+    step_fix_permissions
+    
+    # 7. Install dependencies
+    [ "$STEP_COMPOSER" = true ] && step_composer_install
+    
+    # 8. Build frontend (if enabled)
+    [ "$STEP_NPM" = true ] && step_npm_build
+    
+    # 9. Clear cache
+    step_clear_cache
+    
+    # 10. Run migrations
+    [ "$STEP_MIGRATIONS" = true ] && step_run_migrations
+    
+    # 11. Optimize
+    [ "$STEP_OPTIMIZE" = true ] && step_optimize
+    
+    # 12. Restart services
+    [ "$STEP_HORIZON" = true ] && step_horizon_restart
+    [ "$STEP_ASTERISK" = true ] && step_asterisk_restart
+    
+    # 13. Generate documentation
+    [ "$STEP_SCRIBE" = true ] && step_generate_docs
+    
+    # 14. Disable maintenance mode
+    run_artisan "up" "Disabling maintenance mode"
+    
+    # 15. Health check
+    if [ "$STEP_HEALTH_CHECK" = true ]; then
+        if ! check_health "$HEALTH_CHECK_URL" "$HEALTH_CHECK_TIMEOUT" "$HEALTH_CHECK_RETRIES"; then
+            log_error "Health check failed! Rolling back..."
+            rollback_deployment "$BACKUP_NAME"
+            release_lock "$LOCK_FILE"
+            send_notification "❌ Deployment Failed" "Health check failed. Rolled back to previous version." "danger"
+            exit 1
+        fi
+    fi
+    
+    # 16. Cleanup
+    cleanup_old_backups
+    release_lock "$LOCK_FILE"
+    
+    # Calculate duration
+    local end_time=$(date +%s)
+    local duration=$((end_time - start_time))
+    
+    log ""
+    log "${COLOR_GREEN}════════════════════════════════════════════════════════════${COLOR_NC}"
+    log "${COLOR_GREEN}  DEPLOYMENT COMPLETED SUCCESSFULLY${COLOR_NC}"
+    log "${COLOR_GREEN}════════════════════════════════════════════════════════════${COLOR_NC}"
+    log_info "Duration: ${duration}s"
+    log_info "Backup: ${BACKUP_NAME}"
+    log ""
+    
+    # Send success notification
+    send_notification "✅ Deployment Successful" "Deployed in ${duration}s" "success"
+}
+
+# ============================================================================
+# GIT HOOK ENTRY POINT
+# ============================================================================
+
+while read oldrev newrev ref
+do
+    # Only deploy if we're on the target branch
+    if [[ $ref = "refs/heads/${DEPLOY_BRANCH}" ]]; then
+        deploy
+    else
+        log_warning "Ref $ref received. Skipping deployment (only ${DEPLOY_BRANCH} branch is deployed)."
+    fi
+done
