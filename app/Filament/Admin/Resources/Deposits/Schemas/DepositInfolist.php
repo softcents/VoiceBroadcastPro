@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Deposits\Schemas;
 
+use App\Filament\Admin\Resources\Customers\CustomerResource;
+use App\Models\Deposit;
 use Filament\Infolists\Components\KeyValueEntry;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Schemas\Components\Grid;
-use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Support\Enums\FontWeight;
-use Filament\Support\Enums\TextSize;
 use LaraZeus\Tabler\Tabler;
 
 final class DepositInfolist
@@ -19,61 +17,91 @@ final class DepositInfolist
     public static function configure(Schema $schema): Schema
     {
         return $schema
-            ->columns(1)
             ->components([
-                Grid::make([
-                    'default' => 1,
-                    'md' => 3,
-                ])->schema([
-                    Group::make()
-                        ->columnSpan(['md' => 2])
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    Grid::make(2)->schema([
-                                        TextEntry::make('gateway')
-                                            ->label('Gateway')
-                                            ->badge()
-                                            ->color('gray')
-                                            ->icon(Tabler::BuildingBank),
-                                        TextEntry::make('transaction_id')
-                                            ->label('Transaction ID')
-                                            ->fontFamily('mono')
-                                            ->copyable(),
-                                    ]),
+                // Deposit Details Section
+                Section::make('Deposit Details')
+                    ->description('Payment gateway and transaction information')
+                    ->icon(Tabler::Cash)
+                    ->schema([
+                        TextEntry::make('amount')
+                            ->label('Amount')
+                            ->icon(Tabler::CurrencyDollar)
+                            ->numeric(decimalPlaces: 2),
+                        TextEntry::make('currency')
+                            ->label('Currency')
+                            ->icon(Tabler::Coin)
+                            ->badge(),
+                        TextEntry::make('gateway')
+                            ->label('Payment Gateway')
+                            ->icon(Tabler::BuildingBank)
+                            ->badge(),
+                        TextEntry::make('transaction_id')
+                            ->label('Transaction ID')
+                            ->icon(Tabler::Hash)
+                            ->fontFamily('mono')
+                            ->copyable()
+                            ->copyMessage('Transaction ID copied!')
+                            ->copyMessageDuration(1500),
+                    ])
+                    ->columns(2)
+                    ->collapsible(),
 
-                                    TextEntry::make('amount')
-                                        ->label('Amount')
-                                        ->size(TextSize::Large)
-                                        ->weight(FontWeight::Bold)
-                                        ->numeric(),
+                // Status & User Section
+                Section::make('Status & User')
+                    ->description('Deposit status and associated user')
+                    ->icon(Tabler::InfoCircle)
+                    ->schema([
+                        TextEntry::make('status')
+                            ->label('Status')
+                            ->icon(Tabler::CircleCheck)
+                            ->badge()
+                            ->color(fn ($state) => match ($state->value ?? $state) {
+                                'completed', 'success' => 'success',
+                                'pending' => 'warning',
+                                'failed', 'cancelled' => 'danger',
+                                default => 'gray',
+                            }),
+                        TextEntry::make('user.name')
+                            ->label('User')
+                            ->icon(Tabler::User)
+                            ->badge()
+                            ->url(fn (Deposit $record) => $record->user_id ? CustomerResource::getUrl('view', ['record' => $record->user_id]) : null),
+                    ])
+                    ->columns()
+                    ->collapsible(),
 
-                                    KeyValueEntry::make('meta_data')
-                                        ->label('Meta Data')
-                                        ->columnSpanFull(),
-                                ]),
-                        ]),
+                // Meta Data Section
+                Section::make('Meta Data')
+                    ->description('Additional payment information')
+                    ->icon(Tabler::FileText)
+                    ->schema([
+                        KeyValueEntry::make('meta_data')
+                            ->label('Payment Details')
+                            ->columnSpanFull(),
+                    ])
+                    ->collapsible(),
 
-                    Group::make()
-                        ->columnSpan(['md' => 1])
-                        ->schema([
-                            Section::make()
-                                ->schema([
-                                    TextEntry::make('status')
-                                        ->badge(),
-                                    TextEntry::make('user.name')
-                                        ->label('User')
-                                        ->icon(Tabler::User),
-                                    TextEntry::make('currency')
-                                        ->badge()
-                                        ->color('gray'),
-                                    TextEntry::make('created_at')
-                                        ->label('Date')
-                                        ->date()
-                                        ->icon(Tabler::Calendar),
-                                ]),
-                        ]),
-                ]),
+                // System Information Section
+                Section::make('System Information')
+                    ->description('Record timestamps')
+                    ->icon(Tabler::Clock)
+                    ->schema([
+                        TextEntry::make('created_at')
+                            ->label('Created')
+                            ->icon(Tabler::CalendarPlus)
+                            ->since()
+                            ->tooltip(fn (Deposit $record) => $record->created_at ? $record->created_at->format('M j, Y \a\t h:i A') : 'Unknown')
+                            ->color('gray'),
+                        TextEntry::make('updated_at')
+                            ->label('Last Updated')
+                            ->icon(Tabler::Refresh)
+                            ->since()
+                            ->tooltip(fn (Deposit $record) => $record->updated_at ? $record->updated_at->format('M j, Y \a\t h:i A') : 'Never updated')
+                            ->color('gray'),
+                    ])
+                    ->columns()
+                    ->collapsed()
+                    ->collapsible(),
             ]);
     }
 }

@@ -23,6 +23,23 @@ final class ViewCustomer extends ViewRecord
     {
         return [
             Actions\EditAction::make(),
+            Actions\DeleteAction::make(),
+            Actions\RestoreAction::make(),
         ];
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        // Load relationship counts for statistics section
+        $record = $this->getRecord();
+        
+        $data['campaigns_count'] = $record->campaigns()->count();
+        $data['calls_count'] = $record->calls()->count();
+        $data['audio_count'] = $record->audio()->count();
+        $data['phonebooks_count'] = $record->phonebooks()->count();
+        $data['templates_count'] = $record->templates()->count();
+        $data['transactions_count'] = $record->transactions()->count();
+        
+        return $data;
     }
 }
