@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Campaign;
 
-use App\Enums\CampaignSource;
 use App\Enums\CampaignStatus;
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -22,17 +22,13 @@ final class UpdateCampaignRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
             'title' => ['sometimes', 'string', 'max:255'],
-            'description' => ['nullable', 'string', 'max:1000'],
-            'audio_id' => ['sometimes', 'exists:audio,id'],
-            'phonebook_id' => ['nullable', 'required_if:source,'.CampaignSource::Phonebook->value, 'exists:phonebooks,id'],
-            'source' => ['sometimes', Rule::enum(CampaignSource::class)],
-            'status' => ['sometimes', Rule::enum(CampaignStatus::class)],
+            'description' => ['nullable', 'string', 'max:500'],
             'scheduled_at' => ['nullable', 'date', 'after:now'],
         ];
     }
@@ -47,22 +43,6 @@ final class UpdateCampaignRequest extends FormRequest
             'description' => [
                 'description' => 'A brief description of the campaign.',
                 'example' => 'Updated description.',
-            ],
-            'audio_id' => [
-                'description' => 'The ID of the audio file to be used.',
-                'example' => 1,
-            ],
-            'phonebook_id' => [
-                'description' => 'The ID of the phonebook (required if source is phonebook).',
-                'example' => 5,
-            ],
-            'source' => [
-                'description' => 'The source of contacts for the campaign.',
-                'example' => CampaignSource::Phonebook->value,
-            ],
-            'status' => [
-                'description' => 'The status of the campaign.',
-                'example' => CampaignStatus::Pending->value,
             ],
             'scheduled_at' => [
                 'description' => 'The scheduled time for the campaign to start.',

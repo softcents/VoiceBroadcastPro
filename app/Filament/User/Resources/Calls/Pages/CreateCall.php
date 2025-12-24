@@ -14,7 +14,8 @@ final class CreateCall extends CreateRecord
 
     protected function handleRecordCreation(array $data): Model
     {
+        $data['user_id'] = auth()->id();
 
-        return auth()->user()->calls()->create($data);
+        return parent::handleRecordCreation($data);
     }
 }

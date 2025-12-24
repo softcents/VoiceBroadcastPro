@@ -7,8 +7,8 @@ namespace App\Filament\Admin\Resources\Servers\Tables;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 
 final class ServersTable
@@ -21,21 +21,21 @@ final class ServersTable
                 TextColumn::make('name')
                     ->label('Name')
                     ->searchable(),
-                TextColumn::make('ari_domain')
-                    ->label('ARI Domain')
+                TextColumn::make('scheme')
+                    ->label('Scheme')
                     ->searchable(),
-                TextColumn::make('ari_username')
-                    ->label('ARI Username')
+                TextColumn::make('host')
+                    ->label('Host')
                     ->searchable(),
-                TextColumn::make('database_host')
-                    ->label('DB Host')
+                TextColumn::make('host')
+                    ->label('Host')
                     ->searchable(),
-                TextColumn::make('database_username')
-                    ->label('DB Username')
+                TextColumn::make('port')
+                    ->label('Port')
                     ->searchable(),
-                IconColumn::make('enabled')
+                ToggleColumn::make('enabled')
                     ->label('Enabled')
-                    ->boolean(),
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()

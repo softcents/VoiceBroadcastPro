@@ -6,6 +6,7 @@ namespace App\Http\Requests\Call;
 
 use App\Enums\AudioApproval;
 use App\Enums\AudioConversionStatus;
+use App\Rules\EnsureUserHasSufficientBalanceForCall;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -32,16 +33,10 @@ final class StoreCallRequest extends FormRequest
                     ->where('user_id', $this->user()?->id)
                     ->where('status', AudioApproval::Approved)
                     ->where('conversion_status', AudioConversionStatus::Completed),
+                new EnsureUserHasSufficientBalanceForCall()
             ],
-            'phone_number' => [
-                'required',
-                'phone',
-            ],
-            'scheduled_at' => [
-                'nullable',
-                'date',
-                'after:now',
-            ],
+            'phone_number' => ['required', 'phone'],
+            'scheduled_at' => ['nullable', 'date', 'after:now'],
         ];
     }
 
@@ -58,11 +53,11 @@ final class StoreCallRequest extends FormRequest
             ],
             'phone_number' => [
                 'description' => 'The recipient phone number for the call. It must be a valid phone number format.',
-                'example' => '+1234567890',
+                'example' => '+8801234567890',
             ],
             'scheduled_at' => [
                 'description' => 'Optional. The date and time when the call should be scheduled. If not provided, the call will be made immediately.',
-                'example' => '2024-12-31 15:30:00',
+                'example' => now()->format('Y-m-d H:i:s'),
             ],
         ];
     }

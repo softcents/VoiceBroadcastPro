@@ -16,24 +16,27 @@ final class Status extends Command
     {
         $pidFile = storage_path('app/private/asterisk-ari.pid');
 
-        if (!file_exists($pidFile)) {
+        if (! file_exists($pidFile)) {
             $this->components->warn('Daemon is not running');
             $this->components->twoColumnDetail('State', '<fg=red>● stopped</>');
+
             return 1;
         }
 
-        $pid = (int) trim(file_get_contents($pidFile));
+        $pid = (int) mb_trim(file_get_contents($pidFile));
 
-        if (!$pid) {
+        if (! $pid) {
             $this->components->error('Invalid PID in state file');
+
             return 1;
         }
 
         // Check if process is actually running
-        if (!posix_kill($pid, 0)) {
+        if (! posix_kill($pid, 0)) {
             $this->components->warn('Daemon not running (stale PID file)');
             $this->components->twoColumnDetail('State', '<fg=red>● stopped</>');
-            $this->components->task('Cleaning up PID file', fn() => unlink($pidFile));
+            $this->components->task('Cleaning up PID file', fn () => unlink($pidFile));
+
             return 1;
         }
 
@@ -47,11 +50,11 @@ final class Status extends Command
         // Get process info
         $processInfo = shell_exec("ps -p {$pid} -o etime,rss,command | tail -n 1");
         if ($processInfo) {
-            $parts = preg_split('/\s+/', trim($processInfo), 3);
+            $parts = preg_split('/\s+/', mb_trim($processInfo), 3);
             if (count($parts) >= 3) {
                 $this->components->twoColumnDetail('Uptime', $parts[0]);
-                $this->components->twoColumnDetail('Memory', number_format((int) $parts[1]) . ' KB');
-                $this->components->twoColumnDetail('Command', '<fg=gray>' . $parts[2] . '</>');
+                $this->components->twoColumnDetail('Memory', number_format((int) $parts[1]).' KB');
+                $this->components->twoColumnDetail('Command', '<fg=gray>'.$parts[2].'</>');
             }
         }
 

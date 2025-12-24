@@ -5,22 +5,23 @@ declare(strict_types=1);
 namespace App\Filament\User\Resources\Campaigns\Schemas;
 
 use App\Enums\AudioApproval;
-use App\Enums\CampaignSource;
-use Filament\Actions\Action;
+use App\Enums\AudioConversionStatus;
+use App\Filament\User\Resources\Phonebooks\Schemas\PhonebookForm;
+use App\Models\Caller;
+use App\Models\Phonebook;
+use App\Rules\EnsureUserHasSufficientBalanceForCampaign;
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 use LaraZeus\Tabler\Tabler;
-use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 final class CampaignForm
 {
@@ -37,69 +38,40 @@ final class CampaignForm
                             ->schema([
                                 TextInput::make('title')
                                     ->label('Campaign Title')
+                                    ->placeholder('Enter campaign title')
                                     ->required()
                                     ->maxLength(255)
                                     ->columnSpanFull()
                                     ->prefixIcon(Tabler::AlphabetLatin),
 
                                 Textarea::make('description')
+                                    ->label('Campaign Description')
+                                    ->placeholder('Enter campaign description')
                                     ->rows(3)
                                     ->columnSpanFull(),
 
-                                Grid::make(1)
-                                    ->schema([
-                                        Select::make('audio_id')
-                                            ->label('Audio File')
-                                            ->relationship('audio', 'title', modifyQueryUsing: fn ($query) => $query->where('approval', AudioApproval::Approved))
-                                            ->searchable()
-                                            ->preload()
-                                            ->required()
-                                            ->prefixIcon(Tabler::Music),
-                                    ]),
-
-                                Select::make('phonebook_id')
-                                    ->label('Contact List')
-                                    ->relationship('phonebook', 'name', modifyQueryUsing: function ($query) {
-                                        return $query->whereHas('contacts');
-                                    })
-                                    ->getOptionLabelFromRecordUsing(function ($record) {
-                                        return $record->name.' ('.$record->contacts()->count().' contacts)';
-                                    })
+                                Select::make('audio_id')
+                                    ->prefixIcon(Tabler::Music)
+                                    ->label('Audio')
+                                    ->relationship(
+                                        name: 'audio',
+                                        titleAttribute: 'title',
+                                        modifyQueryUsing: function (Builder $query) {
+                                            return $query->where('approval', AudioApproval::Approved)
+                                                ->where('conversion_status', AudioConversionStatus::Completed);
+                                        })
                                     ->searchable()
                                     ->preload()
-                                    ->prefixIcon(Tabler::AddressBook)
-                                    ->visible(fn ($get) => $get('source') === CampaignSource::Phonebook)
-                                    ->required(fn ($get) => $get('source') === CampaignSource::Phonebook),
-
-                                FileUpload::make('file_path')
-                                    ->label('Contact List (CSV)')
-                                    ->disk('local') // Adjust disk as needed
-                                    ->directory('campaign-files')
-                                    ->acceptedFileTypes(['text/csv', 'text/plain', '.csv'])
-                                    ->visible(fn ($get) => $get('source') === CampaignSource::Import)
-                                    ->required(fn ($get) => $get('source') === CampaignSource::Import)
-                                    ->hintAction(Action::make('sample_file')
-                                        ->label('Download Sample File')
-                                        ->url(url('samples/contacts.csv'))
-                                        ->openUrlInNewTab()
-                                        ->icon(Tabler::Download)),
-
-                                Repeater::make('manual_numbers')
-                                    ->label('Manual Numbers')
-                                    ->addActionLabel('Add Number')
-                                    ->schema([
-                                        PhoneInput::make('number')
-                                            ->label('Phone Number')
-                                            ->defaultCountry('BD')
-                                            ->required()
-                                            ->rules(['phone:BD']),
-                                    ])
-                                    ->columnSpanFull()
-                                    ->minItems(1)
-                                    ->grid(2)
-                                    ->compact()
-                                    ->visible(fn ($get) => $get('source') === CampaignSource::Manual)
-                                    ->required(fn ($get) => $get('source') === CampaignSource::Manual),
+                                    ->required()
+                                    ->rules(function (Get $get) {
+                                        return [
+                                            Rule::exists('audio', 'id')
+                                                ->where('approval', AudioApproval::Approved)
+                                                ->where('conversion_status', AudioConversionStatus::Completed)
+                                                ->where('user_id', auth()->id()),
+                                            new EnsureUserHasSufficientBalanceForCampaign($get('phonebook_id'))
+                                        ];
+                                    }),
                             ]),
                     ]),
 
@@ -120,28 +92,37 @@ final class CampaignForm
                                             });
                                         }
                                     )
-                                    ->getOptionLabelFromRecordUsing(function ($record) {
-                                        return $record->name;
-                                    })
+                                    ->getOptionLabelFromRecordUsing(fn(Caller $record) => $record->name)
                                     ->preload()
                                     ->searchable(['caller_name', 'caller_number'])
                                     ->native(false)
                                     ->selectablePlaceholder(false)
                                     ->required(),
-                                Select::make('source')
-                                    ->label('Source')
-                                    ->options(CampaignSource::class)
-                                    ->required()
-                                    ->live()
-                                    ->prefixIcon(Tabler::Link)
+                                Select::make('phonebook_id')
+                                    ->prefixIcon(Tabler::AddressBook)
+                                    ->label('Contact List')
+                                    ->relationship(
+                                        name: 'phonebook',
+                                        titleAttribute: 'name',
+                                        modifyQueryUsing: function ($query) {
+                                            return $query->whereHas('contacts');
+                                        }
+                                    )
+                                    ->getOptionLabelFromRecordUsing(function (Phonebook $record) {
+                                        $record->loadCount('contacts');
+
+                                        return $record->name . ' (' . trans_choice(':count contact|:count contacts', $record->contacts_count) . ')';
+                                    })
                                     ->searchable()
-                                    ->selectablePlaceholder(false)
-                                    ->default(CampaignSource::Phonebook),
+                                    ->preload()
+                                    ->live(onBlur: true)
+                                    ->required(),
 
                                 DateTimePicker::make('scheduled_at')
-                                    ->label('Launch Date')
-                                    ->helperText('Leave empty to launch immediately')
                                     ->prefixIcon(Tabler::Calendar)
+                                    ->label('Launch Date')
+                                    ->placeholder('Select launch date and time')
+                                    ->helperText('Leave empty to launch immediately')
                                     ->native(false)
                                     ->minDate(now()->addMinutes(5))
                                     ->maxDate(now()->addMonth()),

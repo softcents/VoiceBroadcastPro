@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Phonebooks\RelationManagers;
 
+use EightyNine\ExcelImport\Tables\ExcelImportRelationshipAction;
+use Exception;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
@@ -18,6 +21,8 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use LaraZeus\Tabler\Tabler;
+use Propaganistas\LaravelPhone\PhoneNumber;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 final class ContactsRelationManager extends RelationManager
@@ -103,6 +108,53 @@ final class ContactsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
+                ExcelImportRelationshipAction::make()
+                    ->slideOver()
+                    ->icon(Tabler::TableImport)
+                    ->color('primary')
+                    ->sampleExcel(
+                        sampleData: [
+                            ['first_name' => 'Bishwajit', 'last_name' => 'Adhikary', 'phone_number' => '+8801700000000'],
+                            ['first_name' => 'John', 'last_name' => 'Doe', 'phone_number' => '+8801600000000'],
+                        ],
+                        fileName: 'sample.xlsx',
+                        sampleButtonLabel: 'Download Sample',
+                        customiseActionUsing: fn (Action $action) => $action->color('secondary')->icon(Tabler::TableExport),
+                    )
+                    ->mutateBeforeValidationUsing(
+                        closure: function (array $data): array {
+                            if (isset($data['phone_number'])) {
+                                // Convert to string in case it's an integer from Excel
+                                $phoneNumber = (string) $data['phone_number'];
+
+                                // Remove any whitespace, dots, or dashes
+                                $phoneNumber = preg_replace('/[\s.\-()]/', '', $phoneNumber);
+
+                                // Remove any existing + prefix to avoid duplication
+                                $phoneNumber = mb_ltrim($phoneNumber, '+');
+
+                                // Add + prefix
+                                $phoneNumber = '+'.$phoneNumber;
+
+                                // Format using Laravel Phone
+                                try {
+                                    $data['phone_number'] = new PhoneNumber($phoneNumber)->formatE164();
+                                } catch (Exception) {
+                                    // If formatting fails, keep the original value with + prefix
+                                    $data['phone_number'] = $phoneNumber;
+                                }
+                            }
+
+                            return $data;
+                        },
+                        shouldRetainBeforeValidationMutation: true,
+                    )
+                    ->validateUsing([
+                        'first_name' => ['nullable', 'string', 'max:255'],
+                        'last_name' => ['nullable', 'string', 'max:255'],
+                        'phone_number' => ['required', 'phone:E164'],
+                    ])
+                    ->successNotificationTitle('Contacts Imported Successfully'),
                 CreateAction::make(),
             ])
             ->recordActions([

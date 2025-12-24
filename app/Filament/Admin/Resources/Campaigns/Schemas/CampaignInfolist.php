@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Campaigns\Schemas;
 
-use App\Enums\CampaignSource;
-use App\Enums\CampaignStatus;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Filament\Admin\Resources\Phonebooks\PhonebookResource;
 use App\Filament\Infolists\Components\AudioPlayerEntry;
@@ -90,36 +88,7 @@ final class CampaignInfolist
                                 TextEntry::make('status')
                                     ->label('Current Status')
                                     ->badge()
-                                    ->formatStateUsing(fn ($state) => $state->name)
-                                    ->icon(fn (Campaign $record) => match ($record->status) {
-                                        CampaignStatus::Pending,
-                                        CampaignStatus::Cancelled => Tabler::Clock,
-                                        CampaignStatus::Processing => Tabler::Refresh,
-                                        CampaignStatus::Completed => Tabler::Check,
-                                        CampaignStatus::Failed => Tabler::X,
-                                    })
-                                    ->color(fn (Campaign $record) => match ($record->status) {
-                                        CampaignStatus::Pending,
-                                        CampaignStatus::Cancelled => 'warning',
-                                        CampaignStatus::Processing => 'primary',
-                                        CampaignStatus::Completed => 'success',
-                                        CampaignStatus::Failed => 'danger',
-                                    }),
-
-                                TextEntry::make('source')
-                                    ->label('Source')
-                                    ->badge()
-                                    ->formatStateUsing(fn ($state) => $state->name)
-                                    ->color(fn ($state) => match ($state) {
-                                        CampaignSource::Phonebook => 'success',
-                                        CampaignSource::Manual => 'primary',
-                                        CampaignSource::Import => 'secondary',
-                                    })
-                                    ->icon(fn ($state) => match ($state) {
-                                        CampaignSource::Phonebook => Tabler::AddressBook,
-                                        CampaignSource::Manual => Tabler::Writing,
-                                        CampaignSource::Import => Tabler::FileImport,
-                                    }),
+                                    ->formatStateUsing(fn ($state) => $state->name),
 
                                 TextEntry::make('scheduled_at')
                                     ->label('Launch Date')

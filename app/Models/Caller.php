@@ -23,6 +23,12 @@ final class Caller extends Model
         'caller_name',
         'caller_number',
         'enabled',
+        'max_concurrency',
+    ];
+
+    protected $casts = [
+        'enabled' => 'boolean',
+        'max_concurrency' => 'integer',
     ];
 
     protected $appends = ['name'];

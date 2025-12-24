@@ -32,8 +32,8 @@ final class CustomerInfolist
                             ->label('Verification Status')
                             ->icon(Tabler::RosetteDiscountCheck)
                             ->badge()
-                            ->formatStateUsing(fn($state) => $state ? 'Verified' : 'Unverified')
-                            ->color(fn($state) => $state ? 'success' : 'warning'),
+                            ->formatStateUsing(fn ($state) => $state ? 'Verified' : 'Unverified')
+                            ->color(fn ($state) => $state ? 'success' : 'warning'),
                     ])
                     ->columns(3)
                     ->collapsible(),
@@ -71,7 +71,7 @@ final class CustomerInfolist
                             ->money('BDT')
                             ->size('lg')
                             ->weight('bold')
-                            ->color(fn($state) => $state > 0 ? 'success' : ($state < 0 ? 'danger' : 'gray')),
+                            ->color(fn ($state) => $state > 0 ? 'success' : ($state < 0 ? 'danger' : 'gray')),
                         TextEntry::make('pulse_rate')
                             ->label('Pulse Rate')
                             ->icon(Tabler::Activity)
@@ -159,26 +159,26 @@ final class CustomerInfolist
                             ->label('Account Created')
                             ->icon(Tabler::CalendarPlus)
                             ->since()
-                            ->tooltip(fn(User $record) => $record->created_at ? $record->created_at->format('M j, Y \a\t h:i A') : 'Unknown')
+                            ->tooltip(fn (User $record) => $record->created_at ? $record->created_at->format('M j, Y \a\t h:i A') : 'Unknown')
                             ->color('gray'),
                         TextEntry::make('updated_at')
                             ->label('Last Updated')
                             ->icon(Tabler::Refresh)
                             ->since()
-                            ->tooltip(fn(User $record) => $record->updated_at ? $record->updated_at->format('M j, Y \a\t h:i A') : 'Never updated')
+                            ->tooltip(fn (User $record) => $record->updated_at ? $record->updated_at->format('M j, Y \a\t h:i A') : 'Never updated')
                             ->color('gray'),
                         TextEntry::make('email_verified_at')
                             ->label('Email Verified At')
                             ->icon(Tabler::CircleCheck)
                             ->since()
-                            ->tooltip(fn(User $record) => $record->email_verified_at ? $record->email_verified_at->format('M j, Y \a\t h:i A') : 'Not verified yet')
+                            ->tooltip(fn (User $record) => $record->email_verified_at ? $record->email_verified_at->format('M j, Y \a\t h:i A') : 'Not verified yet')
                             ->placeholder('Email not verified yet')
                             ->color('success'),
                         TextEntry::make('deleted_at')
                             ->label('Deleted At')
                             ->icon(Tabler::Trash)
                             ->since()
-                            ->tooltip(fn(User $record) => $record->deleted_at ? $record->deleted_at->format('M j, Y \a\t h:i A') : 'Account is active')
+                            ->tooltip(fn (User $record) => $record->deleted_at ? $record->deleted_at->format('M j, Y \a\t h:i A') : 'Account is active')
                             ->placeholder('Account is active')
                             ->color('danger'),
                     ])

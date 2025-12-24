@@ -16,7 +16,9 @@ use Illuminate\Support\Number;
 final class AsteriskDaemonStats extends StatsOverviewWidget
 {
     protected static ?int $sort = 1;
+
     protected int|array|null $columns = 2;
+
     protected int|string|array $columnSpan = 1;
 
     protected function getStats(): array
@@ -28,7 +30,7 @@ final class AsteriskDaemonStats extends StatsOverviewWidget
         $memory = 'N/A';
 
         if (file_exists($pidFile)) {
-            $pid = (int)mb_trim(file_get_contents($pidFile));
+            $pid = (int) mb_trim(file_get_contents($pidFile));
 
             if ($pid && posix_kill($pid, 0)) {
                 $running = true;
@@ -83,7 +85,7 @@ final class AsteriskDaemonStats extends StatsOverviewWidget
         $running = false;
 
         if (file_exists($pidFile)) {
-            $pid = (int)mb_trim(file_get_contents($pidFile));
+            $pid = (int) mb_trim(file_get_contents($pidFile));
             $running = $pid && posix_kill($pid, 0);
         }
 
@@ -92,9 +94,9 @@ final class AsteriskDaemonStats extends StatsOverviewWidget
                 ->label('Start Daemon')
                 ->color('success')
                 ->icon('heroicon-o-play-circle')
-                ->visible(!$running)
+                ->visible(! $running)
                 ->action(function () {
-                    shell_exec('cd ' . base_path() . ' && nohup php artisan asterisk:start > /dev/null 2>&1 &');
+                    shell_exec('cd '.base_path().' && nohup php artisan asterisk:start > /dev/null 2>&1 &');
 
                     Notification::make()
                         ->success()

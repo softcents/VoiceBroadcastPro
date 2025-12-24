@@ -4,15 +4,11 @@ declare(strict_types=1);
 
 namespace App\Jobs;
 
-use App\Enums\CallStatus;
 use App\Enums\CampaignStatus;
 use App\Models\Campaign;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\RateLimiter;
 use Throwable;
 
 final class ProcessCampaign implements ShouldQueue
@@ -37,52 +33,17 @@ final class ProcessCampaign implements ShouldQueue
             return;
         }
 
-        $campaign->update(['status' => CampaignStatus::Processing]);
+        // Only start if it's currently Pending or Failed (retry)
+        if ($campaign->status !== CampaignStatus::Pending && $campaign->status !== CampaignStatus::Failed) {
+            return;
+        }
 
-        $campaign->calls()
-            ->where('status', '!=', CallStatus::Initiated)
-            ->chunkById(50, function ($calls) use ($campaign) {
-                RateLimiter::attempt(
-                    "campaign:{$this->campaignId}",
-                    $maxAttempts = 1,
-                    function () use ($calls, $campaign) {
-                        DB::transaction(function () use ($calls, $campaign) {
-                            $callIds = $calls->pluck('id');
+        $campaign->update([
+            'status' => CampaignStatus::Processing,
+            'started_at' => now(),
+        ]);
 
-                            DB::table('calls')
-                                ->whereIn('id', $callIds)
-                                ->update(['status' => CallStatus::Initiated]);
-
-                            $jobs = $calls->map(fn ($call) => new ProcessMarketingCall($call->id)->onQueue('marketing'));
-
-                            $batch = Bus::batch($jobs->toArray())
-                                ->name("Campaign {$campaign->id} - Chunk")
-                                ->allowFailures()
-                                ->finally(function () use ($campaign) {
-                                    // Check if all calls are processed
-                                    $pendingCalls = $campaign->calls()
-                                        ->where('status', CallStatus::Initiated)
-                                        ->count();
-
-                                    if ($pendingCalls === 0) {
-                                        $campaign->update([
-                                            'status' => CampaignStatus::Completed,
-                                        ]);
-                                    }
-                                })
-                                ->dispatch();
-
-                            Log::info("Batch dispatched for campaign {$campaign->id}", [
-                                'batch_id' => $batch->id,
-                                'jobs_count' => $calls->count(),
-                            ]);
-                        });
-                    },
-                    $decaySeconds = 10
-                );
-            });
-
-        $campaign->update(['status' => CampaignStatus::Completed]);
+        Log::info("Campaign #{$campaign->id} transitioned to Processing. Dispatcher cron will take over.");
     }
 
     public function failed(Throwable $exception): void

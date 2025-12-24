@@ -116,7 +116,6 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true; // TODO:: Adjust access control as needed
         if ($panel->getId() === 'admin') {
             return $this->type === UserType::Admin;
         }
@@ -141,6 +140,11 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
     public function isUser(): bool
     {
         return $this->type === UserType::User;
+    }
+
+    public function hasEnoughBalance(float $amount): bool
+    {
+        return $this->balance >= $amount;
     }
 
     #[Scope]

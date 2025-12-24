@@ -46,8 +46,9 @@ final class CallsTable
                     ->badge(),
                 TextColumn::make('duration')
                     ->label('Duration')
+                    ->numeric()
                     ->placeholder('-')
-                    ->formatStateUsing(fn (int $state) => secondsToHuman($state))
+                    ->formatStateUsing(fn (float $state) => secondsToHuman($state))
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created At')
@@ -72,6 +73,7 @@ final class CallsTable
                 SelectFilter::make('from_interface')
                     ->label('From Interface')
                     ->options(CallFromInterface::class)
+                    ->multiple()
                     ->searchable(),
             ])
             ->recordActions([

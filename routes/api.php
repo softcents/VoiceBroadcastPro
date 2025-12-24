@@ -32,7 +32,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::apiResource('templates', TemplateController::class);
     Route::apiResource('callers', CallerController::class)->only('index');
     Route::apiResource('campaigns', CampaignController::class);
-    Route::apiResource('calls', CallController::class);
+    Route::apiResource('calls', CallController::class)->only(['index', 'store']);
 
     Route::apiResource('otp', OtpController::class)->only('index', 'store');
 

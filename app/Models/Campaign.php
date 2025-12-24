@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\CampaignSource;
 use App\Enums\CampaignStatus;
 use App\Models\Scopes\OwnedByAuthUser;
 use App\Observers\CampaignObserver;
@@ -24,6 +23,11 @@ final class Campaign extends Model
     use HasFactory;
 
     protected $guarded = [];
+
+    protected $casts = [
+        'status' => CampaignStatus::class,
+        'scheduled_at' => 'datetime',
+    ];
 
     public function user(): BelongsTo
     {
@@ -48,14 +52,5 @@ final class Campaign extends Model
     public function calls(): HasMany
     {
         return $this->hasMany(Call::class);
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'source' => CampaignSource::class,
-            'status' => CampaignStatus::class,
-            'scheduled_at' => 'datetime',
-        ];
     }
 }

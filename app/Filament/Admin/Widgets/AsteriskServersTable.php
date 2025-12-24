@@ -8,11 +8,10 @@ use App\Models\Server;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Filament\Widgets\TableWidget as BaseWidget;
-use Illuminate\Database\Eloquent\Builder;
 
 final class AsteriskServersTable extends BaseWidget
 {
-    protected int | string | array $columnSpan = 1;
+    protected int|string|array $columnSpan = 1;
 
     protected static ?int $sort = 2;
 

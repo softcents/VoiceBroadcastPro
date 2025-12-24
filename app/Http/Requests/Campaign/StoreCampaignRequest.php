@@ -30,47 +30,18 @@ final class StoreCampaignRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:1000'],
-            'audio_id' => ['required', 'exists:audio,id'],
-            'source' => ['required', Rule::enum(CampaignSource::class)],
-
+            'audio_id' => [
+                'required',
+                'exists:audio,id',
+                new \App\Rules\EnsureUserHasSufficientBalanceForCampaign(),
+            ],
             'phonebook_id' => [
-                Rule::requiredIf(function () {
-                    return $this->input('source') === CampaignSource::Phonebook->value;
-                }),
-                Rule::prohibitedIf(function () {
-                    return $this->input('source') !== CampaignSource::Phonebook->value;
-                }),
-                'nullable',
+                'required',
                 'integer',
-                Rule::exists('phonebooks', 'id')->where('user_id', Auth::id()),
+                Rule::exists('phonebooks', 'id')
+                    ->where('user_id', Auth::id()),
             ],
-
-            'phone_numbers' => [
-                Rule::requiredIf(function () {
-                    return $this->input('source') === CampaignSource::Manual->value;
-                }),
-                Rule::prohibitedIf(function () {
-                    return $this->input('source') !== CampaignSource::Manual->value;
-                }),
-                'nullable',
-                'array',
-                'min:1',
-            ],
-            'phone_numbers.*' => ['string', 'phone:E.164,BD'],
-
-            'file' => [
-                Rule::requiredIf(function () {
-                    return $this->input('source') === CampaignSource::Import->value;
-                }),
-                Rule::prohibitedIf(function () {
-                    return $this->input('source') !== CampaignSource::Import->value;
-                }),
-                'nullable',
-                'file',
-                'mimes:csv',
-                'max:2048',
-            ],
-            'scheduled_at' => ['nullable', 'date', 'after:5 minutes'],
+            'scheduled_at' => ['nullable', 'date', 'after:now'],
         ];
     }
 
@@ -89,20 +60,12 @@ final class StoreCampaignRequest extends FormRequest
                 'description' => 'The ID of the audio file to be used.',
                 'example' => 1,
             ],
-            'source' => [
-                'description' => 'The source of contacts for the campaign.',
-                'example' => CampaignSource::Phonebook->value,
-            ],
-
             'phonebook_id' => [
-                'description' => 'The ID of the phonebook (required if source is phonebook).',
+                'description' => 'The ID of the phonebook associated with the campaign.',
                 'example' => 5,
             ],
-            'file' => [
-                'description' => 'A CSV file containing phone numbers (required if source is import).',
-            ],
             'scheduled_at' => [
-                'description' => 'The scheduled time for the campaign to start. (min: 5 minutes from now)',
+                'description' => 'The scheduled time for the campaign to start.',
                 'example' => '2025-12-25 10:00:00',
             ],
         ];

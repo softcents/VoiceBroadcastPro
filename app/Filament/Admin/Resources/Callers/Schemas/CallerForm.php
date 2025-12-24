@@ -25,6 +25,7 @@ final class CallerForm
                             ->label('Server')
                             ->required()
                             ->searchable()
+                            ->selectablePlaceholder(false)
                             ->preload(),
                         TextInput::make('trunk_name')
                             ->label('Trunk Name')
@@ -40,6 +41,13 @@ final class CallerForm
                                 TextInput::make('caller_number')
                                     ->label('Caller Number')
                                     ->required(),
+                                TextInput::make('max_concurrency')
+                                    ->label('Max Concurrency')
+                                    ->hint('Set to 0 for unlimited.')
+                                    ->numeric()
+                                    ->default(0)
+                                    ->required()
+                                    ->helperText('Maximum number of concurrent calls this caller ID can handle.'),
                             ]),
                         Select::make('users')
                             ->relationship('users', 'name', modifyQueryUsing: function (Builder $query) {

@@ -121,4 +121,20 @@ final class ProcessOtpCall implements ShouldQueue
             'called_at' => CarbonImmutable::createFromTimeString($response->json('creationtime')),
         ]);
     }
+
+    /**
+     * Handle a job failure.
+     */
+    public function failed(Throwable $exception): void
+    {
+        if (isset($this->call)) {
+            $this->call->update([
+                'status' => CallStatus::Failed,
+            ]);
+        }
+
+        Log::error('ProcessOtpCall failed for Call ID: '.($this->call?->id ?? 'unknown'), [
+            'exception' => $exception->getMessage(),
+        ]);
+    }
 }

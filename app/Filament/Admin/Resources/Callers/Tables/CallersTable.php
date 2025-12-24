@@ -8,8 +8,8 @@ use App\Filament\Admin\Resources\Servers\ServerResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 
 final class CallersTable
@@ -29,13 +29,22 @@ final class CallersTable
                 TextColumn::make('caller_number')
                     ->label('Caller Number')
                     ->searchable(),
+                TextColumn::make('max_concurrency')
+                    ->label('Max Concurrency')
+                    ->numeric()
+                    ->sortable()
+                    ->badge()
+                    ->alignCenter()
+                    ->formatStateUsing(fn (int $state): string => $state === 0 ? 'Unlimited' : trans_choice(':count Call|:count Calls', $state, ['count' => $state])),
                 TextColumn::make('users_count')
                     ->label('Assigned')
                     ->counts('users')
-                    ->alignCenter(),
-                IconColumn::make('enabled')
+                    ->alignCenter()
+                    ->badge()
+                    ->formatStateUsing(fn (int $state): string => $state === 0 ? 'None' : trans_choice(':count User|:count Users', $state, ['count' => $state])),
+                ToggleColumn::make('enabled')
                     ->label('Enabled')
-                    ->boolean()
+                    ->sortable()
                     ->alignCenter(),
                 TextColumn::make('created_at')
                     ->label('Created At')

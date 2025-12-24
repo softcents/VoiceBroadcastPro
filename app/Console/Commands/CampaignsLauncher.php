@@ -55,7 +55,7 @@ final class CampaignsLauncher extends Command
                                     // Dispatch the campaign processing job
                                     ProcessCampaign::dispatch($campaign->id);
 
-                                    $this->components->task("Campaign #{$campaign->id}: {$campaign->name}", fn() => true);
+                                    $this->components->task("Campaign #{$campaign->id}: {$campaign->name}", fn () => true);
 
                                     Log::info('Campaign queued for processing', [
                                         'campaign_id' => $campaign->id,

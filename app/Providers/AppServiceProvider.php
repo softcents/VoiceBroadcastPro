@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Providers;
 
 use App\Services\TTS\TTSManager;
-use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Schema;
-use Filament\Schemas\Components\Section;
 use Filament\Tables\Table;
 use Illuminate\Support\ServiceProvider;
 

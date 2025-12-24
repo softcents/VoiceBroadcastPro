@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Enums\CampaignStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
 use App\Http\Requests\Campaign\UpdateCampaignRequest;
@@ -15,6 +16,7 @@ use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\BodyParam;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
+use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
 #[Group('Campaigns', 'Manage voice campaigns')]
@@ -43,20 +45,9 @@ final class CampaignController extends Controller
         required: false,
         example: ['+88017XXXXXXXX', '+88016XXXXXXXX'])
     ]
-    public function store(#[CurrentUser] User $user, StoreCampaignRequest $request, \App\Actions\Campaign\CreateCampaignAction $createCampaignAction)
+    public function store(#[CurrentUser] User $user, StoreCampaignRequest $request)
     {
-        $data = $request->validated();
-        $data['status'] = \App\Enums\CampaignStatus::Pending;
-
-        if ($request->hasFile('file')) {
-            $path = $request->file('file')->store('campaigns');
-            $data['file_path'] = $path;
-            $data['source'] = \App\Enums\CampaignSource::Import->value; // Force source if file is present?
-            // Or assume source is part of request.
-            // If API uploads file, usually source=import is implied or required validation.
-        }
-
-        $campaign = $createCampaignAction->execute($user, $data);
+        $campaign = $user->campaigns()->create($request->validated());
 
         return new CampaignResource($campaign->load(['audio', 'phonebook']));
     }
@@ -76,11 +67,15 @@ final class CampaignController extends Controller
 
     #[Endpoint(title: 'Update Campaign')]
     #[ResponseFromApiResource(CampaignResource::class, Campaign::class)]
+    #[Response(
+        status: 403,
+        description: 'You do not have permission to update this campaign, or the campaign cannot be updated due to its current status.',
+    )]
     public function update(#[CurrentUser] User $user, UpdateCampaignRequest $request, Campaign $campaign)
     {
-        if ($campaign->user_id !== $user->id) {
-            abort(403);
-        }
+        abort_if($campaign->user_id !== $user->id, 403, 'You do not have permission to update this campaign.');
+        abort_if($campaign->status !== CampaignStatus::Pending, 403, 'Only pending campaigns can be updated.');
+        abort_if($campaign->scheduled_at && $campaign->scheduled_at->isPast(), 403, 'Cannot update a campaign that has already been executed.');
 
         $campaign->update($request->validated());
 

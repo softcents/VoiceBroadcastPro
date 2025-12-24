@@ -5,10 +5,7 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Enums\CallStatus;
-use App\Enums\CallType;
 use App\Enums\TransactionType;
-use App\Jobs\ProcessMarketingCall;
-use App\Jobs\ProcessOtpCall;
 use App\Models\Call;
 
 final class CallObserver
@@ -18,14 +15,37 @@ final class CallObserver
      */
     public function created(Call $call): void
     {
-        if ($call->campaign_id === null && $call->scheduled_at === null) {
-            if ($call->type === CallType::OTP) {
-                ProcessOtpCall::dispatch($call->id)
-                    ->onQueue('otp');
-            } else {
-                ProcessMarketingCall::dispatch($call->id)
-                    ->onQueue('marketing');
-            }
+        if ($call->campaign_id){
+            // Campaign calls are handled in CampaignObserver
+            return;
+        }
+
+        $call->loadMissing(['user', 'audio']);
+
+        $user = $call->user;
+        $audio = $call->audio;
+
+        if (! $user || ! $audio) {
+            return;
+        }
+
+        // Calculate and reserve cost
+        $cost = $audio->calculateCostForUser($user);
+
+        if ($cost > 0) {
+            $user->decrement('balance', $cost);
+
+            $user->transactions()->create([
+                'type' => TransactionType::Debit,
+                'amount' => $cost,
+                'currency' => 'BDT',
+                'description' => "Reserved balance for call ID {$call->id}",
+                'reference_type' => Call::class,
+                'reference_id' => $call->id,
+            ]);
+
+            $call->cost = $cost;
+            $call->saveQuietly();
         }
     }
 

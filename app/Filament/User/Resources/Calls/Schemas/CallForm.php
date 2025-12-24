@@ -7,10 +7,13 @@ namespace App\Filament\User\Resources\Calls\Schemas;
 use App\Enums\AudioApproval;
 use App\Enums\AudioConversionStatus;
 use App\Models\Caller;
+use App\Rules\EnsureUserHasSufficientBalanceForCall;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Validation\Rule;
 use LaraZeus\Tabler\Tabler;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
@@ -38,19 +41,25 @@ final class CallForm
                             ->required()
                             ->rules(['phone:BD']),
                         Select::make('audio_id')
+                            ->prefixIcon(Tabler::Music)
+                            ->label('Audio')
                             ->relationship(
                                 name: 'audio',
                                 titleAttribute: 'title',
-                                modifyQueryUsing: function ($query) {
+                                modifyQueryUsing: function (Builder $query) {
                                     return $query->where('approval', AudioApproval::Approved)
                                         ->where('conversion_status', AudioConversionStatus::Completed);
                                 })
-                            ->label('Audio')
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->live()
-                            ->prefixIcon(Tabler::Music),
+                            ->rules([
+                                Rule::exists('audio', 'id')
+                                    ->where('approval', AudioApproval::Approved)
+                                    ->where('conversion_status', AudioConversionStatus::Completed)
+                                    ->where('user_id', auth()->id()),
+                                new EnsureUserHasSufficientBalanceForCall(),
+                            ]),
                         DateTimePicker::make('scheduled_at')
                             ->label('Scheduled At')
                             ->prefixIcon(Tabler::CalendarTime)

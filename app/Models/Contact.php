@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
 
 final class Contact extends Model
 {
@@ -20,6 +21,10 @@ final class Contact extends Model
         'first_name',
         'last_name',
         'phone_number',
+    ];
+
+    protected $casts = [
+        'phone_number' => E164PhoneNumberCast::class,
     ];
 
     public function phonebook(): BelongsTo

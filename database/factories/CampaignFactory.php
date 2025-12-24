@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
-use App\Enums\CampaignSource;
 use App\Enums\CampaignStatus;
 use App\Models\Audio;
 use App\Models\Caller;
@@ -32,7 +31,6 @@ final class CampaignFactory extends Factory
             'phonebook_id' => Phonebook::factory(),
             'title' => fake()->sentence(),
             'description' => fake()->text(),
-            'source' => CampaignSource::Manual,
             'status' => CampaignStatus::Pending,
             'scheduled_at' => fake()->dateTimeBetween('now', '+1 month'),
         ];

@@ -29,9 +29,8 @@ final class CallInfolist
                             ->schema([
                                 Section::make([
                                     TextEntry::make('phone_number')
-                                        ->label('Phone Number')
-                                        ->weight(FontWeight::Bold)
-                                        ->size('lg'),
+                                        ->icon(Tabler::Dialpad)
+                                        ->label('Phone Number'),
                                     TextEntry::make('type')
                                         ->badge(),
                                     TextEntry::make('status')

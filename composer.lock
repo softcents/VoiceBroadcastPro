@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "49e3262a2eff2161aadebb3ae9f34bc1",
+    "content-hash": "781769e5bf862ef064aa634a28e6d9aa",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1246,6 +1246,97 @@
                 }
             ],
             "time": "2025-03-06T22:45:56+00:00"
+        },
+        {
+            "name": "eightynine/filament-excel-import",
+            "version": "4.x-dev",
+            "dist": {
+                "type": "path",
+                "url": "./plugins/filament-excel-import",
+                "reference": "6d9bff58cbf3657b01e46610ee8b22871a5dc8cb"
+            },
+            "require": {
+                "filament/filament": "^4.0",
+                "illuminate/contracts": "^11.0|^12.0",
+                "maatwebsite/excel": "^3.1",
+                "php": "^8.2",
+                "spatie/laravel-package-tools": "^1.15.0"
+            },
+            "require-dev": {
+                "laravel/pint": "^1.0",
+                "nunomaduro/collision": "^8.1",
+                "nunomaduro/larastan": "^2.0.1",
+                "orchestra/testbench": "^10.0|^11.0",
+                "pestphp/pest": "^3.7",
+                "pestphp/pest-plugin-arch": "^3.0",
+                "pestphp/pest-plugin-laravel": "^3.1",
+                "phpstan/extension-installer": "^1.1",
+                "phpstan/phpstan-deprecation-rules": "^2.0",
+                "phpstan/phpstan-phpunit": "^2.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "EightyNine\\ExcelImport\\ExcelImportServiceProvider"
+                    ],
+                    "aliases": {
+                        "ExcelImportAction": "EightyNine\\ExcelImport\\Facades\\ExcelImportAction"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "EightyNine\\ExcelImport\\": "src/",
+                    "EightyNine\\ExcelImport\\Database\\Factories\\": "database/factories/"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "EightyNine\\ExcelImport\\Tests\\": "tests/"
+                }
+            },
+            "scripts": {
+                "post-autoload-dump": [
+                    "@php ./vendor/bin/testbench package:discover --ansi"
+                ],
+                "analyse": [
+                    "vendor/bin/phpstan analyse"
+                ],
+                "test": [
+                    "vendor/bin/pest"
+                ],
+                "test-coverage": [
+                    "vendor/bin/pest --coverage"
+                ],
+                "format": [
+                    "vendor/bin/pint"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Eighty Nine",
+                    "email": "eighty9nine@gmail.com",
+                    "role": "Developer"
+                }
+            ],
+            "description": "Import Excel files with Laravel Filament.",
+            "homepage": "https://github.com/eightynine/filament-excel-import",
+            "keywords": [
+                "eightynine",
+                "filament-excel-import",
+                "laravel"
+            ],
+            "support": {
+                "issues": "https://github.com/eightynine/filament-excel-import/issues",
+                "source": "https://github.com/eightynine/filament-excel-import"
+            },
+            "transport-options": {
+                "relative": true
+            }
         },
         {
             "name": "evenement/evenement",
@@ -15966,8 +16057,10 @@
         }
     ],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": {},
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "eightynine/filament-excel-import": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
