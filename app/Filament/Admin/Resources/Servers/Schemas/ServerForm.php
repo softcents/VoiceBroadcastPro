@@ -55,30 +55,35 @@ final class ServerForm
                                     ->prefixIcon(Tabler::ShieldLock),
                                 TextInput::make('host')
                                     ->label('Host')
-                                    ->placeholder('127.0.0.1')
+                                    ->placeholder('e.g. 127.0.0.1')
                                     ->required()
                                     ->columnSpan(1)
                                     ->prefixIcon(Tabler::Network),
                                 TextInput::make('port')
+                                    ->prefixIcon(Tabler::Adjustments)
                                     ->label('Port')
+                                    ->placeholder('e.g. 8088')
                                     ->numeric()
                                     ->default(8088)
-                                    ->required()
-                                    ->prefixIcon(Tabler::Adjustments),
+                                    ->required(),
                             ]),
 
-                        Grid::make(2)
+                        Grid::make()
                             ->schema([
                                 TextInput::make('username')
                                     ->label('Username')
+                                    ->prefixIcon(Tabler::User)
                                     ->required()
-                                    ->prefixIcon(Tabler::User),
+                                    ->placeholder('Enter your username'),
                                 TextInput::make('password')
+                                    ->prefixIcon(Tabler::Key)
                                     ->label('Password')
+                                    ->placeholder('Enter your password')
                                     ->password()
                                     ->revealable()
-                                    ->required()
-                                    ->prefixIcon(Tabler::Key),
+                                    ->required(fn($operation) => $operation === 'create')
+                                    ->dehydrated(fn($state, $operation) => $operation === 'create' || filled($state))
+                                    ->helperText(fn($operation) => $operation === 'edit' ? 'Leave blank to keep existing password.' : null),
                             ]),
                     ]),
             ]);

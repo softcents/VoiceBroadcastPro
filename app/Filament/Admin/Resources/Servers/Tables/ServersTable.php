@@ -10,6 +10,8 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
+use LaraZeus\Tabler\Tabler;
+use Tiptap\Nodes\Text;
 
 final class ServersTable
 {
@@ -33,6 +35,21 @@ final class ServersTable
                 TextColumn::make('port')
                     ->label('Port')
                     ->searchable(),
+                TextColumn::make('connection_status')
+                    ->label('Connection Status')
+                    ->searchable()
+                    ->badge()
+                    ->formatStateUsing(fn(string $state) => str($state)->headline()->value())
+                    ->color(fn ($state) => match ($state) {
+                        'connected' => 'success',
+                        'disconnected' => 'danger',
+                        default => 'gray',
+                    })
+                    ->icon(fn($state) => match ($state) {
+                        'connected' => Tabler::CircleDashedCheck,
+                        'disconnected' => Tabler::CircleDashedX,
+                        default => Tabler::InfoCircle,
+                    }),
                 ToggleColumn::make('enabled')
                     ->label('Enabled')
                     ->sortable(),

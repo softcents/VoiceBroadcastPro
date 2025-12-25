@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Providers\Filament;
 
 use App\Filament\User\Pages\Dashboard;
+use App\Filament\User\Pages\Register;
 use App\Http\Middleware\UserMiddleware;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -35,7 +36,7 @@ final class UserPanelProvider extends PanelProvider
             ->path('')
             ->login()
             ->profile()
-            ->registration()
+            ->registration(Register::class)
             ->passwordReset()
             ->emailVerification()
             ->databaseNotifications()
