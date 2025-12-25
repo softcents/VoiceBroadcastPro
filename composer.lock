@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c7414bdf25398fc51b0496468957bfed",
+    "content-hash": "08e0130e40ee6dabf36c2bdb620ef914",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1250,10 +1250,16 @@
         {
             "name": "eightynine/filament-excel-import",
             "version": "4.x-dev",
-            "dist": {
-                "type": "path",
-                "url": "./plugins/filament-excel-import",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/bishwajitcadhikary/filament-excel-import.git",
                 "reference": "4e118f696e11953ec9d24d4fffe6fb6099efeb9c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/bishwajitcadhikary/filament-excel-import/zipball/4e118f696e11953ec9d24d4fffe6fb6099efeb9c",
+                "reference": "4e118f696e11953ec9d24d4fffe6fb6099efeb9c",
+                "shasum": ""
             },
             "require": {
                 "filament/filament": "^4.0",
@@ -1274,6 +1280,7 @@
                 "phpstan/phpstan-deprecation-rules": "^2.0",
                 "phpstan/phpstan-phpunit": "^2.0"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "laravel": {
@@ -1334,9 +1341,7 @@
                 "issues": "https://github.com/eightynine/filament-excel-import/issues",
                 "source": "https://github.com/eightynine/filament-excel-import"
             },
-            "transport-options": {
-                "relative": true
-            }
+            "time": "2025-12-25T18:40:52+00:00"
         },
         {
             "name": "evenement/evenement",
