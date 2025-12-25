@@ -20,6 +20,8 @@ final class Server extends Model
 
     protected $guarded = [];
 
+    protected $hidden = ['password'];
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'server_user');

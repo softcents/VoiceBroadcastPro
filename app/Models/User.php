@@ -116,15 +116,8 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function canAccessPanel(Panel $panel): bool
     {
-        if ($panel->getId() === 'admin') {
-            return $this->type === UserType::Admin;
-        }
-
-        if ($panel->getId() === 'user') {
-            return $this->type === UserType::User;
-        }
-
-        return false;
+        // Managed by AdminMiddleware and UserMiddleware
+        return true;
     }
 
     public function getFilamentAvatarUrl(): ?string

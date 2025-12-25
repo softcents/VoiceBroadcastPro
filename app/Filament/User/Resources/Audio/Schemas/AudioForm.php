@@ -36,12 +36,15 @@ final class AudioForm
                     ->schema([
                         TextInput::make('title')
                             ->label('Title')
+                            ->placeholder('Enter audio title')
                             ->required(),
                         Textarea::make('description')
                             ->label('Description')
+                            ->placeholder('Enter audio description')
                             ->columnSpanFull(),
                         Textarea::make('message')
                             ->label('Script / Message')
+                            ->placeholder('Enter the script or message for TTS audio')
                             ->rows(5)
                             ->columnSpanFull()
                             ->disabledOn(['edit', 'view'])

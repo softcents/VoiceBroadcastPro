@@ -17,15 +17,11 @@ final class ServerSeeder extends Seeder
         $servers = [
             [
                 'name' => 'Hostomega BDIX',
+                'scheme' => 'http',
                 'host' => '160.191.163.122',
                 'port' => '8088',
                 'username' => 'softcents',
                 'password' => 'password',
-                'database_host' => '160.191.163.122',
-                'database_port' => 3306,
-                'database_name' => 'asteriskcdrdb',
-                'database_username' => 'bishwajit',
-                'database_password' => 'password',
                 'enabled' => true,
             ],
         ];

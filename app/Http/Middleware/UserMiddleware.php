@@ -6,6 +6,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Response;
 
 final class UserMiddleware
@@ -17,7 +18,7 @@ final class UserMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if ($request->user()->isUser()) {
+        if (Auth::check() && $request->user()->isUser()) {
             return $next($request);
         }
 

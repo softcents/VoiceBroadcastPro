@@ -20,6 +20,7 @@ final class CallerSeeder extends Seeder
                 'caller_name' => 'SoftCents',
                 'caller_number' => '09617510201',
                 'trunk_name' => '09617510201',
+                'max_concurrency' => 10,
                 'enabled' => true,
             ],
         ];

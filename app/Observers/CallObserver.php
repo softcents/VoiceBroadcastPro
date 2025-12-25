@@ -15,7 +15,7 @@ final class CallObserver
      */
     public function created(Call $call): void
     {
-        if ($call->campaign_id){
+        if ($call->campaign_id) {
             // Campaign calls are handled in CampaignObserver
             return;
         }

@@ -7,6 +7,7 @@ namespace App\Console\Commands;
 use App\Enums\CallStatus;
 use App\Models\Call;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 
 final class CallsCleanup extends Command
 {
@@ -16,13 +17,26 @@ final class CallsCleanup extends Command
 
     public function handle(): void
     {
-        $calls = Call::query()
-            ->whereIn('status', [
-                CallStatus::Initiated,
-                CallStatus::Ringing,
-                CallStatus::Answered,
-            ])
-            ->where('created_at', '<', now()->subMinutes(5))
+        $calls = Call::active()
+            ->with('user')
+            ->where(function (Builder $query) {
+                $query
+                    ->where(function (Builder $query) {
+                        $query->where('status', CallStatus::Initiated)
+                            ->whereNotNull('initiated_at')
+                            ->where('initiated_at', '<=', now()->subMinutes(2));
+                    })
+                    ->orWhere(function (Builder $query) {
+                        $query->where('status', CallStatus::Ringing)
+                            ->whereNotNull('ringing_at')
+                            ->where('ringing_at', '<=', now()->subMinutes(2));
+                    })
+                    ->orWhere(function (Builder $query) {
+                        $query->where('status', CallStatus::Answered)
+                            ->whereNotNull('answered_at')
+                            ->where('answered_at', '<=', now()->subHour());
+                    });
+            })
             ->get();
 
         $count = $calls->count();
@@ -37,7 +51,7 @@ final class CallsCleanup extends Command
             $call->update(['status' => CallStatus::Failed]);
         }
 
-        $this->components->task("Fixed {$count} stuck call".($count !== 1 ? 's' : ''), fn () => true);
-        $this->components->twoColumnDetail('Updated calls', (string) $count);
+        $this->components->task("Fixed {$count} stuck call" . ($count !== 1 ? 's' : ''), fn() => true);
+        $this->components->twoColumnDetail('Updated calls', (string)$count);
     }
 }

@@ -15,7 +15,7 @@ final class EnsureUserHasSufficientBalanceForCall implements ValidationRule
     /**
      * Run the validation rule.
      *
-     * @param Closure(string, ?string=): PotentiallyTranslatedString $fail
+     * @param  Closure(string, ?string=): PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
@@ -24,7 +24,7 @@ final class EnsureUserHasSufficientBalanceForCall implements ValidationRule
 
         $cost = $audio->calculateCostForUser($user);
 
-        if (!$user->hasEnoughBalance($cost)) {
+        if (! $user->hasEnoughBalance($cost)) {
             $message = sprintf(
                 'Insufficient balance. This call costs %s. Your balance: %s.',
                 Number::currency($cost, 'BDT'),

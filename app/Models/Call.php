@@ -14,7 +14,9 @@ use App\Observers\CallObserver;
 use App\Settings\CallingSetting;
 use Database\Factories\CallFactory;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
+use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -114,5 +116,27 @@ final class Call extends Model
         return Attribute::make(
             get: fn () => $this->isRetryable && $this->retries < app(CallingSetting::class)->max_retry_attempts,
         );
+    }
+
+    /**
+     * Scope a query to only include active calls.
+     */
+    #[Scope]
+    protected function active(Builder $query): Builder
+    {
+        return $query->whereIn('status', [
+            CallStatus::Initiated,
+            CallStatus::Ringing,
+            CallStatus::Answered,
+        ]);
+    }
+
+    /**
+     * Scope a query to only include pending calls.
+     */
+    #[Scope]
+    protected function pending(Builder $query): Builder
+    {
+        return $query->where('status', CallStatus::Pending);
     }
 }

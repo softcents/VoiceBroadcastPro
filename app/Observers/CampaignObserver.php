@@ -10,15 +10,16 @@ use App\Enums\TransactionType;
 use App\Models\Call;
 use App\Models\Campaign;
 use App\Models\Transaction;
+use Exception;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 use Illuminate\Support\Facades\DB;
-use Exception;
 use Throwable;
 
 final class CampaignObserver implements ShouldHandleEventsAfterCommit
 {
     /**
      * Handle the Campaign "created" event.
+     *
      * @throws Throwable
      */
     public function created(Campaign $campaign): void
@@ -26,7 +27,7 @@ final class CampaignObserver implements ShouldHandleEventsAfterCommit
         $campaign->loadMissing(['phonebook.contacts', 'audio', 'user']);
 
         $phonebook = $campaign->phonebook;
-        if (!$phonebook || $phonebook->contacts->isEmpty()) {
+        if (! $phonebook || $phonebook->contacts->isEmpty()) {
             return;
         }
 

@@ -13,6 +13,7 @@ use Filament\Forms\Components\Select;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
 use LaraZeus\Tabler\Tabler;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
@@ -27,13 +28,20 @@ final class CallForm
                     ->schema(components: [
                         Select::make('caller_id')
                             ->label('Caller ID')
-                            ->relationship('caller', modifyQueryUsing: function ($query) {
-                                return $query->enabled();
-                            })
+                            ->relationship(
+                                name: 'caller',
+                                titleAttribute: 'caller_number',
+                                modifyQueryUsing: function (Builder $query): Builder {
+                                    return $query->scopes(['enabled'])
+                                        ->whereHas('users', function (Builder $q) {
+                                            $q->where('id', Auth::id());
+                                        });
+                                }
+                            )
                             ->searchable(['caller_name', 'caller_number'])
                             ->preload()
                             ->required()
-                            ->getOptionLabelFromRecordUsing(fn (Caller $caller) => $caller->name),
+                            ->getOptionLabelFromRecordUsing(fn(Caller $caller) => $caller->name),
                         PhoneInput::make('phone_number')
                             ->label('Phone Number')
                             ->onlyCountries(['BD'])

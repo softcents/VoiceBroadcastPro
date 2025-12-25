@@ -43,8 +43,7 @@ final class PhonebookForm
                         Repeater::make('contacts')
                             ->hiddenLabel()
                             ->relationship()
-                            ->required()
-                            ->minItems(1)
+                            ->defaultItems(0)
                             ->table([
                                 TableColumn::make('First Name'),
                                 TableColumn::make('Last Name'),

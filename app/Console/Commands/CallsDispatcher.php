@@ -10,25 +10,32 @@ use App\Enums\CampaignStatus;
 use App\Jobs\ProcessMarketingCall;
 use App\Jobs\ProcessOtpCall;
 use App\Models\Call;
+use App\Models\Caller;
 use Illuminate\Console\Command;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Throwable;
 
 final class CallsDispatcher extends Command
 {
     protected $signature = 'calls:dispatch';
 
-    protected $description = 'Dispatch calls based on server concurrency limits';
+    protected $description = 'Dispatch calls based on callers concurrency limits';
 
     /**
      * Execute the console command.
+     *
+     * @throws Throwable
      */
     public function handle(): int
     {
         $this->components->info('Dispatching calls based on Caller ID concurrency limits');
 
-        $callers = \App\Models\Caller::where('enabled', true)->with('server')->get();
+        $callers = Caller::where('enabled', true)
+            ->with('server')
+            ->get();
 
         if ($callers->isEmpty()) {
             $this->components->warn('No enabled callers found');
@@ -46,12 +53,8 @@ final class CallsDispatcher extends Command
             $this->components->twoColumnDetail('Processing Caller', "{$caller->caller_name} ({$caller->caller_number})");
 
             // 1. Calculate Active Calls for this Caller
-            $activeCallsCount = Call::where('caller_id', $caller->id)
-                ->whereIn('status', [
-                    CallStatus::Initiated,
-                    CallStatus::Ringing,
-                    CallStatus::Answered,
-                ])
+            $activeCallsCount = Call::active()
+                ->whereCallerId($caller->id)
                 ->count();
 
             $limit = $caller->max_concurrency;
@@ -68,14 +71,14 @@ final class CallsDispatcher extends Command
 
             // 2. Fetch Pending Calls for this Caller
             // Logic: Standalone calls (scheduled or now) OR Campaign calls (only if campaign is Processing)
-            $pendingCalls = Call::where('status', CallStatus::Pending)
-                ->where('caller_id', $caller->id)
-                ->where(function ($query) {
+            $pendingCalls = Call::pending()
+                ->whereCallerId($caller->id)
+                ->where(function (Builder $query) {
                     $query->where(function ($q) {
                         $q->whereNull('campaign_id')
                             ->where(function ($sq) {
                                 $sq->whereNull('scheduled_at')
-                                    ->orWhere('scheduled_at', '<=', now());
+                                    ->orWherePast('scheduled_at');
                             });
                     })
                         ->orWhere(function ($q) {
@@ -83,6 +86,7 @@ final class CallsDispatcher extends Command
                                 ->whereHas('campaign', fn ($cq) => $cq->where('status', CampaignStatus::Processing));
                         });
                 })
+                ->oldest()
                 ->limit($availableSlots)
                 ->get();
 

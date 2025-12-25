@@ -13,25 +13,22 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 
 final class EnsureUserHasSufficientBalanceForCampaign implements ValidationRule
 {
-    public function __construct(protected int|null $phonebookId = null)
-    {
-
-    }
+    public function __construct(private ?int $phonebookId = null) {}
 
     /**
      * Run the validation rule.
      *
-     * @param Closure(string, ?string=): PotentiallyTranslatedString $fail
+     * @param  Closure(string, ?string=): PotentiallyTranslatedString  $fail
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         $user = auth()->user();
-        if (!$user) {
+        if (! $user) {
             return;
         }
 
         $audio = Audio::find($value);
-        if (!$audio) {
+        if (! $audio) {
             return;
         }
 
@@ -40,11 +37,11 @@ final class EnsureUserHasSufficientBalanceForCampaign implements ValidationRule
         }
 
         $phonebook = Phonebook::withCount('contacts')->find($this->phonebookId);
-        if (!$phonebook) {
+        if (! $phonebook) {
             return;
         }
 
-        $contactsCount = (int)$phonebook->contacts_count;
+        $contactsCount = (int) $phonebook->contacts_count;
         if ($contactsCount === 0) {
             return;
         }
@@ -52,7 +49,7 @@ final class EnsureUserHasSufficientBalanceForCampaign implements ValidationRule
         $costPerCall = $audio->calculateCostForUser($user);
         $totalEstimatedCost = $costPerCall * $contactsCount;
 
-        if (!$user->hasEnoughBalance($totalEstimatedCost)) {
+        if (! $user->hasEnoughBalance($totalEstimatedCost)) {
             $message = sprintf(
                 'Insufficient balance. This campaign costs estimated %s for %s calls. Your balance: %s.',
                 Number::currency($totalEstimatedCost, 'BDT'),

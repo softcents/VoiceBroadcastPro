@@ -50,6 +50,10 @@ final class CallsTable
                     ->placeholder('-')
                     ->formatStateUsing(fn (float $state) => secondsToHuman($state))
                     ->sortable(),
+                TextColumn::make('cost')
+                    ->label('Cost')
+                    ->money('BDT')
+                    ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()

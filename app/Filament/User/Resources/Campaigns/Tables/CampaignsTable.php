@@ -39,7 +39,7 @@ final class CampaignsTable
                 TextColumn::make('status')
                     ->label('Current Status')
                     ->badge()
-                    ->formatStateUsing(fn($state) => $state->name),
+                    ->formatStateUsing(fn ($state) => $state->name),
                 TextColumn::make('scheduled_at')
                     ->label('Scheduled At')
                     ->placeholder('Not Scheduled')
@@ -62,7 +62,7 @@ final class CampaignsTable
                 ActionGroup::make([
                     ViewAction::make(),
                     EditAction::make()
-                        ->visible(fn(Campaign $record) => $record->status === CampaignStatus::Pending && $record->scheduled_at),
+                        ->visible(fn (Campaign $record) => $record->status === CampaignStatus::Pending && $record->scheduled_at),
                 ]),
             ])
             ->toolbarActions([

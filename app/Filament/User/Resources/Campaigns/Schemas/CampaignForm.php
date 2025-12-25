@@ -6,7 +6,6 @@ namespace App\Filament\User\Resources\Campaigns\Schemas;
 
 use App\Enums\AudioApproval;
 use App\Enums\AudioConversionStatus;
-use App\Filament\User\Resources\Phonebooks\Schemas\PhonebookForm;
 use App\Models\Caller;
 use App\Models\Phonebook;
 use App\Rules\EnsureUserHasSufficientBalanceForCampaign;
@@ -69,7 +68,7 @@ final class CampaignForm
                                                 ->where('approval', AudioApproval::Approved)
                                                 ->where('conversion_status', AudioConversionStatus::Completed)
                                                 ->where('user_id', auth()->id()),
-                                            new EnsureUserHasSufficientBalanceForCampaign($get('phonebook_id'))
+                                            new EnsureUserHasSufficientBalanceForCampaign($get('phonebook_id')),
                                         ];
                                     }),
                             ]),
@@ -87,9 +86,10 @@ final class CampaignForm
                                         name: 'caller',
                                         titleAttribute: 'caller_number',
                                         modifyQueryUsing: function (Builder $query): Builder {
-                                            return $query->whereHas('users', function (Builder $q) {
-                                                $q->where('id', Auth::id());
-                                            });
+                                            return $query->scopes(['enabled'])
+                                                ->whereHas('users', function (Builder $q) {
+                                                    $q->where('id', Auth::id());
+                                                });
                                         }
                                     )
                                     ->getOptionLabelFromRecordUsing(fn(Caller $record) => $record->name)

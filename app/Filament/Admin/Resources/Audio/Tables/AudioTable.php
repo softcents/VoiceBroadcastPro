@@ -97,6 +97,21 @@ final class AudioTable
                     ->label('Play')
                     ->icon(Tabler::Music),
                 ActionGroup::make([
+                    Action::make('retry_conversion')
+                        ->icon(Tabler::Refresh)
+                        ->label('Retry')
+                        ->action(function ($record) {
+                            ConvertAudio::dispatch($record->id);
+                        })
+                        ->visible(fn (Audio $record) => $record->conversion_status === AudioConversionStatus::Failed),
+                    Action::make('retry_tts')
+                        ->icon(Tabler::Refresh)
+                        ->label('Retry')
+                        ->action(function ($record) {
+                            GenerateAudio::dispatch($record->id);
+                        })
+                        ->visible(fn (Audio $record) => $record->tts_status === AudioTTSStatus::Failed),
+
                     Action::make('approve')
                         ->icon(Tabler::CircleCheck)
                         ->label('Approve')

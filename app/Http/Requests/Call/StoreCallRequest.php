@@ -33,7 +33,7 @@ final class StoreCallRequest extends FormRequest
                     ->where('user_id', $this->user()?->id)
                     ->where('status', AudioApproval::Approved)
                     ->where('conversion_status', AudioConversionStatus::Completed),
-                new EnsureUserHasSufficientBalanceForCall()
+                new EnsureUserHasSufficientBalanceForCall(),
             ],
             'phone_number' => ['required', 'phone'],
             'scheduled_at' => ['nullable', 'date', 'after:now'],
