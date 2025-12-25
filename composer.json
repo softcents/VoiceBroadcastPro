@@ -122,7 +122,15 @@
     "repositories": [
         {
             "type": "path",
-            "url": "./plugins/*"
+            "url": "./plugins/*",
+            "options": {
+                "symlink": true
+            }
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/bishwajitcadhikary/filament-excel-import.git",
+            "canonical": false
         }
     ]
 }

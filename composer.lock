@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "781769e5bf862ef064aa634a28e6d9aa",
+    "content-hash": "c7414bdf25398fc51b0496468957bfed",
     "packages": [
         {
             "name": "anourvalar/eloquent-serialize",
@@ -1253,7 +1253,7 @@
             "dist": {
                 "type": "path",
                 "url": "./plugins/filament-excel-import",
-                "reference": "6d9bff58cbf3657b01e46610ee8b22871a5dc8cb"
+                "reference": "4e118f696e11953ec9d24d4fffe6fb6099efeb9c"
             },
             "require": {
                 "filament/filament": "^4.0",
