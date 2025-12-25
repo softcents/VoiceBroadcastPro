@@ -10,16 +10,8 @@ use App\Models\Call;
 
 final class CallObserver
 {
-    /**
-     * Handle the Call "created" event.
-     */
-    public function created(Call $call): void
+    private function deductCost(Call $call): void
     {
-        if ($call->campaign_id) {
-            // Campaign calls are handled in CampaignObserver
-            return;
-        }
-
         $call->loadMissing(['user', 'audio']);
 
         $user = $call->user;
@@ -47,6 +39,19 @@ final class CallObserver
             $call->cost = $cost;
             $call->saveQuietly();
         }
+    }
+
+    /**
+     * Handle the Call "created" event.
+     */
+    public function created(Call $call): void
+    {
+        if ($call->campaign_id) {
+            // Campaign calls are handled in CampaignObserver
+            return;
+        }
+
+        $this->deductCost($call);
     }
 
     /**
@@ -117,6 +122,12 @@ final class CallObserver
 
                     $call->cost = 0;
                     $call->saveQuietly();
+                }
+            }
+            elseif ($call->status === CallStatus::Pending){
+                // Re-deduct cost if call is retried
+                if ($call->cost <= 0) {
+                    $this->deductCost($call);
                 }
             }
         }

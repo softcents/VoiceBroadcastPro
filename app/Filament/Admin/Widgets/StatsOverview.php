@@ -64,7 +64,7 @@ final class StatsOverview extends BaseWidget
                 ->description('Campaigns waiting to start')
                 ->icon(Tabler::Clock),
 
-            Stat::make('Completed (Today)', Campaign::whereStatus(CampaignStatus::Completed)->whereDate('updated_at', today())->count())
+            Stat::make('Completed (Today)', Campaign::whereStatus(CampaignStatus::Finished)->whereDate('updated_at', today())->count())
                 ->description('Campaigns completed today')
                 ->icon(Tabler::CircleCheck),
 

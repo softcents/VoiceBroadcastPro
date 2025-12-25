@@ -15,8 +15,6 @@ final class AsteriskController extends Controller
     {
         $call = Call::whereUniqueId($request->validated('channel'))->firstOrFail();
 
-        ray($request->all())->showApp();
-
         switch ($request->validated('event')) {
             case 'ringing':
                 $call->update([

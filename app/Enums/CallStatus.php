@@ -31,14 +31,13 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::Pending => 'primary',
+            self::Pending => 'gray',
             self::Completed,
             self::Answered => 'success',
             self::Failed,
             self::Busy,
             self::NotAnswered => 'danger',
-            self::Ringing => 'warning',
-            self::Initiated => 'info',
+            self::Ringing, self::Initiated => 'info',
         };
     }
 

@@ -41,7 +41,7 @@ final class AsteriskDaemonStats extends StatsOverviewWidget
                     $parts = preg_split('/\s+/', mb_trim($processInfo), 2);
                     if (count($parts) >= 2) {
                         $uptime = $parts[0];
-                        $memory = Number::fileSize($parts[1] * 1024); // RSS is in KB
+                        $memory = bytesToHuman($parts[1] * 1024); // RSS is in KB
                     }
                 }
             }

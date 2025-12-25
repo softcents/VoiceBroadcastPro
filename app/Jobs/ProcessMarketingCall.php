@@ -23,7 +23,7 @@ final class ProcessMarketingCall implements ShouldQueue
 {
     use Batchable, Queueable;
 
-    public int $tries = 3;
+    public int $tries = 1;
 
     public int $timeout = 120;
 
@@ -104,14 +104,6 @@ final class ProcessMarketingCall implements ShouldQueue
                 'exception' => $exception->getMessage(),
             ]);
         }
-    }
-
-    /**
-     * Calculate the number of seconds to wait before retrying the job.
-     */
-    public function backoff(): array
-    {
-        return [30, 60, 120]; // Wait 30s, 60s, then 120s between retries
     }
 
     /**

@@ -31,6 +31,7 @@ final class CallsRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('phone_number')
+            ->poll()
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')

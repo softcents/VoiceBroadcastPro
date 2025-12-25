@@ -46,7 +46,7 @@ final class CallsDispatcher extends Command
         $totalDispatched = 0;
 
         foreach ($callers as $caller) {
-            if (! $caller->server || ! $caller->server->enabled) {
+            if (!$caller->server || !$caller->server->enabled) {
                 continue;
             }
 
@@ -60,8 +60,8 @@ final class CallsDispatcher extends Command
             $limit = $caller->max_concurrency;
             $availableSlots = $limit > 0 ? max(0, $limit - $activeCallsCount) : 1000;
 
-            $this->components->twoColumnDetail('Active Calls', (string) $activeCallsCount);
-            $this->components->twoColumnDetail('Slots Available', $limit > 0 ? (string) $availableSlots : 'Unlimited');
+            $this->components->twoColumnDetail('Active Calls', (string)$activeCallsCount);
+            $this->components->twoColumnDetail('Slots Available', $limit > 0 ? (string)$availableSlots : 'Unlimited');
 
             if ($availableSlots <= 0) {
                 $this->components->warn('Caller limit reached. Skipping...');
@@ -75,15 +75,15 @@ final class CallsDispatcher extends Command
                 ->whereCallerId($caller->id)
                 ->where(function (Builder $query) {
                     $query->where(function ($q) {
-                        $q->whereNull('campaign_id')
-                            ->where(function ($sq) {
-                                $sq->whereNull('scheduled_at')
-                                    ->orWherePast('scheduled_at');
-                            });
-                    })
+                            $q->whereNull('campaign_id')
+                                ->where(function ($sq) {
+                                    $sq->whereNull('scheduled_at')
+                                        ->orWherePast('scheduled_at');
+                                });
+                        })
                         ->orWhere(function ($q) {
                             $q->whereNotNull('campaign_id')
-                                ->whereHas('campaign', fn ($cq) => $cq->where('status', CampaignStatus::Processing));
+                                ->whereHas('campaign', fn($cq) => $cq->where('status', CampaignStatus::Processing));
                         });
                 })
                 ->oldest()
@@ -115,7 +115,7 @@ final class CallsDispatcher extends Command
                 });
 
                 $batch = Bus::batch($jobs->toArray())
-                    ->name('Dispatcher - '.$caller->name.' - '.now()->format('H:i:s'))
+                    ->name('Dispatcher - ' . $caller->name . ' - ' . now()->format('H:i:s'))
                     ->allowFailures()
                     ->dispatch();
 
@@ -128,7 +128,7 @@ final class CallsDispatcher extends Command
                 ]);
             });
 
-            $this->components->task("Dispatched {$pendingCalls->count()} calls", fn () => true);
+            $this->components->task("Dispatched {$pendingCalls->count()} calls", fn() => true);
         }
 
         if ($totalDispatched > 0) {

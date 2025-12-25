@@ -32,6 +32,15 @@ final class Call extends Model
     /** @use HasFactory<CallFactory> */
     use HasFactory;
 
+    protected CallingSetting $callSettings;
+
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        $this->callSettings = app(CallingSetting::class);
+    }
+
     protected $guarded = [];
 
     protected $casts = [
@@ -114,13 +123,10 @@ final class Call extends Model
     protected function canRetry(): Attribute
     {
         return Attribute::make(
-            get: fn () => $this->isRetryable && $this->retries < app(CallingSetting::class)->max_retry_attempts,
+            get: fn () => $this->isRetryable && $this->retries < $this->callSettings->max_retry_attempts,
         );
     }
 
-    /**
-     * Scope a query to only include active calls.
-     */
     #[Scope]
     protected function active(Builder $query): Builder
     {
@@ -131,12 +137,57 @@ final class Call extends Model
         ]);
     }
 
-    /**
-     * Scope a query to only include pending calls.
-     */
     #[Scope]
     protected function pending(Builder $query): Builder
     {
         return $query->where('status', CallStatus::Pending);
+    }
+
+    #[Scope]
+    protected function failed(Builder $query): Builder
+    {
+        return $query->where('status', CallStatus::Failed);
+    }
+
+    #[Scope]
+    protected function scheduled(Builder $query): Builder
+    {
+        return $query->whereNotNull('scheduled_at');
+    }
+
+    #[Scope]
+    protected function answered(Builder $query): Builder
+    {
+        return $query->whereNotNull('answered_at');
+    }
+
+    #[Scope]
+    protected function called(Builder $query): Builder
+    {
+        return $query->whereNotNull('called_at');
+    }
+
+    #[Scope]
+    protected function ended(Builder $query): Builder
+    {
+        return $query->whereNotNull('ended_at');
+    }
+
+    #[Scope]
+    protected function ringing(Builder $query): Builder
+    {
+        return $query->whereNotNull('ringing_at');
+    }
+
+    #[Scope]
+    protected function retryable(Builder $query): Builder
+    {
+        return $query->where(function (Builder $q) {
+            $q->whereIn('status', [
+                CallStatus::Busy,
+                CallStatus::NotAnswered,
+                CallStatus::Failed,
+            ])->where('retries', '<', $this->callSettings->max_retry_attempts);
+        });
     }
 }

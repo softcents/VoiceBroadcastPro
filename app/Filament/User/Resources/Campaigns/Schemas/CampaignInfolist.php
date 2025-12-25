@@ -28,7 +28,6 @@ final class CampaignInfolist
                     ->schema([
                         Section::make()
                             ->heading('Campaign Details')
-                            ->description('Detailed information about the campaign')
                             ->icon(Tabler::Ad2)
                             ->schema([
                                 TextEntry::make('title')
@@ -59,16 +58,10 @@ final class CampaignInfolist
                                             ->placeholder('N/A')
                                             ->visible(fn (Campaign $record) => $record->phonebook_id !== null)
                                             ->url(fn (Campaign $record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
+                                        TextEntry::make('status')
+                                            ->label('Current Status')
+                                            ->badge(),
                                     ]),
-                            ]),
-
-                        Section::make()
-                            ->heading('Audio Preview')
-                            ->icon(Tabler::PlayerPlay)
-                            ->schema([
-                                AudioPlayerEntry::make('audio.original_path')
-                                    ->label('Player')
-                                    ->hiddenLabel(),
                             ]),
                     ]),
 
@@ -76,39 +69,27 @@ final class CampaignInfolist
                     ->columnSpan(1)
                     ->schema([
                         Section::make()
-                            ->icon(Tabler::InfoCircle)
-                            ->heading('Status & Source')
-                            ->description('Current status and source of the campaign')
-                            ->schema([
-                                TextEntry::make('status')
-                                    ->label('Current Status')
-                                    ->badge(),
-
-                                TextEntry::make('source')
-                                    ->label('Source')
-                                    ->badge(),
-
-                                TextEntry::make('scheduled_at')
-                                    ->label('Launch Date')
-                                    ->dateTime()
-                                    ->icon(Tabler::CalendarEvent)
-                                    ->visible(fn (Campaign $record) => $record->scheduled_at !== null),
-                            ]),
-
-                        Section::make()
                             ->heading('Timestamps')
                             ->icon(Tabler::Clock)
-                            ->collapsed()
+                            ->collapsible()
                             ->schema([
+                                TextEntry::make('scheduled_at')
+                                    ->label('Launch Date')
+                                    ->icon(Tabler::CalendarEvent)
+                                    ->placeholder('Not Scheduled')
+                                    ->dateTime(),
+
                                 TextEntry::make('created_at')
                                     ->label('Created At')
+                                    ->icon(Tabler::CalendarPlus)
                                     ->dateTime()
-                                    ->size(TextSize::Small),
+                                    ->sinceTooltip(),
 
                                 TextEntry::make('updated_at')
                                     ->label('Last Updated')
+                                    ->icon(Tabler::CalendarUp)
                                     ->dateTime()
-                                    ->size(TextSize::Small),
+                                    ->sinceTooltip(),
                             ]),
                     ]),
             ]);

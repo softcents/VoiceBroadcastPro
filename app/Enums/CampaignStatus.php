@@ -12,10 +12,10 @@ use LaraZeus\Tabler\Tabler;
 enum CampaignStatus: string implements HasColor, HasIcon, HasLabel
 {
     case Pending = 'pending';
-    case Processing = 'processing';
-    case Completed = 'completed';
-    case Failed = 'failed';
     case Cancelled = 'cancelled';
+    case Processing = 'processing';
+    case Failed = 'failed';
+    case Finished = 'finished';
 
     public function getLabel(): string
     {
@@ -25,10 +25,11 @@ enum CampaignStatus: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::Completed => 'success',
+            self::Pending => 'gray',
+            self::Cancelled => 'warning',
+            self::Processing => 'info',
             self::Failed => 'danger',
-            self::Processing => 'warning',
-            self::Pending, self::Cancelled => 'gray',
+            self::Finished => 'success',
         };
     }
 
@@ -36,10 +37,10 @@ enum CampaignStatus: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::Pending => Tabler::Clock,
-            self::Processing => Tabler::Loader,
-            self::Completed => Tabler::CircleCheck,
-            self::Failed => Tabler::CircleX,
             self::Cancelled => Tabler::Ban,
+            self::Processing => Tabler::Loader,
+            self::Failed => Tabler::CircleX,
+            self::Finished => Tabler::CircleCheck,
         };
     }
 }

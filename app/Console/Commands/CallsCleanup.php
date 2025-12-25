@@ -24,12 +24,12 @@ final class CallsCleanup extends Command
                     ->where(function (Builder $query) {
                         $query->where('status', CallStatus::Initiated)
                             ->whereNotNull('initiated_at')
-                            ->where('initiated_at', '<=', now()->subMinutes(2));
+                            ->where('initiated_at', '<=', now()->subMinutes(5));
                     })
                     ->orWhere(function (Builder $query) {
                         $query->where('status', CallStatus::Ringing)
                             ->whereNotNull('ringing_at')
-                            ->where('ringing_at', '<=', now()->subMinutes(2));
+                            ->where('ringing_at', '<=', now()->subMinutes(5));
                     })
                     ->orWhere(function (Builder $query) {
                         $query->where('status', CallStatus::Answered)

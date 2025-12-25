@@ -11,6 +11,7 @@ use App\Models\Audio;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Illuminate\Support\Number;
 use LaraZeus\Tabler\Tabler;
 
 final class AudioInfolist
@@ -72,7 +73,7 @@ final class AudioInfolist
                             ->label('Duration')
                             ->icon(Tabler::Clock)
                             ->numeric()
-                            ->formatStateUsing(fn (int $state) => secondsToHuman($state)),
+                            ->formatStateUsing(fn (float $state) => secondsToHuman($state)),
                         TextEntry::make('size')
                             ->label('File Size')
                             ->icon(Tabler::Database)

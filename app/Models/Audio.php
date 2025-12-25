@@ -49,6 +49,15 @@ final class Audio extends Model
         'tts_generated_at',
     ];
 
+    protected $casts = [
+        'duration' => 'float',
+        'size' => 'integer',
+        'type' => AudioType::class,
+        'approval' => AudioApproval::class,
+        'conversion_status' => AudioConversionStatus::class,
+        'tts_status' => AudioTTSStatus::class,
+    ];
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
@@ -89,16 +98,6 @@ final class Audio extends Model
                 Storage::disk('local')->delete($audio->converted_path);
             }
         });
-    }
-
-    protected function casts(): array
-    {
-        return [
-            'type' => AudioType::class,
-            'approval' => AudioApproval::class,
-            'conversion_status' => AudioConversionStatus::class,
-            'tts_status' => AudioTTSStatus::class,
-        ];
     }
 
     #[Scope]
