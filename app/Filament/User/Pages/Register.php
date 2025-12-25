@@ -45,7 +45,8 @@ class Register extends BaseRegister
             ->email()
             ->required()
             ->maxLength(255)
-            ->unique($this->getUserModel());
+            ->unique($this->getUserModel())
+            ->rule('indisposable');
     }
 
     protected function getPasswordFormComponent(): Component
@@ -78,10 +79,15 @@ class Register extends BaseRegister
 
     protected function getPhoneFormComponent(): Component
     {
-        return PhoneInput::make('email')
+        return PhoneInput::make('phone')
             ->label("Phone Number")
-            ->required()
             ->defaultCountry('BD')
-            ->unique($this->getUserModel());
+            ->required()
+            ->onlyCountries(['BD'])
+            ->formatAsYouType(false)
+            ->rules([
+                'required',
+                'phone:BD',
+            ]);
     }
 }
