@@ -150,9 +150,9 @@ final class ContactsRelationManager extends RelationManager
                         shouldRetainBeforeValidationMutation: true,
                     )
                     ->validateUsing([
+                        'phone_number' => ['required', 'phone:E164'],
                         'first_name' => ['nullable', 'string', 'max:255'],
                         'last_name' => ['nullable', 'string', 'max:255'],
-                        'phone_number' => ['required', 'phone:E164'],
                     ])
                     ->successNotificationTitle('Contacts Imported Successfully'),
                 CreateAction::make(),

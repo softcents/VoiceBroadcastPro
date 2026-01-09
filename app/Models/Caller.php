@@ -43,6 +43,31 @@ final class Caller extends Model
         return $this->belongsToMany(User::class, 'caller_user');
     }
 
+    /**
+     * Get the count of active calls for this caller.
+     */
+    public function activeCallsCount(): int
+    {
+        return Call::active()
+            ->whereCallerId($this->id)
+            ->count();
+    }
+
+    /**
+     * Get the number of available slots for this caller.
+     * Returns a high number (1000) if max_concurrency is 0 (unlimited).
+     */
+    public function availableSlots(): int
+    {
+        $limit = $this->max_concurrency;
+
+        if ($limit <= 0) {
+            return 1000; // Unlimited
+        }
+
+        return max(0, $limit - $this->activeCallsCount());
+    }
+
     protected function name(): Attribute
     {
         return Attribute::make(

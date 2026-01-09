@@ -188,7 +188,7 @@ final class Start extends Command
         $channelId = $event['channel']['id'];
         $callType = $event['args'][0] ?? 'marketing';
         $audioOrOtp = $event['args'][1] ?? 'hello-world';
-        ray($callType, $audioOrOtp);
+
         $this->line("  <fg=green>✓</> StasisStart: <fg=gray>{$channelId}</>");
 
         // Using Http Facade here is blocking, but for quick API calls it's "okay" in low volume.
