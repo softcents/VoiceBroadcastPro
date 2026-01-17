@@ -304,7 +304,7 @@ final class Start extends Command
         }
     }
 
-    private function updateStatus($event, $channelId, $timestamp): void
+    private function updateStatus($event, $channelId, $timestamp, $eventData): void
     {
         $timestamp = CarbonImmutable::createFromTimeString($timestamp);
 
@@ -318,9 +318,10 @@ final class Start extends Command
 
         try {
             $call->events()->create([
-                'data' => $event,
+                'data' => $eventData,
             ]);
-        }catch (Throwable) {
+        }catch (Throwable $e) {
+            ray($e, $eventData);
             // Ignore event logging failures
         }
 
