@@ -235,7 +235,7 @@ return [
     'environments' => [
         'production' => [
             'default-1' => [
-                'maxProcesses' => 5,
+                'maxProcesses' => 1,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
@@ -250,8 +250,8 @@ return [
             'default-1' => [
                 'maxProcesses' => 30,
             ],
-            'marketing-call' => [
-                'maxProcesses' => 100,
+            'call-1' => [
+                'maxProcesses' => 10,
             ],
         ],
     ],
