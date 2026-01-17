@@ -129,7 +129,9 @@ final class ProcessMarketingCall implements ShouldQueue
                 ]);
 
             if ($response->failed()) {
-                $errorMessage = $response->json('message') ?? 'Unknown API error';
+                $errorMessage = $response->json('message')
+                    ?? $response->json('error')
+                    ?? 'Unknown API error';
                 $statusCode = $response->status();
 
                 Log::error("API request failed for Call ID {$this->call->id}", [

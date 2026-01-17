@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Observers;
 
 use App\Enums\CallStatus;
+use App\Enums\CallType;
 use App\Enums\TransactionType;
+use App\Jobs\ProcessMarketingCall;
+use App\Jobs\ProcessOtpCall;
 use App\Models\Call;
 
 final class CallObserver
@@ -52,6 +55,18 @@ final class CallObserver
         }
 
         $this->deductCost($call);
+
+        if ($call->caller->availableSlots() > 0){
+            $call->update([
+                'status' => CallStatus::Initiated,
+                'initiated_at' => now()
+            ]);
+
+            match ($call->type) {
+                CallType::OTP => new ProcessOtpCall($call->id)->onQueue('otp'),
+                CallType::Marketing => new ProcessMarketingCall($call->id)->onQueue('marketing'),
+            };
+        }
     }
 
     /**

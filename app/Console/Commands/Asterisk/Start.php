@@ -12,6 +12,7 @@ use Exception;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 use Ratchet\RFC6455\Messaging\Message;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
@@ -35,6 +36,12 @@ final class Start extends Command
         $this->writePidFile();
 
         $loop = Loop::get();
+
+        if (! $loop) {
+            $this->components->error('Failed to get event loop instance');
+
+            return 1;
+        }
 
         // 1. Signal Handling
         $loop->addSignal(SIGINT, fn () => $this->shutdown($loop));
@@ -65,7 +72,7 @@ final class Start extends Command
     {
         $this->newLine();
         $this->components->warn('Shutting down');
-        foreach ($this->connections as $serverId => $conn) {
+        foreach ($this->connections as $conn) {
             $conn->close();
         }
         $this->removePidFile();
@@ -97,8 +104,8 @@ final class Start extends Command
 
         // Cleanup removed servers
         foreach ($this->connections as $serverId => $conn) {
-            if (! in_array($serverId, $activeServerIds)) {
-                $this->components->task("Closing connection to server {$serverId}", fn () => true);
+            if (!in_array($serverId, $activeServerIds, true)) {
+                $this->components->task("Closing connection to server $serverId", fn () => true);
                 $conn->close();
                 unset($this->connections[$serverId]);
             }
@@ -107,19 +114,19 @@ final class Start extends Command
 
     private function connectToServer(Server $server, LoopInterface $loop): void
     {
-        $this->line("  <fg=yellow>→</> Connecting to <fg=cyan>{$server->host}</>");
+        $this->line("  <fg=yellow>→</> Connecting to <fg=cyan>$server->host</>");
 
         // Placeholder to prevent multiple connection attempts while one is pending
         // We set it to true initially, then replace with actual connection object on success
         $this->connections[$server->id] = true;
 
         $appName = 'originate';
-        $base = "{$server->host}".($server->port ? ":{$server->port}" : '');
+        $base = $server->host .($server->port ? ":$server->port" : '');
 
-        $url = "ws://{$base}/ari/events?api_key={$server->username}:{$server->password}&app={$appName}";
+        $url = "ws://$base/ari/events?api_key=$server->username:$server->password&app=$appName";
 
         connect($url, [], [], $loop)->then(function ($conn) use ($server) {
-            $this->components->task("Connected to {$server->host}", fn () => true);
+            $this->components->task("Connected to $server->host", fn () => true);
             $this->connections[$server->id] = $conn;
 
             // Update database connection status
@@ -129,8 +136,8 @@ final class Start extends Command
                 $this->handleMessage($msg, $server);
             });
 
-            $conn->on('close', function ($code = null, $reason = null) use ($server) {
-                $this->components->warn("Connection closed: {$server->host} (code: {$code})");
+            $conn->on('close', function ($code = null) use ($server) {
+                $this->components->warn("Connection closed: $server->host (code: $code)");
                 unset($this->connections[$server->id]);
 
                 // Update database connection status
@@ -138,7 +145,7 @@ final class Start extends Command
             });
 
         }, function ($e) use ($server) {
-            $this->components->error("Failed to connect to {$server->host}: {$e->getMessage()}");
+            $this->components->error("Failed to connect to $server->host: {$e->getMessage()}");
             unset($this->connections[$server->id]);
 
             // Update database connection status
@@ -149,7 +156,7 @@ final class Start extends Command
     private function handleMessage(Message $message, Server $server): void
     {
         try {
-            $event = json_decode($message->getPayload(), true);
+            $event = json_decode($message->getPayload(), true, 512, JSON_THROW_ON_ERROR);
             if (! $event) {
                 return;
             }
@@ -189,7 +196,7 @@ final class Start extends Command
         $callType = $event['args'][0] ?? 'marketing';
         $audioOrOtp = $event['args'][1] ?? 'hello-world';
 
-        $this->line("  <fg=green>✓</> StasisStart: <fg=gray>{$channelId}</>");
+        $this->line("  <fg=green>✓</> StasisStart: <fg=gray>$channelId</>");
 
         // Using Http Facade here is blocking, but for quick API calls it's "okay" in low volume.
         // For high volume, would need an Async HTTP client too.
@@ -197,20 +204,20 @@ final class Start extends Command
         // We'll keep the synchronous HTTP for consistency with previous logic,
         // but ideally this should also be async.
 
-        $this->ariPost($server, "channels/{$channelId}/answer");
+        $this->ariPost($server, "channels/$channelId/answer");
 
         if ($callType === 'otp') {
-            $this->ariPost($server, "channels/{$channelId}/play", ['media' => 'sound:'.url('sounds/pre-otp.wav')]);
-            $this->ariPost($server, "channels/{$channelId}/play", ['media' => "digits:{$audioOrOtp}"]);
-            $this->ariPost($server, "channels/{$channelId}/play", ['media' => 'sound:'.url('sounds/post-otp.wav')]);
-            $this->ariPost($server, "channels/{$channelId}/play", [
-                'media' => "digits:{$audioOrOtp}",
-                'playbackId' => uniqid().'_eof',
+            $this->ariPost($server, "channels/$channelId/play", ['media' => 'sound:'.url('sounds/pre-otp.wav')]);
+            $this->ariPost($server, "channels/$channelId/play", ['media' => "digits:$audioOrOtp"]);
+            $this->ariPost($server, "channels/$channelId/play", ['media' => 'sound:'.url('sounds/post-otp.wav')]);
+            $this->ariPost($server, "channels/$channelId/play", [
+                'media' => "digits:$audioOrOtp",
+                'playbackId' => Str::random().'_eof',
             ]);
         } else {
-            $this->ariPost($server, "channels/{$channelId}/play", [
-                'media' => "sound:{$audioOrOtp}",
-                'playbackId' => uniqid().'_eof',
+            $this->ariPost($server, "channels/$channelId/play", [
+                'media' => "sound:$audioOrOtp",
+                'playbackId' => Str::random().'_eof',
             ]);
         }
     }
@@ -226,7 +233,7 @@ final class Start extends Command
         $targetUri = $event['playback']['target_uri'] ?? '';
         if (str_starts_with($targetUri, 'channel:')) {
             $channelId = str_replace('channel:', '', $targetUri);
-            $this->ariPost($server, "channels/{$channelId}", [], 'DELETE', [404]);
+            $this->ariPost($server, "channels/$channelId", [], 'DELETE', [404]);
         }
     }
 
@@ -271,19 +278,19 @@ final class Start extends Command
         // But for this specific request "Refactor to ReactPHP" primarily targeting the loop/sockets,
         // this is acceptable if load isn't massive.
 
-        $base = "{$server->scheme}://{$server->host}".($server->port ? ":{$server->port}" : '');
-        $url = "{$base}/ari/{$endpoint}";
+        $base = "$server->scheme://$server->host".($server->port ? ":$server->port" : '');
+        $url = "$base/ari/$endpoint";
 
         try {
             $response = Http::withBasicAuth($server->username, $server->password)
                 ->timeout(5)
                 ->send($method, $url, ['json' => $data]);
 
-            if ($response->failed() && ! in_array($response->status(), $ignoreCodes)) {
-                $this->components->error("ARI API error [{$server->host}]: ".$response->body());
+            if ($response->failed() && !in_array($response->status(), $ignoreCodes, true)) {
+                $this->components->error("ARI API error [$server->host]: ".$response->body());
             }
         } catch (Exception $e) {
-            $this->components->error("HTTP error [{$server->host}]: ".$e->getMessage());
+            $this->components->error("HTTP error [$server->host]: ".$e->getMessage());
         }
     }
 
@@ -294,7 +301,7 @@ final class Start extends Command
         $call = Call::whereUniqueId($channelId)->first();
 
         if (! $call) {
-            $this->components->warn("Call record not found: {$channelId}");
+            $this->components->warn("Call record not found: $channelId");
 
             return;
         }
@@ -369,7 +376,7 @@ final class Start extends Command
     private function reloadConnections(LoopInterface $loop): void
     {
         // Close all existing connections
-        foreach ($this->connections as $serverId => $conn) {
+        foreach ($this->connections as $conn) {
             if (is_object($conn)) {
                 $conn->close();
             }
@@ -398,7 +405,7 @@ final class Start extends Command
             DB::table('servers')
                 ->where('id', $serverId)
                 ->update($data);
-        } catch (Exception $e) {
+        } catch (Exception) {
             // Silently fail to avoid disrupting daemon
         }
     }
