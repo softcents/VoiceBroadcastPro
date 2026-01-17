@@ -217,26 +217,12 @@ return [
             'nice' => 0,
         ],
 
-        'otp-1' => [
+        'call-1' => [
             'connection' => 'redis',
-            'queue' => ['otp'],
+            'queue' => ['otp', 'marketing'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 100,
-            'maxTime' => 0,
-            'maxJobs' => 0,
-            'memory' => 128,
-            'tries' => 1,
-            'timeout' => 120,
-            'nice' => 0,
-        ],
-
-        'marketing-1' => [
-            'connection' => 'redis',
-            'queue' => ['marketing'],
-            'balance' => 'auto',
-            'autoScalingStrategy' => 'time',
-            'maxProcesses' => 100,
+            'maxProcesses' => 5,
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,
@@ -249,17 +235,12 @@ return [
     'environments' => [
         'production' => [
             'default-1' => [
-                'maxProcesses' => 10,
+                'maxProcesses' => 5,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
-            'otp-1' => [
-                'maxProcesses' => 100,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-            ],
-            'marketing-1' => [
-                'maxProcesses' => 100,
+            'call-1' => [
+                'maxProcesses' => 5,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
@@ -269,10 +250,7 @@ return [
             'default-1' => [
                 'maxProcesses' => 30,
             ],
-            'otp-1' => [
-                'maxProcesses' => 100,
-            ],
-            'marketing-1' => [
+            'marketing-call' => [
                 'maxProcesses' => 100,
             ],
         ],
