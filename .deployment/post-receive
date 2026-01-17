@@ -78,9 +78,6 @@ deploy() {
     LOG_INFO "Optimizing Laravel..."
     artisan optimize
 
-    LOG_INFO "Restart Reverb"
-    artisan reverb:restart
-
     LOG_INFO "Terminate Horizon"
     artisan horizon:terminate
 
