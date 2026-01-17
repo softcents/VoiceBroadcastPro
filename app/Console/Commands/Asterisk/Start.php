@@ -318,6 +318,7 @@ final class Start extends Command
 
         switch ($event) {
             case 'ringing':
+            case 'progress':
                 $call->update([
                     'status' => CallStatus::Ringing,
                     'ringing_at' => $timestamp,
