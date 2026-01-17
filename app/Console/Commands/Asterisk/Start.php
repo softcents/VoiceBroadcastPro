@@ -267,7 +267,7 @@ final class Start extends Command
             // default => 'failed'
         };
 
-        $this->updateStatus($webhookEvent, $peerId, $timestamp);
+        $this->updateStatus($webhookEvent, $peerId, $timestamp, $event);
     }
 
     private function handleChannelDestroyed($event): void
@@ -275,7 +275,7 @@ final class Start extends Command
         if (($event['cause'] ?? 0) === 16) {
             $this->line("  <fg=green>✓</> ChannelDestroyed: Call completed for <fg=gray>{$event['channel']['id']}</>");
 
-            $this->updateStatus('completed', $event['channel']['id'], $event['timestamp']);
+            $this->updateStatus('completed', $event['channel']['id'], $event['timestamp'], $event);
         }
     }
 
@@ -314,6 +314,14 @@ final class Start extends Command
             $this->components->warn("Call record not found: $channelId");
 
             return;
+        }
+
+        try {
+            $call->events()->create([
+                'data' => $event,
+            ]);
+        }catch (Throwable) {
+            // Ignore event logging failures
         }
 
         switch ($event) {
