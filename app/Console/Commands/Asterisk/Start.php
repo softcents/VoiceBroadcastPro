@@ -214,16 +214,22 @@ final class Start extends Command
                 'media' => "digits:$audioOrOtp",
                 'playbackId' => Str::random().'_eof',
             ]);
+
+            $this->line("  <fg=green>✓</> OTP played on channel: <fg=gray>$channelId</>");
         } else {
             $this->ariPost($server, "channels/$channelId/play", [
                 'media' => "sound:$audioOrOtp",
                 'playbackId' => Str::random().'_eof',
             ]);
+
+            $this->line('  <fg=green>✓</> Marketing audio played on channel: <fg=gray>'.$channelId.'</>');
         }
     }
 
     private function handlePlaybackFinished($event, Server $server): void
     {
+        $this->line('  <fg=green>✓</> PlaybackFinished event received');
+
         $playbackId = $event['playback']['id'] ?? '';
 
         if (! str_ends_with($playbackId, '_eof')) {
@@ -242,6 +248,8 @@ final class Start extends Command
         $peerId = $event['peer']['id'] ?? null;
         $status = $event['dialstatus'] ?? '';
         $timestamp = $event['timestamp'];
+
+        $this->line("  <fg=green>✓</> Dial event: Peer ID: <fg=gray>$peerId</>, Status: <fg=gray>$status</>");
 
         if (! $peerId || empty($status)) {
             return;
@@ -265,6 +273,8 @@ final class Start extends Command
     private function handleChannelDestroyed($event): void
     {
         if (($event['cause'] ?? 0) === 16) {
+            $this->line("  <fg=green>✓</> ChannelDestroyed: Call completed for <fg=gray>{$event['channel']['id']}</>");
+
             $this->updateStatus('completed', $event['channel']['id'], $event['timestamp']);
         }
     }

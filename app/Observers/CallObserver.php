@@ -49,12 +49,16 @@ final class CallObserver
      */
     public function created(Call $call): void
     {
+        $call->refresh();
+        $call->loadMissing(['caller']);
         if ($call->campaign_id) {
             // Campaign calls are handled in CampaignObserver
             return;
         }
 
         $this->deductCost($call);
+
+        ray($call->toArray());
 
         if ($call->caller->availableSlots() > 0){
             $call->update([
@@ -63,8 +67,8 @@ final class CallObserver
             ]);
 
             match ($call->type) {
-                CallType::OTP => new ProcessOtpCall($call->id)->onQueue('otp'),
-                CallType::Marketing => new ProcessMarketingCall($call->id)->onQueue('marketing'),
+                CallType::OTP => ProcessOtpCall::dispatch($call->id)->onQueue('otp'),
+                CallType::Marketing => ProcessMarketingCall::dispatch($call->id)->onQueue('marketing'),
             };
         }
     }

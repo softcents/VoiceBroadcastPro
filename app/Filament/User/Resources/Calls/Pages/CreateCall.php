@@ -12,6 +12,8 @@ final class CreateCall extends CreateRecord
 {
     protected static string $resource = CallResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected function handleRecordCreation(array $data): Model
     {
         $data['user_id'] = auth()->id();

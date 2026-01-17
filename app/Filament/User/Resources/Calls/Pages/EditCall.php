@@ -12,6 +12,8 @@ final class EditCall extends EditRecord
 {
     protected static string $resource = CallResource::class;
 
+    protected ?bool $hasDatabaseTransactions = true;
+
     protected function getHeaderActions(): array
     {
         return [
