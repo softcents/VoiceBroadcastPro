@@ -16,6 +16,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
 final class CallResource extends Resource
@@ -57,5 +58,11 @@ final class CallResource extends Resource
             'create' => CreateCall::route('/create'),
             'view' => ViewCall::route('/{record}'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('user_id', auth()->id());
     }
 }

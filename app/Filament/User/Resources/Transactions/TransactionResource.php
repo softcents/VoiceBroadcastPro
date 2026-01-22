@@ -12,6 +12,7 @@ use App\Models\Transaction;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 final class TransactionResource extends Resource
@@ -47,5 +48,11 @@ final class TransactionResource extends Resource
             'index' => ListTransactions::route('/'),
             'view' => ViewTransaction::route('/{record}'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('user_id', auth()->id());
     }
 }

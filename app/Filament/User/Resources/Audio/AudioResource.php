@@ -16,6 +16,7 @@ use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use LaraZeus\Tabler\Tabler;
 
 final class AudioResource extends Resource
@@ -58,5 +59,11 @@ final class AudioResource extends Resource
             'view' => ViewAudio::route('/{record}'),
             'edit' => EditAudio::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('user_id', auth()->id());
     }
 }

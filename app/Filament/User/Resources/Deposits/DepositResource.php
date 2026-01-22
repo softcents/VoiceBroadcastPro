@@ -11,6 +11,7 @@ use App\Models\Deposit;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use UnitEnum;
 
 final class DepositResource extends Resource
@@ -46,5 +47,11 @@ final class DepositResource extends Resource
             'index' => ListDeposits::route('/'),
             'view' => Pages\ViewDeposit::route('/{record}'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('user_id', auth()->id());
     }
 }

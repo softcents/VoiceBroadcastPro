@@ -18,6 +18,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 final class PhonebookResource extends Resource
 {
@@ -59,5 +60,11 @@ final class PhonebookResource extends Resource
             'view' => ViewPhonebook::route('/{record}'),
             'edit' => EditPhonebook::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->where('user_id', auth()->id());
     }
 }
