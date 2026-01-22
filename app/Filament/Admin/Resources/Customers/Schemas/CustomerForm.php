@@ -83,7 +83,6 @@ final class CustomerForm
                             ->prefix('BDT')
                             ->numeric()
                             ->minValue(0)
-                            ->step(0.1)
                             ->default(app(CallingSetting::class)->pulse_rate)
                             ->required(),
                         TextInput::make('pulse_duration')
