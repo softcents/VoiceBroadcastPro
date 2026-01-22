@@ -17,6 +17,8 @@ final class CallingSettings extends SettingsPage
 
     protected static string $settings = CallingSetting::class;
 
+    protected static ?string $title = 'Calling';
+
     public function form(Schema $schema): Schema
     {
         return $schema
