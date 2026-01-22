@@ -36,6 +36,10 @@ final class CampaignsTable
                 TextColumn::make('phonebook.name')
                     ->label('Phonebook')
                     ->limit(20),
+                TextColumn::make('approval')
+                    ->label('Approval')
+                    ->badge()
+                    ->formatStateUsing(fn ($state) => $state->name),
                 TextColumn::make('status')
                     ->label('Current Status')
                     ->badge()
