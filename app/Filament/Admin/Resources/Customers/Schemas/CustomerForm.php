@@ -8,9 +8,13 @@ use App\Enums\UserAudioType;
 use App\Models\Caller;
 use App\Settings\CallingSetting;
 use Filament\Actions\Action;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
+use Filament\Schemas\Components\Tabs\Tab;
 use Filament\Schemas\Schema;
 use Filament\Support\Icons\Heroicon;
 use LaraZeus\Tabler\Tabler;
@@ -58,43 +62,57 @@ final class CustomerForm
                                 })
                             ),
                     ]),
-                Section::make()
-                    ->heading('Calling Settings')
-                    ->description('Settings related to calling features for the customer.')
-                    ->schema([
-                        Select::make('callers')
-                            ->prefixIcon(Tabler::IdBadge)
-                            ->label('Callers')
-                            ->relationship('callers')
-                            ->searchable(['caller_name', 'caller_number'])
-                            ->getOptionLabelFromRecordUsing(fn (Caller $record): string => $record->name)
-                            ->multiple()
-                            ->preload(),
-                        Select::make('audio_type')
-                            ->prefixIcon(Tabler::MusicBolt)
-                            ->label('Audio Type')
-                            ->options(UserAudioType::class)
-                            ->default('both')
-                            ->required()
-                            ->native(false)
-                            ->selectablePlaceholder(false),
-                        TextInput::make('pulse_rate')
-                            ->label('Pulse Rate')
-                            ->prefix('BDT')
-                            ->numeric()
-                            ->minValue(0)
-                            ->default(app(CallingSetting::class)->pulse_rate)
-                            ->required(),
-                        TextInput::make('pulse_duration')
-                            ->prefixIcon(Tabler::ClockRecord)
-                            ->label('Pulse Duration')
-                            ->suffix('seconds')
-                            ->numeric()
-                            ->minValue(1)
-                            ->step(1)
-                            ->default(app(CallingSetting::class)->pulse_duration)
-                            ->required(),
-                    ]),
+                Tabs::make('Tabs')
+                    ->tabs([
+                        Tab::make('Calling')
+                            ->schema([
+                                Select::make('callers')
+                                    ->prefixIcon(Tabler::IdBadge)
+                                    ->label('Callers')
+                                    ->relationship('callers')
+                                    ->searchable(['caller_name', 'caller_number'])
+                                    ->getOptionLabelFromRecordUsing(fn (Caller $record): string => $record->name)
+                                    ->multiple()
+                                    ->preload(),
+                                Select::make('audio_type')
+                                    ->prefixIcon(Tabler::MusicBolt)
+                                    ->label('Audio Type')
+                                    ->options(UserAudioType::class)
+                                    ->default('both')
+                                    ->required()
+                                    ->native(false)
+                                    ->selectablePlaceholder(false),
+                                TextInput::make('pulse_rate')
+                                    ->label('Pulse Rate')
+                                    ->prefix('BDT')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->default(app(CallingSetting::class)->pulse_rate)
+                                    ->required(),
+                                TextInput::make('pulse_duration')
+                                    ->prefixIcon(Tabler::ClockRecord)
+                                    ->label('Pulse Duration')
+                                    ->suffix('seconds')
+                                    ->numeric()
+                                    ->minValue(1)
+                                    ->step(1)
+                                    ->default(app(CallingSetting::class)->pulse_duration)
+                                    ->required(),
+                            ]),
+                        Tab::make('Approval')
+                            ->schema([
+                                Toggle::make('auto_approve_audio')
+                                    ->label('Auto Approve Audio')
+                                    ->default(false)
+                                    ->required(),
+                                Toggle::make('auto_approve_campaigns')
+                                    ->label('Auto Approve Campaigns')
+                                    ->default(false)
+                                    ->required(),
+                            ]),
+                    ])
+                    ->persistTab()
+                    ->id('customer_form_tabs'),
             ]);
     }
 }

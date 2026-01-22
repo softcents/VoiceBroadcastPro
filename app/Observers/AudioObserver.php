@@ -19,15 +19,31 @@ use Illuminate\Support\Facades\Bus;
 
 final class AudioObserver implements ShouldHandleEventsAfterCommit
 {
-    /**
-     * Handle the Audio "created" event.
-     */
     public function created(Audio $audio): void
     {
+        $audio->load('user');
+
+        $this->notifyAdmins($audio);
+
+        if ($audio->user->auto_approve_audio) {
+            $this->autoApproveAndProcess($audio);
+        }
+    }
+
+    public function updated(Audio $audio): void
+    {
+        if ($this->shouldProcessAudio($audio)) {
+            $this->dispatchAudioProcessingJobs($audio);
+        }
+    }
+
+    private function notifyAdmins(Audio $audio): void
+    {
         $admins = User::admin()->get();
+
         Notification::make()
-            ->title('Audio')
-            ->body('New audio has been created')
+            ->title('New Audio Created')
+            ->body("Audio has been created by {$audio->user->name}")
             ->success()
             ->actions([
                 Action::make('view')
@@ -37,30 +53,45 @@ final class AudioObserver implements ShouldHandleEventsAfterCommit
             ->sendToDatabase($admins);
     }
 
-    /**
-     * Handle the Audio "updated" event.
-     */
-    public function updated(Audio $audio): void
+    private function autoApproveAndProcess(Audio $audio): void
     {
-        if ($audio->wasChanged('approval') && $audio->approval === AudioApproval::Approved) {
-
-            // If the audio is of type TTS and not yet completed, dispatch jobs to generate and convert audio
-            if ($audio->type === AudioType::TTS && $audio->tts_status !== AudioTTSStatus::Completed) {
-                Bus::chain([
-                    new GenerateAudio($audio->id),
-                    new ConvertAudio($audio->id),
-                ])->dispatch();
-            } elseif ($audio->type === AudioType::Upload && $audio->conversion_status !== AudioTTSStatus::Completed) {
-                ConvertAudio::dispatch($audio->id);
-            }
-        }
+        $audio->updateQuietly(['approval' => AudioApproval::Approved]);
+        $this->dispatchAudioProcessingJobs($audio);
     }
 
-    /**
-     * Handle the Audio "deleted" event.
-     */
-    public function deleted(Audio $audio): void
+    private function shouldProcessAudio(Audio $audio): bool
     {
-        //
+        return $audio->wasChanged('approval')
+            && $audio->approval === AudioApproval::Approved;
+    }
+
+    private function dispatchAudioProcessingJobs(Audio $audio): void
+    {
+        match ($audio->type) {
+            AudioType::TTS => $this->processTTSAudio($audio),
+            AudioType::Upload => $this->processUploadedAudio($audio),
+            default => null,
+        };
+    }
+
+    private function processTTSAudio(Audio $audio): void
+    {
+        if ($audio->tts_status === AudioTTSStatus::Completed) {
+            return;
+        }
+
+        Bus::chain([
+            new GenerateAudio($audio->id),
+            new ConvertAudio($audio->id),
+        ])->dispatch();
+    }
+
+    private function processUploadedAudio(Audio $audio): void
+    {
+        if ($audio->conversion_status === AudioTTSStatus::Completed) {
+            return;
+        }
+
+        ConvertAudio::dispatch($audio->id);
     }
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\CampaignApproval;
 use App\Enums\CampaignStatus;
 use App\Models\Scopes\OwnedByAuthUser;
 use App\Observers\CampaignObserver;
@@ -28,6 +29,7 @@ final class Campaign extends Model
 
     protected $casts = [
         'status' => CampaignStatus::class,
+        'approval' => CampaignApproval::class,
         'scheduled_at' => 'datetime',
     ];
 
@@ -75,5 +77,11 @@ final class Campaign extends Model
     protected function notScheduled(Builder $query): Builder
     {
         return $query->whereNull('scheduled_at');
+    }
+
+    #[Scope]
+    protected function approved(Builder $query): Builder
+    {
+        return $query->where('approval', CampaignApproval::Approved);
     }
 }

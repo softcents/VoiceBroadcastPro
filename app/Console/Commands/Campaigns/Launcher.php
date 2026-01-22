@@ -18,6 +18,7 @@ final class Launcher extends Command
     public function handle(): void
     {
         Campaign::pending()
+            ->approved()
             ->where(function (Builder $query) {
                 $query->whereNull('scheduled_at')
                     ->orWhere(function (Builder $q) {

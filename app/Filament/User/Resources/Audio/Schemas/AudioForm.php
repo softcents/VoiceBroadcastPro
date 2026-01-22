@@ -98,7 +98,11 @@ final class AudioForm
                                         $set('tts_artist_id', null);
                                     })
                                     ->afterStateHydrated(function (Select $component, ?Audio $record) {
-                                        if ($record?->tts_artist_id && $artist = TTSArtist::find($record->tts_artist_id)) {
+                                        if (!$record) {
+                                            return;
+                                        }
+
+                                        if ($record->tts_artist_id && $artist = TTSArtist::find($record->tts_artist_id)) {
                                             $component->state($artist->tts_language_id);
                                         }
                                     })
@@ -112,7 +116,11 @@ final class AudioForm
                                     ->disabledOn(['edit', 'view'])
                                     ->afterStateUpdated(fn (Set $set) => $set('tts_artist_id', null))
                                     ->afterStateHydrated(function (Select $component, ?Audio $record) {
-                                        if ($record?->tts_artist_id && $artist = TTSArtist::find($record->tts_artist_id)) {
+                                        if (!$record) {
+                                            return;
+                                        }
+
+                                        if ($record->tts_artist_id && $artist = TTSArtist::find($record->tts_artist_id)) {
                                             $component->state($artist->gender);
                                         }
                                     })

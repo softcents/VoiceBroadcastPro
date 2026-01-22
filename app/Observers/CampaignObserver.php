@@ -6,13 +6,18 @@ namespace App\Observers;
 
 use App\Enums\CallStatus;
 use App\Enums\CallType;
+use App\Enums\CampaignApproval;
 use App\Enums\TransactionType;
+use App\Filament\Admin\Resources\Campaigns\CampaignResource;
 use App\Models\Call;
 use App\Models\Campaign;
 use App\Models\Transaction;
-use Exception;
+use App\Models\User;
+use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 use Illuminate\Support\Facades\DB;
+use RuntimeException;
 use Throwable;
 
 final class CampaignObserver implements ShouldHandleEventsAfterCommit
@@ -25,6 +30,13 @@ final class CampaignObserver implements ShouldHandleEventsAfterCommit
     public function created(Campaign $campaign): void
     {
         $campaign->loadMissing(['phonebook.contacts', 'audio', 'user']);
+
+        // Auto-approve if user has auto_approve_campaigns enabled
+        if ($campaign->user->auto_approve_campaigns) {
+            $campaign->updateQuietly(['approval' => CampaignApproval::Approved]);
+        } else {
+            $this->notifyAdmins($campaign);
+        }
 
         $phonebook = $campaign->phonebook;
         if (! $phonebook || $phonebook->contacts->isEmpty()) {
@@ -40,10 +52,10 @@ final class CampaignObserver implements ShouldHandleEventsAfterCommit
 
         // Check if user has sufficient balance
         if ($campaign->user->balance < $totalCost) {
-            throw new Exception('Insufficient balance');
+            throw new RuntimeException('Insufficient balance');
         }
 
-        DB::transaction(function () use ($campaign, $contacts, $cost, $now, $totalCost) {
+        DB::transaction(static function () use ($campaign, $contacts, $cost, $now, $totalCost) {
             // Bulk insert calls
             $callsData = $contacts->map(function ($contact) use ($campaign, $cost, $now) {
                 return [
@@ -79,7 +91,7 @@ final class CampaignObserver implements ShouldHandleEventsAfterCommit
                     'type' => TransactionType::Debit,
                     'amount' => $cost,
                     'currency' => 'BDT',
-                    'description' => "Call charge for call ID {$call->id}",
+                    'description' => "Call charge for call ID $call->id",
                     'reference_type' => Call::class,
                     'reference_id' => $call->id,
                     'created_at' => $now,
@@ -97,35 +109,19 @@ final class CampaignObserver implements ShouldHandleEventsAfterCommit
         });
     }
 
-    /**
-     * Handle the Campaign "updated" event.
-     */
-    public function updated(Campaign $campaign): void
+    private function notifyAdmins(Campaign $campaign): void
     {
-        //
-    }
+        $admins = User::admin()->get();
 
-    /**
-     * Handle the Campaign "deleted" event.
-     */
-    public function deleted(Campaign $campaign): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Campaign "restored" event.
-     */
-    public function restored(Campaign $campaign): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Campaign "force deleted" event.
-     */
-    public function forceDeleted(Campaign $campaign): void
-    {
-        //
+        Notification::make()
+            ->title('New Campaign Pending Approval')
+            ->body("Campaign \"{$campaign->title}\" created by {$campaign->user->name} requires approval.")
+            ->warning()
+            ->actions([
+                Action::make('view')
+                    ->label('Review Campaign')
+                    ->url(CampaignResource::getUrl('view', ['record' => $campaign->id], panel: 'admin')),
+            ])
+            ->sendToDatabase($admins);
     }
 }
