@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Customers\Tables;
 
+use App\Enums\DepositStatus;
+use App\Filament\Admin\Resources\Customers\Actions\AddBalanceAction;
+use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -12,9 +16,12 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
+use Filament\Forms\Components\TextInput;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
+use LaraZeus\Tabler\Tabler;
 use STS\FilamentImpersonate\Actions\Impersonate;
 
 final class CustomersTable
@@ -55,11 +62,15 @@ final class CustomersTable
             ])
             ->recordActions([
                 ActionGroup::make([
-                    ViewAction::make(),
+                    ViewAction::make()
+                        ->label('View Details'),
+                    AddBalanceAction::make(),
                     Impersonate::make()
-                        ->label('Login'),
-                    EditAction::make(),
-                    DeleteAction::make(),
+                        ->label('Login as User'),
+                    EditAction::make()
+                        ->label('Edit Customer'),
+                    DeleteAction::make()
+                        ->label('Delete Customer'),
                 ]),
             ])
             ->toolbarActions([

@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Customers\Pages;
 
+use App\Filament\Admin\Resources\Customers\Actions\AddBalanceAction;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Filament\Admin\Resources\Customers\Schemas\CustomerInfolist;
 use Filament\Actions;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
+use STS\FilamentImpersonate\Actions\Impersonate;
 
 final class ViewCustomer extends ViewRecord
 {
@@ -22,6 +24,11 @@ final class ViewCustomer extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
+            Impersonate::make()
+                ->label('Login as Customer')
+                ->requiresConfirmation()
+                ->color('warning'),
+            AddBalanceAction::make(),
             Actions\EditAction::make(),
             Actions\DeleteAction::make(),
             Actions\RestoreAction::make(),
