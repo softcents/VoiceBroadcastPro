@@ -11,7 +11,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use UnitEnum;
 
-final class Calling extends SettingsPage
+final class CallingSettings extends SettingsPage
 {
     protected static string|UnitEnum|null $navigationGroup = 'Settings';
 
@@ -28,7 +28,6 @@ final class Calling extends SettingsPage
                             ->prefix('BDT')
                             ->numeric()
                             ->minValue(0)
-                            ->step(0.1)
                             ->required(),
                         TextInput::make('pulse_duration')
                             ->label('Pulse Duration')
