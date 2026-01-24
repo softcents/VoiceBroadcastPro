@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\Phonebooks\Transactions;
+namespace App\Filament\Admin\Resources\Finance\Transactions;
 
-use App\Filament\Admin\Resources\Phonebooks\Transactions\Pages\ListTransactions;
-use App\Filament\Admin\Resources\Phonebooks\Transactions\Pages\ViewTransaction;
-use App\Filament\Admin\Resources\Phonebooks\Transactions\Schemas\TransactionInfolist;
-use App\Filament\Admin\Resources\Phonebooks\Transactions\Tables\TransactionsTable;
+use App\Filament\Admin\Resources\Finance\Transactions\Pages\ListTransactions;
+use App\Filament\Admin\Resources\Finance\Transactions\Pages\ViewTransaction;
+use App\Filament\Admin\Resources\Finance\Transactions\Schemas\TransactionInfolist;
+use App\Filament\Admin\Resources\Finance\Transactions\Tables\TransactionsTable;
 use App\Models\Transaction;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;

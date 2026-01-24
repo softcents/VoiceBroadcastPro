@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\Phonebooks\Transactions\Tables;
+namespace App\Filament\Admin\Resources\Finance\Transactions\Tables;
 
 use App\Filament\Admin\Resources\Calls\CallResource;
 use App\Filament\Admin\Resources\Customers\CustomerResource;

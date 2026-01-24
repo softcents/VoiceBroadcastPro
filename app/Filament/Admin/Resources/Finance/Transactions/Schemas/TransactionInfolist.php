@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Filament\Admin\Resources\Phonebooks\Transactions\Schemas;
+namespace App\Filament\Admin\Resources\Finance\Transactions\Schemas;
 
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Models\Transaction;
