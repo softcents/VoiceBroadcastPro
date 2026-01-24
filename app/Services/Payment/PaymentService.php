@@ -44,7 +44,7 @@ final class PaymentService
         $deposit->update(['status' => DepositStatus::Completed]);
 
         $deposit->user->transactions()->create([
-            'type' => TransactionType::Deposit,
+            'type' => TransactionType::Credit,
             'amount' => $deposit->amount,
             'currency' => $deposit->currency,
             'description' => 'Deposit via '.$deposit->gateway,
