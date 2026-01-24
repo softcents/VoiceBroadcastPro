@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Customers\Tables;
 
 use App\Enums\DepositStatus;
 use App\Filament\Admin\Resources\Customers\Actions\AddBalanceAction;
+use App\Filament\Admin\Resources\Customers\Actions\ImpersonateAction;
 use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -65,8 +66,7 @@ final class CustomersTable
                     ViewAction::make()
                         ->label('View Details'),
                     AddBalanceAction::make(),
-                    Impersonate::make()
-                        ->label('Login as User'),
+                    ImpersonateAction::make(),
                     EditAction::make()
                         ->label('Edit Customer'),
                     DeleteAction::make()
