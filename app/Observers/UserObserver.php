@@ -15,6 +15,7 @@ final class UserObserver
      */
     public function created(User $user): void
     {
+        $user = $user->fresh();
         if ($user->type === UserType::User) {
             $settings = app(CallingSetting::class);
 
