@@ -2,10 +2,19 @@
 
 namespace App\Filament\User\Pages;
 
+use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
+use Filament\Auth\Events\Registered;
+use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Filament\Auth\Pages\Register as BaseRegister;
+use Filament\Facades\Filament;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
+use Filament\Schemas\Components\Fieldset;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 use LaraZeus\Tabler\Tabler;
@@ -13,15 +22,99 @@ use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 class Register extends BaseRegister
 {
+    protected Width|string|null $maxContentWidth = Width::SixExtraLarge;
+
+    protected ?bool $hasDatabaseTransactions = true;
+
+    public function register(): ?RegistrationResponse
+    {
+        try {
+            $this->rateLimit(5);
+        } catch (TooManyRequestsException $exception) {
+            $this->getRateLimitedNotification($exception)?->send();
+
+            return null;
+        }
+
+        $user = $this->wrapInDatabaseTransaction(function (): Model {
+            $this->callHook('beforeValidate');
+
+            $data = $this->form->getState();
+
+            $this->callHook('afterValidate');
+
+            $data = $this->mutateFormDataBeforeRegister($data);
+
+            $this->callHook('beforeRegister');
+
+            $user = $this->handleRegistration($data);
+
+            $this->form->model($user)->saveRelationships();
+
+            $this->callHook('afterRegister');
+
+            return $user;
+        });
+
+        event(new Registered($user));
+
+        $this->sendEmailVerificationNotification($user);
+
+        Filament::auth()->login($user);
+
+        session()->regenerate();
+
+        return app(RegistrationResponse::class);
+    }
+
     public function form(Schema $schema): Schema
     {
         return $schema
+            ->columns()
             ->components([
-                $this->getNameFormComponent(),
-                $this->getEmailFormComponent(),
-                $this->getPhoneFormComponent(),
-                $this->getPasswordFormComponent(),
-                $this->getPasswordConfirmationFormComponent(),
+                Fieldset::make()
+                    ->label('User Information')
+                    ->columns(1)
+                    ->schema([
+                        $this->getNameFormComponent(),
+                        $this->getEmailFormComponent(),
+                        $this->getPhoneFormComponent(),
+                        $this->getPasswordFormComponent(),
+                        $this->getPasswordConfirmationFormComponent(),
+                    ]),
+                Group::make()
+                    ->schema([
+                        Fieldset::make()
+                            ->label('Company Information')
+                            ->columns(1)
+                            ->schema([
+                                TextInput::make('company_name')
+                                    ->label('Company Name')
+                                    ->maxLength(255),
+                            ]),
+
+                        Fieldset::make()
+                            ->label('National ID Upload')
+                            ->columns(1)
+                            ->schema([
+                                FileUpload::make('front_nid')
+                                    ->label('Front Side of NID')
+                                    ->image()
+                                    ->required()
+                                    ->maxSize(2048) // 2MB
+                                    ->directory('ids')
+                                    ->visibility('private')
+                                    ->disk('local'),
+                                FileUpload::make('back_nid')
+                                    ->label('Back Side of NID')
+                                    ->image()
+                                    ->required()
+                                    ->maxSize(2048) // 2MB
+                                    ->directory('ids')
+                                    ->visibility('private')
+                                    ->disk('local'),
+                            ])
+                    ])
             ]);
     }
 
@@ -60,7 +153,7 @@ class Register extends BaseRegister
             ->required()
             ->rule(Password::default())
             ->showAllValidationMessages()
-            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
+            ->dehydrateStateUsing(fn($state) => Hash::make($state))
             ->same('passwordConfirmation')
             ->validationAttribute(__('filament-panels::auth/pages/register.form.password.validation_attribute'));
     }

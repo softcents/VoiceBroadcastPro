@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Customers\Schemas;
 
 use App\Models\User;
+use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -181,6 +182,23 @@ final class CustomerInfolist
                             ->tooltip(fn (User $record) => $record->deleted_at ? $record->deleted_at->format('M j, Y \a\t h:i A') : 'Account is active')
                             ->placeholder('Account is active')
                             ->color('danger'),
+                    ])
+                    ->columns()
+                    ->collapsible(),
+                Section::make('Documents')
+                    ->description('Uploaded documents and files')
+                    ->icon(Tabler::Folder)
+                    ->schema([
+                        ImageEntry::make('front_nid')
+                            ->label('Front NID')
+                            ->placeholder('No front NID uploaded')
+                            ->disk('local')
+                            ->visibility('private'),
+                        ImageEntry::make('back_nid')
+                            ->label('Back NID')
+                            ->placeholder('No back NID uploaded')
+                            ->disk('local')
+                            ->visibility('private'),
                     ])
                     ->columns()
                     ->collapsible(),

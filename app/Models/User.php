@@ -28,25 +28,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
-    protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'type',
-        'audio_type',
-
-        'balance',
-        'pulse_rate',
-        'pulse_duration',
-
-        'password',
-        'email_verified_at',
-    ];
+    protected $guarded = [];
 
     protected $casts = [
         'type' => UserType::class,
