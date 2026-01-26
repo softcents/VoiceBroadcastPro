@@ -12,6 +12,8 @@ Route::get('auth/login', function () {
     return redirect('login');
 })->name('login');
 
+Route::view('/terms', 'terms')->name('terms');
+
 Route::group(['prefix' => 'payments', 'as' => 'payments.'], function () {
     Route::get('success', Success::class)->name('success');
     Route::get('cancel', Cancel::class)->name('cancel');

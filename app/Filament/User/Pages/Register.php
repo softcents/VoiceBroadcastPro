@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Pages;
 
 use DanHarrin\LivewireRateLimiting\Exceptions\TooManyRequestsException;
@@ -7,6 +9,7 @@ use Filament\Auth\Events\Registered;
 use Filament\Auth\Http\Responses\Contracts\RegistrationResponse;
 use Filament\Auth\Pages\Register as BaseRegister;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
@@ -16,11 +19,12 @@ use Filament\Schemas\Schema;
 use Filament\Support\Enums\Width;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\HtmlString;
 use Illuminate\Validation\Rules\Password;
 use LaraZeus\Tabler\Tabler;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
-class Register extends BaseRegister
+final class Register extends BaseRegister
 {
     protected Width|string|null $maxContentWidth = Width::SixExtraLarge;
 
@@ -113,8 +117,11 @@ class Register extends BaseRegister
                                     ->directory('ids')
                                     ->visibility('private')
                                     ->disk('local'),
-                            ])
-                    ])
+                            ]),
+                    ]),
+                Checkbox::make('terms')
+                    ->label(new HtmlString('I agree to the <a href="'.route('terms').'" target="_blank" class="underline hover:text-primary-500">Terms and Conditions</a>'))
+                    ->required(),
             ]);
     }
 
@@ -153,7 +160,7 @@ class Register extends BaseRegister
             ->required()
             ->rule(Password::default())
             ->showAllValidationMessages()
-            ->dehydrateStateUsing(fn($state) => Hash::make($state))
+            ->dehydrateStateUsing(fn ($state) => Hash::make($state))
             ->same('passwordConfirmation')
             ->validationAttribute(__('filament-panels::auth/pages/register.form.password.validation_attribute'));
     }
@@ -173,7 +180,7 @@ class Register extends BaseRegister
     protected function getPhoneFormComponent(): Component
     {
         return PhoneInput::make('phone')
-            ->label("Phone Number")
+            ->label('Phone Number')
             ->defaultCountry('BD')
             ->required()
             ->onlyCountries(['BD'])
