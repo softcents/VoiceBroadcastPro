@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Phonebooks\RelationManagers;
 
+use App\Filament\Exports\ContactExporter;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
 use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
@@ -18,6 +20,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use LaraZeus\Tabler\Tabler;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
 
 final class ContactsRelationManager extends RelationManager
@@ -112,6 +115,11 @@ final class ContactsRelationManager extends RelationManager
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
+                ExportAction::make('export')
+                    ->label('Export')
+                    ->icon(Tabler::TableExport)
+                    ->exporter(ContactExporter::class)
+                    ->columnMappingColumns(3),
             ]);
     }
 }

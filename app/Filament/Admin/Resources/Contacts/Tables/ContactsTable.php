@@ -6,14 +6,17 @@ namespace App\Filament\Admin\Resources\Contacts\Tables;
 
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Filament\Admin\Resources\Phonebooks\PhonebookResource;
+use App\Filament\Exports\ContactExporter;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use LaraZeus\Tabler\Tabler;
 
 final class ContactsTable
 {
@@ -45,6 +48,11 @@ final class ContactsTable
             ->filters([
                 //
             ])
+            ->headerActions([
+                ExportAction::make('export')
+                    ->exporter(ContactExporter::class)
+                    ->columnMappingColumns(3),
+            ])
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
@@ -56,6 +64,11 @@ final class ContactsTable
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
                 ]),
+                ExportAction::make('export')
+                    ->label('Export')
+                    ->icon(Tabler::TableExport)
+                    ->exporter(ContactExporter::class)
+                    ->columnMappingColumns(3),
             ]);
     }
 }
