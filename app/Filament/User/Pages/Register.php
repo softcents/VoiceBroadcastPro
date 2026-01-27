@@ -121,7 +121,8 @@ final class Register extends BaseRegister
                     ]),
                 Checkbox::make('terms')
                     ->label(new HtmlString('I agree to the <a href="'.route('terms').'" target="_blank" class="underline hover:text-primary-500">Terms and Conditions</a>'))
-                    ->required(),
+                    ->required()
+                    ->dehydrated(false),
             ]);
     }
 

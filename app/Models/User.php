@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\UserAudioType;
+use App\Enums\UserStatus;
 use App\Enums\UserType;
 use App\Observers\UserObserver;
 use Database\Factories\UserFactory;
@@ -33,6 +34,7 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
     protected $casts = [
         'type' => UserType::class,
         'audio_type' => UserAudioType::class,
+        'status' => UserStatus::class,
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'balance' => 'float',

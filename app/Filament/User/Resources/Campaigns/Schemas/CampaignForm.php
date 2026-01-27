@@ -116,7 +116,14 @@ final class CampaignForm
                                     ->searchable()
                                     ->preload()
                                     ->live(onBlur: true)
-                                    ->required(),
+                                    ->required()
+                                    ->createOptionForm([
+                                        TextInput::make('name')
+                                            ->label('Phonebook Name')
+                                            ->required()
+                                            ->maxLength(255),
+
+                                    ]),
 
                                 DateTimePicker::make('scheduled_at')
                                     ->prefixIcon(Tabler::Calendar)

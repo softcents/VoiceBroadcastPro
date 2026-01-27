@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace App\Observers;
 
-use App\Enums\UserType;
 use App\Models\User;
-use App\Settings\CallingSetting;
 
 final class UserObserver
 {
@@ -15,15 +13,7 @@ final class UserObserver
      */
     public function created(User $user): void
     {
-        $user = $user->fresh();
-        if ($user->type === UserType::User) {
-            $settings = app(CallingSetting::class);
-
-            $user->update([
-                'pulse_rate' => $settings->pulse_rate,
-                'pulse_duration' => $settings->pulse_duration,
-            ]);
-        }
+        //
     }
 
     /**

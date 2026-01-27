@@ -5,9 +5,14 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Customers\Pages;
 
 use App\Filament\Admin\Resources\Customers\Actions\AddBalanceAction;
+use App\Filament\Admin\Resources\Customers\Actions\ApprovalAction;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Filament\Admin\Resources\Customers\Schemas\CustomerInfolist;
+use App\Models\User;
 use Filament\Actions;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\EditAction;
+use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Schemas\Schema;
 use STS\FilamentImpersonate\Actions\Impersonate;
@@ -28,16 +33,19 @@ final class ViewCustomer extends ViewRecord
                 ->label('Login as Customer')
                 ->requiresConfirmation()
                 ->color('warning'),
+            ApprovalAction::make()
+                ->outlined(false),
             AddBalanceAction::make(),
-            Actions\EditAction::make(),
-            Actions\DeleteAction::make(),
-            Actions\RestoreAction::make(),
+            EditAction::make(),
+            DeleteAction::make(),
+            RestoreAction::make(),
         ];
     }
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
         // Load relationship counts for statistics section
+        /** @var User $record */
         $record = $this->getRecord();
 
         $data['campaigns_count'] = $record->campaigns()->count();

@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Customers\Tables;
 
 use App\Enums\DepositStatus;
+use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\Customers\Actions\AddBalanceAction;
+use App\Filament\Admin\Resources\Customers\Actions\ApprovalAction;
 use App\Filament\Admin\Resources\Customers\Actions\ImpersonateAction;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -46,6 +48,12 @@ final class CustomersTable
                 TextColumn::make('balance')
                     ->label('Balance')
                     ->searchable()
+                    ->sortable()
+                    ->money('BDT')
+                    ->alignCenter(),
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
                     ->sortable(),
                 TextColumn::make('created_at')
                     ->label('Created At')
@@ -62,6 +70,8 @@ final class CustomersTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
+                ApprovalAction::make()
+                    ->hidden(fn(User $record) => $record->status !== UserStatus::Pending),
                 ActionGroup::make([
                     ViewAction::make()
                         ->label('View Details'),
