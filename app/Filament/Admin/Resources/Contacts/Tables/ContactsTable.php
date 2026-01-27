@@ -48,11 +48,6 @@ final class ContactsTable
             ->filters([
                 //
             ])
-            ->headerActions([
-                ExportAction::make('export')
-                    ->exporter(ContactExporter::class)
-                    ->columnMappingColumns(3),
-            ])
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
