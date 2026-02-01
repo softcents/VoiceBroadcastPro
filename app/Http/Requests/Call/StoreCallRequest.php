@@ -31,7 +31,7 @@ final class StoreCallRequest extends FormRequest
                 'required',
                 Rule::exists('audio', 'id')
                     ->where('user_id', $this->user()?->id)
-                    ->where('status', AudioApproval::Approved)
+                    ->where('approval', AudioApproval::Approved)
                     ->where('conversion_status', AudioConversionStatus::Completed),
                 new EnsureUserHasSufficientBalanceForCall(),
             ],
