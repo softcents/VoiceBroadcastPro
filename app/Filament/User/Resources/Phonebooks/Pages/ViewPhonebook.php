@@ -19,9 +19,9 @@ final class ViewPhonebook extends ViewRecord
     {
         return [
             EditAction::make(),
-            Action::make('create_contact')
-                ->label('Add Contact')
-                ->url(fn(Phonebook $record) => ContactResource::getUrl('create', ['phonebook_id' => $record->id])),
+//            Action::make('create_contact')
+//                ->label('Add Contact')
+//                ->url(fn(Phonebook $record) => ContactResource::getUrl('create', ['phonebook_id' => $record->id])),
         ];
     }
 }

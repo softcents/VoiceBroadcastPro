@@ -29,7 +29,7 @@ final class StoreCallRequest extends FormRequest
             ],
             'audio_id' => [
                 'required',
-                Rule::exists('audios', 'id')
+                Rule::exists('audio', 'id')
                     ->where('user_id', $this->user()?->id)
                     ->where('status', AudioApproval::Approved)
                     ->where('conversion_status', AudioConversionStatus::Completed),

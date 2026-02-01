@@ -15,7 +15,7 @@
         "ext-posix": "*",
         "eightynine/filament-excel-import": "4.x-dev",
         "filament/filament": "^4.2",
-        "filament/spatie-laravel-settings-plugin": "^4.2",
+        "filament/spatie-laravel-settings-plugin": "*",
         "flowframe/laravel-trend": "^0.4.0",
         "hugomyb/filament-media-action": "^4.1",
         "lara-zeus/tabler-icons-enum": "^1.0",

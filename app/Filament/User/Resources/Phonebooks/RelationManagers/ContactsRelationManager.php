@@ -106,7 +106,6 @@ final class ContactsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-
                 ImportAction::make('import_contacts')
                     ->label('Import')
                     ->importer(ContactImporter::class)

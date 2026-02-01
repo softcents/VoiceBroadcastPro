@@ -26,6 +26,7 @@ final class PhonebookInfolist
                             ->columnSpanFull(),
                     ]),
                 Section::make()
+                    ->columns()
                     ->schema([
                         TextEntry::make('contacts_count')
                             ->counts('contacts')
