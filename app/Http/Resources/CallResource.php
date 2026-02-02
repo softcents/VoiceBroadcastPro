@@ -16,6 +16,11 @@ final class CallResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        return parent::toArray($request);
+        return array_merge(parent::toArray($request), [
+            'caller' => new CallerResource($this->whenLoaded('caller')),
+            'audio' => new AudioResource($this->whenLoaded('audio')),
+            'user' => new UserResource($this->whenLoaded('user')),
+            'campaign' => new CampaignResource($this->whenLoaded('campaign')),
+        ]);
     }
 }

@@ -129,20 +129,20 @@ final class ProcessMarketingCall implements ShouldQueue
                 ]);
 
             if ($response->failed()) {
-                $errorMessage = $response->json('message')
+                $serverError = $response->json('message')
                     ?? $response->json('error')
                     ?? 'Unknown API error';
                 $statusCode = $response->status();
 
                 Log::error("API request failed for Call ID {$this->call->id}", [
                     'status' => $statusCode,
-                    'error' => $errorMessage,
+                    'error' => $serverError,
                     'response' => $response->body(),
                 ]);
 
                 $this->refundAndFail(
                     $this->call->user,
-                    "API request failed with status {$statusCode}: {$errorMessage}"
+                    "API request failed with status {$statusCode}."
                 );
             }
 
@@ -172,7 +172,7 @@ final class ProcessMarketingCall implements ShouldQueue
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->refundAndFail($this->call->user, "API exception: {$e->getMessage()}");
+            $this->refundAndFail($this->call->user, "Server API exception");
         }
     }
 

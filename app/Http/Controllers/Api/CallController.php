@@ -25,10 +25,7 @@ final class CallController extends Controller
     public function index(#[CurrentUser] User $user)
     {
         $calls = Call::query()
-            ->where('user_id', $user->id)
-            ->orWhereHas('campaign', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
+            ->whereUserId($user->id)
             ->latest()
             ->paginate();
 
@@ -43,6 +40,6 @@ final class CallController extends Controller
             'from_interface' => CallFromInterface::API,
         ] + $request->validated());
 
-        return new CallResource($call);
+        return new CallResource($call->unsetRelation('user'));
     }
 }

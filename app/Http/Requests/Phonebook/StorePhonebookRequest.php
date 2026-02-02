@@ -35,9 +35,11 @@ final class StorePhonebookRequest extends FormRequest
         return [
             'name' => [
                 'description' => 'The name of the phonebook.',
+                'example' => 'Friends',
             ],
             'description' => [
                 'description' => 'The description of the phonebook.',
+                'example' => 'Phonebook for my close friends.',
             ],
         ];
     }

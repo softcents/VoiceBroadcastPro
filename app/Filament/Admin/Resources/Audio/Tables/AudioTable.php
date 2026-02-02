@@ -55,12 +55,13 @@ final class AudioTable
                     ->badge(),
                 TextColumn::make('tts_status')
                     ->label('TTS')
-                    ->badge(),
+                    ->badge()
+                    ->placeholder('N/A'),
                 TextColumn::make('duration')
                     ->numeric()
                     ->sortable()
                     ->formatStateUsing(fn ($state): string => secondsToHuman((int) $state))
-                    ->placeholder(secondsToHuman(0)),
+                    ->placeholder('N/A'),
                 TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()

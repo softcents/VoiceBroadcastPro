@@ -12,7 +12,6 @@ use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Hash;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
@@ -31,7 +30,10 @@ final class AccountController extends Controller
         return new UserResource($user);
     }
 
-    #[Endpoint(title: 'Update profile', description: "Update the authenticated user's profile information.")]
+    #[Endpoint(
+        title: 'Update profile',
+        description: "Update the authenticated user's profile information."
+    )]
     #[Response(
         content: [
             'message' => 'The given data was invalid.',
@@ -49,6 +51,7 @@ final class AccountController extends Controller
 
         if ($user->wasChanged('email')) {
             $user->update(['email_verified_at' => null]);
+            $user->sendEmailVerificationNotification();
         }
 
         return new UserResource($user);
@@ -67,14 +70,6 @@ final class AccountController extends Controller
     )]
     public function changePassword(#[CurrentUser] User $user, ChangePasswordRequest $request): JsonResponse|JsonResource
     {
-        if (Hash::check($request->current_password, $user->password)) {
-            return response()->json([
-                'message' => 'The given data was invalid.',
-                'errors' => [
-                    'current_password' => ['The current password is incorrect.'],
-                ],
-            ], 422);
-        }
         $user->update([
             'password' => $request->validated('password'),
         ]);

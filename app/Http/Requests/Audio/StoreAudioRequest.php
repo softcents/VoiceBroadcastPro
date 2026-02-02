@@ -8,6 +8,7 @@ use App\Enums\AudioType;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 
 final class StoreAudioRequest extends FormRequest
 {
@@ -29,10 +30,29 @@ final class StoreAudioRequest extends FormRequest
         return [
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
-            'type' => ['required', Rule::enum(AudioType::class)],
-            'message' => ['required_if:type,tts', 'prohibited_if:type,record', 'nullable', 'string'],
-            'file' => ['required_if:type,record', 'prohibited_if:type,tts', 'nullable', 'file', 'mimes:mp3,wav,ogg,m4a', 'max:10240'], // 10MB max
-            'tts_artist_id' => ['required_if:type,tts', 'prohibited_if:type,record', 'nullable', 'exists:tts_artists,id'],
+            'type' => [
+                'required',
+                Rule::enum(AudioType::class)
+            ],
+            'message' => [
+                'required_if:type,tts',
+                'prohibited_if:type,upload',
+                'nullable',
+                'string'
+            ],
+            'file' => [
+                'required_if:type,upload',
+                'prohibited_if:type,tts',
+                'nullable',
+                File::types(['mp3', 'wav', 'ogg', 'm4a'])
+                    ->max('10mb')
+            ],
+            'tts_artist_id' => [
+                'required_if:type,tts',
+                'prohibited_if:type,upload',
+                'nullable',
+                'exists:tts_artists,id'
+            ],
         ];
     }
 
@@ -48,7 +68,7 @@ final class StoreAudioRequest extends FormRequest
                 'example' => 'Greeting for new customers.',
             ],
             'file' => [
-                'description' => 'The audio file to upload (mp3, wav, ogg, m4a). Required if type is record.',
+                'description' => 'The audio file to upload (mp3, wav, ogg, m4a). Required if type is upload.',
             ],
 
             'message' => [
@@ -60,8 +80,8 @@ final class StoreAudioRequest extends FormRequest
                 'example' => 'Welcome Message',
             ],
             'type' => [
-                'description' => 'The type of audio (tts or record).',
-                'example' => 'tts',
+                'description' => 'The type of audio (tts or upload).',
+                'example' => 'tts|upload',
             ],
         ];
     }

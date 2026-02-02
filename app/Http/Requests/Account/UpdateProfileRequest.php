@@ -7,6 +7,8 @@ namespace App\Http\Requests\Account;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Propaganistas\LaravelPhone\PhoneNumber;
+use Propaganistas\LaravelPhone\Rules\Phone;
 
 final class UpdateProfileRequest extends FormRequest
 {
@@ -37,7 +39,6 @@ final class UpdateProfileRequest extends FormRequest
             'phone' => [
                 'nullable',
                 'phone:BD',
-                'regex:/^([0-9\s\-\+\(\)]*)$/',
                 Rule::unique('users')->ignore($this->user()?->id),
             ],
         ];
@@ -51,7 +52,7 @@ final class UpdateProfileRequest extends FormRequest
                 'example' => 'John Doe',
             ],
             'email' => [
-                'description' => 'The email of the user.',
+                'description' => 'The email of the user. If changed, the email verification will be reset.',
                 'example' => 'johndoe@example.com',
             ],
             'phone' => [
@@ -59,5 +60,12 @@ final class UpdateProfileRequest extends FormRequest
                 'example' => '+8801XXXXXXXXX',
             ],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'phone' => rescue(fn() => new PhoneNumber($this->input('phone'), 'BD')->formatE164()),
+        ]);
     }
 }

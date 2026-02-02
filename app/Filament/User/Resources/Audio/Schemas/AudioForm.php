@@ -83,7 +83,7 @@ final class AudioForm
                                 Select::make('language_id')
                                     ->label('Language')
                                     ->options(function () {
-                                        return TTSLanguage::enabled()
+                                        return TTSLanguage::scopes(['enabled'])
                                             ->whereEngine(app(TTSSetting::class)->engine)
                                             ->pluck('name', 'id');
                                     })
@@ -127,7 +127,7 @@ final class AudioForm
                                     ->required(fn (Get $get) => $get('type') === AudioType::TTS->value),
                                 Select::make('tts_artist_id')
                                     ->label('Artist')
-                                    ->options(fn (Get $get) => TTSArtist::enabled()
+                                    ->options(fn (Get $get) => TTSArtist::scopes(['enabled'])
                                         ->where('tts_language_id', $get('language_id'))
                                         ->where('gender', $get('gender'))
                                         ->pluck('name', 'id'))

@@ -27,8 +27,7 @@ final class CampaignController extends Controller
     #[ResponseFromApiResource(CampaignResource::class, Campaign::class, collection: true, paginate: 15)]
     public function index(#[CurrentUser] User $user)
     {
-        $campaigns = Campaign::query()
-            ->where('user_id', $user->id)
+        $campaigns = Campaign::whereUserId($user->id)
             ->with(['audio', 'phonebook'])
             ->latest()
             ->paginate(15);
@@ -38,13 +37,6 @@ final class CampaignController extends Controller
 
     #[Endpoint(title: 'Create Campaign')]
     #[ResponseFromApiResource(CampaignResource::class, Campaign::class, status: 201)]
-    #[BodyParam(
-        name: 'phone_numbers',
-        type: 'string[]',
-        description: 'Array of phone numbers in E.164 format. Required if source is Manual.',
-        required: false,
-        example: ['+88017XXXXXXXX', '+88016XXXXXXXX'])
-    ]
     public function store(#[CurrentUser] User $user, StoreCampaignRequest $request)
     {
         $campaign = $user->campaigns()->create($request->validated());

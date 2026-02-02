@@ -22,6 +22,16 @@ final class EnsureUserHasSufficientBalanceForCall implements ValidationRule
         $user = auth()->user();
         $audio = Audio::find($value);
 
+        if (!$user) {
+            $fail('User not authenticated.');
+            return;
+        }
+
+        if (!$audio) {
+            $fail('The selected audio does not exist.');
+            return;
+        }
+
         $cost = $audio->calculateCostForUser($user);
 
         if (! $user->hasEnoughBalance($cost)) {

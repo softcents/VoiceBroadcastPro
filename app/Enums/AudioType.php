@@ -35,7 +35,7 @@ enum AudioType: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::TTS => 'info',
+            self::TTS => 'success',
             self::Upload => 'primary',
         };
     }

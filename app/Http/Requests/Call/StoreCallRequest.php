@@ -9,6 +9,7 @@ use App\Enums\AudioConversionStatus;
 use App\Rules\EnsureUserHasSufficientBalanceForCall;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Propaganistas\LaravelPhone\PhoneNumber;
 
 final class StoreCallRequest extends FormRequest
 {
@@ -35,7 +36,7 @@ final class StoreCallRequest extends FormRequest
                     ->where('conversion_status', AudioConversionStatus::Completed),
                 new EnsureUserHasSufficientBalanceForCall(),
             ],
-            'phone_number' => ['required', 'phone'],
+            'phone_number' => ['required', 'phone:BD'],
             'scheduled_at' => ['nullable', 'date', 'after:now'],
         ];
     }
@@ -60,5 +61,12 @@ final class StoreCallRequest extends FormRequest
                 'example' => now()->format('Y-m-d H:i:s'),
             ],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'phone_number' => rescue(fn() => new PhoneNumber($this->input('phone_number'), 'BD')->formatE164())
+        ]);
     }
 }

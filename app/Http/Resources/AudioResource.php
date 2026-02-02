@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Models\Audio;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Storage;
 
+/**
+ * @mixin Audio
+ */
 final class AudioResource extends JsonResource
 {
     /**
@@ -25,8 +29,8 @@ final class AudioResource extends JsonResource
             'approval' => $this->approval,
             'message' => $this->message,
             'tts_artist' => $this->whenLoaded('ttsArtist'),
-            'original_url' => $this->original_path ? Storage::url($this->original_path) : null,
-            'converted_url' => $this->converted_path ? Storage::url($this->converted_path) : null,
+            'original_url' => $this->original_path ? Storage::disk('public')->url($this->original_path) : null,
+            'converted_url' => $this->converted_path ? Storage::disk('public')->url($this->converted_path) : null,
             'duration' => $this->duration,
             'size' => $this->size,
             'created_at' => $this->created_at,

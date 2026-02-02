@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Requests\Campaign;
 
+use App\Rules\EnsureUserHasSufficientBalanceForCampaign;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
@@ -32,7 +33,7 @@ final class StoreCampaignRequest extends FormRequest
             'audio_id' => [
                 'required',
                 'exists:audio,id',
-                new \App\Rules\EnsureUserHasSufficientBalanceForCampaign(),
+                new EnsureUserHasSufficientBalanceForCampaign($this->integer('phonebook_id')),
             ],
             'phonebook_id' => [
                 'required',

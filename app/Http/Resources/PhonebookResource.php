@@ -4,9 +4,13 @@ declare(strict_types=1);
 
 namespace App\Http\Resources;
 
+use App\Models\Phonebook;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
+/**
+ * @mixin Phonebook
+ */
 final class PhonebookResource extends JsonResource
 {
     /**
@@ -20,9 +24,10 @@ final class PhonebookResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'contacts_count' => $this->whenCounted('contacts'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
+
+            'contacts_count' => $this->whenCounted('contacts'),
         ];
     }
 }

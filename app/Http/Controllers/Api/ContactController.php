@@ -30,9 +30,7 @@ final class ContactController extends Controller
     public function index(#[CurrentUser] User $user, Request $request): ResourceCollection
     {
         $contacts = Contact::query()
-            ->whereHas('phonebook', function ($query) use ($user) {
-                $query->where('user_id', $user->id);
-            })
+            ->whereRelation('phonebook', 'user_id', $user->id)
             ->when($request->filled('phonebook_id'), function ($query) use ($request) {
                 $query->where('phonebook_id', $request->integer('phonebook_id'));
             })
@@ -77,10 +75,6 @@ final class ContactController extends Controller
     {
         if ($contact->phonebook->user_id !== $user->id) {
             abort(403);
-        }
-
-        if ($request->has('phonebook_id')) {
-            $user->phonebooks()->findOrFail($request->phonebook_id);
         }
 
         $contact->update($request->validated());

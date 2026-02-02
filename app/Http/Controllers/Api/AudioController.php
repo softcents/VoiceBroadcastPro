@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Audio\StoreAudioRequest;
 use App\Http\Requests\Audio\UpdateAudioRequest;
 use App\Http\Resources\AudioResource;
-use App\Jobs\ConvertAudio;
 use App\Models\Audio;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
@@ -52,21 +51,17 @@ final class AudioController extends Controller
     {
         $data = $request->validated();
 
-        if ($request->type === AudioType::Upload->value) {
+        if (AudioType::tryFrom($request->type) === AudioType::Upload) {
             $file = $request->file('file');
-            $path = $file->store('audios', 'public');
+            $path = $file->store('audios/originals', 'public');
             $data['original_path'] = $path;
-            $data['mime_type'] = $file->getMimeType();
             $data['size'] = $file->getSize();
+
+            unset($data['file']);
         }
 
+        /** @var Audio $audio */
         $audio = $user->audio()->create($data);
-        $audio->refresh();
-        $audio->load('ttsArtist');
-
-        if ($audio->type === AudioType::Upload) {
-            ConvertAudio::dispatch($audio);
-        }
 
         return new AudioResource($audio);
     }

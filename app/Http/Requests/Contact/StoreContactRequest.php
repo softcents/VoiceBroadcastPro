@@ -7,6 +7,7 @@ namespace App\Http\Requests\Contact;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
+use Propaganistas\LaravelPhone\PhoneNumber;
 
 final class StoreContactRequest extends FormRequest
 {
@@ -32,7 +33,7 @@ final class StoreContactRequest extends FormRequest
             'phone_number' => [
                 'required',
                 'string',
-                'phone',
+                'phone:BD',
                 Rule::unique('contacts', 'phone_number')
                     ->where('phonebook_id', $this->input('phonebook_id')),
             ],
@@ -58,5 +59,12 @@ final class StoreContactRequest extends FormRequest
                 'example' => '+8801XXXXXXXXX',
             ],
         ];
+    }
+
+    protected function prepareForValidation(): void
+    {
+        $this->merge([
+            'phone_number' => rescue(fn()=> new PhoneNumber($this->input('phone_number'), 'BD')->formatE164()),
+        ]);
     }
 }

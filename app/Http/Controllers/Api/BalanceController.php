@@ -19,12 +19,18 @@ use Knuckles\Scribe\Attributes\Response;
 final class BalanceController extends Controller
 {
     #[Endpoint(title: 'Get balance', description: "Retrieve the authenticated user's current balance.")]
-    #[Response(content: ['data' => ['balance' => 100.50]])]
+    #[Response(content: ['data' => [
+        'balance' => 100.50,
+        'pulse_rate' => 0.45,
+        'pulse_duration' => 30,
+    ]])]
     public function show(#[CurrentUser] User $user): JsonResponse
     {
         return response()->json([
             'data' => [
                 'balance' => $user->balance,
+                'pulse_rate' => $user->pulse_rate,
+                'pulse_duration' => $user->pulse_duration,
             ],
         ]);
     }
