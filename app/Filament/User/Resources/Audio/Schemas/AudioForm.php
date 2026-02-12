@@ -69,8 +69,7 @@ final class AudioForm
                         FileUpload::make('original_path')
                             ->label('Upload Audio File')
                             ->directory('audios/originals')
-                            ->visibility('public')
-                            ->disk('public')
+                            ->disk(config('filesystems.default'))
                             ->acceptedFileTypes(['audio/*'])
                             ->maxSize(10240) // 10 MB
                             ->disabledOn(['edit', 'view'])

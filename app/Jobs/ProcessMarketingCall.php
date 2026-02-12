@@ -74,7 +74,7 @@ final class ProcessMarketingCall implements ShouldQueue
         // Check audio file exists before proceeding
         $audioPath = $this->call->audio->converted_path;
 
-        if (! $audioPath || ! Storage::disk('public')->exists($audioPath)) {
+        if (! $audioPath || ! Storage::exists($audioPath)) {
             $this->refundAndFail($user, 'Audio file not found');
         }
 
@@ -125,7 +125,7 @@ final class ProcessMarketingCall implements ShouldQueue
                     'priority' => 1,
                     'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
                     'app' => 'originate',
-                    'appArgs' => 'marketing,'.Storage::disk('public')->url($audioPath),
+                    'appArgs' => 'marketing,'.Storage::temporaryUrl($audioPath, now()->addMinutes(15)),
                 ]);
 
             if ($response->failed()) {

@@ -73,14 +73,14 @@ final class AudioTable
                     MediaAction::make('converted_audio')
                         ->label('Play Converted')
                         ->icon(Tabler::Music)
-                        ->media(fn (Audio $record) => Storage::disk('public')->url($record->converted_path))
+                        ->media(fn (Audio $record) => Storage::temporaryUrl($record->converted_path, now()->addMinutes(15)))
                         ->mediaType(MediaAction::TYPE_AUDIO)
                         ->autoplay()
                         ->visible(fn (Audio $record) => $record->conversion_status === AudioConversionStatus::Completed),
                     MediaAction::make('original_audio')
                         ->label('Play Original')
                         ->icon(Tabler::Music)
-                        ->media(fn (Audio $record) => Storage::disk('public')->url($record->original_path))
+                        ->media(fn (Audio $record) => Storage::temporaryUrl($record->original_path, now()->addMinutes(15)))
                         ->mediaType(MediaAction::TYPE_AUDIO)
                         ->autoplay()
                         ->visible(fn (Audio $record) => $record->type === AudioType::Upload ||

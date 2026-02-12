@@ -53,7 +53,7 @@ final class AudioController extends Controller
 
         if (AudioType::tryFrom($request->type) === AudioType::Upload) {
             $file = $request->file('file');
-            $path = $file->store('audios/originals', 'public');
+            $path = $file->store('audios/originals', config('filesystems.default'));
             $data['original_path'] = $path;
             $data['size'] = $file->getSize();
 

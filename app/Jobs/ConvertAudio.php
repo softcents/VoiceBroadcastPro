@@ -57,7 +57,7 @@ final class ConvertAudio implements ShouldQueue
             $outputPath = 'audios/conversions/'.$this->audio->uuid.'.wav';
 
             // Validate input file exists
-            if (! Storage::disk('public')->exists($inputPath)) {
+            if (! Storage::exists($inputPath)) {
                 throw new Exception("Input file not found: {$inputPath}");
             }
 
@@ -113,7 +113,7 @@ final class ConvertAudio implements ShouldQueue
      */
     protected function convertAudio(string $inputPath, string $outputPath): float
     {
-        $ffmpeg = FFMpeg::fromDisk('public')->open($inputPath);
+        $ffmpeg = FFMpeg::fromDisk(config('filesystems.default'))->open($inputPath);
 
         // Get duration before conversion
         $duration = $ffmpeg->getDurationInSeconds();
@@ -129,7 +129,7 @@ final class ConvertAudio implements ShouldQueue
             ->addFilter(['-ac', '1'])              // Mono
             ->addFilter(['-sample_fmt', 's16'])    // 16-bit signed PCM
             ->addFilter(['-acodec', 'pcm_s16le'])  // Ensure PCM codec
-            ->toDisk('public')
+            ->toDisk(config('filesystems.default'))
             ->save($outputPath);
 
         return $duration;
@@ -140,7 +140,7 @@ final class ConvertAudio implements ShouldQueue
      */
     protected function updateAudioRecord(string $outputPath, float $duration): void
     {
-        $size = Storage::disk('public')->size($outputPath);
+        $size = Storage::size($outputPath);
 
         $this->audio->update([
             'converted_path' => $outputPath,
@@ -156,8 +156,8 @@ final class ConvertAudio implements ShouldQueue
      */
     protected function ensureDirectoryExists(string $directory): void
     {
-        if (! Storage::disk('public')->exists($directory)) {
-            Storage::disk('public')->makeDirectory($directory);
+        if (! Storage::exists($directory)) {
+            Storage::makeDirectory($directory);
         }
     }
 }

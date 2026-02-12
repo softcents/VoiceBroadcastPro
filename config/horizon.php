@@ -222,7 +222,7 @@ return [
             'queue' => ['otp', 'marketing'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 5,
+            'maxProcesses' => 20,
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,

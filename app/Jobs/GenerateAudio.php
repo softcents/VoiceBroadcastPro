@@ -179,8 +179,8 @@ final class GenerateAudio implements ShouldQueue
 
         // Ensure directory exists
         $directory = dirname($filename);
-        if (! Storage::disk('public')->exists($directory)) {
-            Storage::disk('public')->makeDirectory($directory);
+        if (! Storage::exists($directory)) {
+            Storage::makeDirectory($directory);
         }
 
         // Validate audio content is not empty
@@ -188,10 +188,10 @@ final class GenerateAudio implements ShouldQueue
             throw new Exception('Generated audio content is empty');
         }
 
-        Storage::disk('public')->put($filename, $audioContent);
+        Storage::put($filename, $audioContent);
 
         // Verify file was saved successfully
-        if (! Storage::disk('public')->exists($filename)) {
+        if (! Storage::exists($filename)) {
             throw new Exception('Failed to save audio file');
         }
 
@@ -203,7 +203,7 @@ final class GenerateAudio implements ShouldQueue
      */
     protected function updateAudioSuccess(Audio $audio, string $filename): void
     {
-        $fileSize = Storage::disk('public')->size($filename);
+        $fileSize = Storage::size($filename);
 
         $audio->update([
             'original_path' => $filename,
