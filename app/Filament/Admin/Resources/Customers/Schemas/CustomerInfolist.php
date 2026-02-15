@@ -192,12 +192,10 @@ final class CustomerInfolist
                         ImageEntry::make('front_nid')
                             ->label('Front NID')
                             ->placeholder('No front NID uploaded')
-                            ->disk('local')
                             ->visibility('private'),
                         ImageEntry::make('back_nid')
                             ->label('Back NID')
                             ->placeholder('No back NID uploaded')
-                            ->disk('local')
                             ->visibility('private'),
                     ])
                     ->columns()

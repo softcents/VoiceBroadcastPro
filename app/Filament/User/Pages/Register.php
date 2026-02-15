@@ -107,16 +107,14 @@ final class Register extends BaseRegister
                                     ->required()
                                     ->maxSize(2048) // 2MB
                                     ->directory('ids')
-                                    ->visibility('private')
-                                    ->disk('local'),
+                                    ->visibility('private'),
                                 FileUpload::make('back_nid')
                                     ->label('Back Side of NID')
                                     ->image()
                                     ->required()
                                     ->maxSize(2048) // 2MB
                                     ->directory('ids')
-                                    ->visibility('private')
-                                    ->disk('local'),
+                                    ->visibility('private'),
                             ]),
                     ]),
                 Checkbox::make('terms')

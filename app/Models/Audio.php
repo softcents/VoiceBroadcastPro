@@ -91,11 +91,11 @@ final class Audio extends Model
 
         self::deleting(function (Audio $audio) {
             // Delete associated audio files from storage
-            if ($audio->original_path && Storage::disk('local')->exists($audio->original_path)) {
-                Storage::disk('local')->delete($audio->original_path);
+            if ($audio->original_path && Storage::exists($audio->original_path)) {
+                Storage::delete($audio->original_path);
             }
-            if ($audio->converted_path && Storage::disk('local')->exists($audio->converted_path)) {
-                Storage::disk('local')->delete($audio->converted_path);
+            if ($audio->converted_path && Storage::exists($audio->converted_path)) {
+                Storage::delete($audio->converted_path);
             }
         });
     }
