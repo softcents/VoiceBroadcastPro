@@ -125,7 +125,7 @@ final class ProcessMarketingCall implements ShouldQueue
                     'priority' => 1,
                     'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
                     'app' => 'originate',
-                    'appArgs' => 'marketing,'.Storage::temporaryUrl($audioPath, now()->addMinutes(15)),
+                    'appArgs' => 'marketing,'.getFileUrl($audioPath),
                 ]);
 
             if ($response->failed()) {
