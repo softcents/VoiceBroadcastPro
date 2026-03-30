@@ -20,10 +20,10 @@ function bytesToHuman(int $bytes): string
     }, 'N/A');
 }
 
-function getFileUrl($path, $expires = 3600): string
+function getFileUrl(?string $path, $expires = 3600): ?string
 {
     if (empty($path)) {
-        return '';
+        return null;
     }
 
     $storage = Storage::disk(config('filesystems.default'));
