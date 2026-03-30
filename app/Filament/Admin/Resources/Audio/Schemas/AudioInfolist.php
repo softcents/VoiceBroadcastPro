@@ -11,7 +11,6 @@ use App\Models\Audio;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Illuminate\Support\Number;
 use LaraZeus\Tabler\Tabler;
 
 final class AudioInfolist
@@ -119,9 +118,11 @@ final class AudioInfolist
                     ->schema([
                         AudioPlayerEntry::make('original_path')
                             ->label('Original Audio')
+                            ->url(fn (Audio $record) => getFileUrl($record->original_path))
                             ->hiddenLabel(),
                         AudioPlayerEntry::make('converted_path')
                             ->label('Converted Audio')
+                            ->url(fn (Audio $record) => getFileUrl($record->converted_path))
                             ->hiddenLabel()
                             ->visible(fn (Audio $record) => ! empty($record->converted_path)),
                     ])

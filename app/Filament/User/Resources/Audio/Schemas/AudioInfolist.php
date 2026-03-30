@@ -101,9 +101,11 @@ final class AudioInfolist
                             ->schema([
                                 AudioPlayerEntry::make('original_path')
                                     ->label('Original Audio')
+                                    ->url(fn (Audio $record) => getFileUrl($record->original_path))
                                     ->hiddenLabel(),
                                 AudioPlayerEntry::make('converted_path')
                                     ->label('Converted Audio')
+                                    ->url(fn (Audio $record) => getFileUrl($record->converted_path))
                                     ->hiddenLabel(),
                             ]),
                     ]),

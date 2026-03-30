@@ -97,7 +97,7 @@ final class AudioForm
                                         $set('tts_artist_id', null);
                                     })
                                     ->afterStateHydrated(function (Select $component, ?Audio $record) {
-                                        if (!$record) {
+                                        if (! $record) {
                                             return;
                                         }
 
@@ -115,7 +115,7 @@ final class AudioForm
                                     ->disabledOn(['edit', 'view'])
                                     ->afterStateUpdated(fn (Set $set) => $set('tts_artist_id', null))
                                     ->afterStateHydrated(function (Select $component, ?Audio $record) {
-                                        if (!$record) {
+                                        if (! $record) {
                                             return;
                                         }
 
