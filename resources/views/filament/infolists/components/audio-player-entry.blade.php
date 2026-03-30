@@ -2,7 +2,7 @@
     <div class="flex flex-col gap-y-2 w-full">
         @if ($getState())
             <audio controls class="w-full rounded-lg" style="width: 100%;">
-                <source src="{{ \Illuminate\Support\Facades\Storage::url($getState()) }}" type="audio/mpeg">
+                <source src="{{ getFileUrl($getState()) }}" type="audio/mpeg">
                 Your browser does not support the audio element.
             </audio>
         @else

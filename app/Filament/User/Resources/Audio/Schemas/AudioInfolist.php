@@ -99,7 +99,7 @@ final class AudioInfolist
                         Section::make('Preview')
                             ->icon(Tabler::PlayerPlay)
                             ->schema([
-                                AudioPlayerEntry::make('original_url')
+                                AudioPlayerEntry::make('original_path')
                                     ->label('Original Audio')
                                     ->hiddenLabel(),
                                 AudioPlayerEntry::make('converted_url')

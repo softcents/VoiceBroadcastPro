@@ -32,9 +32,9 @@ function getFileUrl(?string $path, $expires = 3600): ?string
         return '';
     }
 
-    if (config('filesystems.disks.'.config('filesystems.default').'.serve', false)) {
+    if (config('filesystems.default') === 'public') {
         return $storage->url($path);
     }
 
-    return $storage->temporaryUrl($path, now()->addSeconds($expires));
+    return $storage->temporaryUrl('audios/originals/01KMYWAHZJZR08RQR53JD4FP52.wav', now()->addSeconds($expires));
 }
