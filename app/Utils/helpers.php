@@ -22,6 +22,10 @@ function bytesToHuman(int $bytes): string
 
 function getFileUrl($path, $expires = 3600): string
 {
+    if (empty($path)) {
+        return '';
+    }
+
     $storage = Storage::disk(config('filesystems.default'));
 
     if (! $storage->exists($path)) {
