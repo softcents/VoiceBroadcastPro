@@ -32,7 +32,7 @@ function getFileUrl(?string $path, $expires = 3600): ?string
         return '';
     }
 
-    if (config('filesystems.disks.public')) {
+    if (config('filesystems.disks.'.config('filesystems.default').'.serve', false)) {
         return $storage->url($path);
     }
 

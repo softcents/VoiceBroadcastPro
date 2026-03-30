@@ -116,13 +116,11 @@ final class AudioInfolist
                     ->description('Listen to audio files')
                     ->icon(Tabler::PlayerPlay)
                     ->schema([
-                        AudioPlayerEntry::make('original_path')
+                        AudioPlayerEntry::make('original_url')
                             ->label('Original Audio')
-                            ->url(fn (Audio $record) => getFileUrl($record->original_path))
                             ->hiddenLabel(),
-                        AudioPlayerEntry::make('converted_path')
+                        AudioPlayerEntry::make('converted_url')
                             ->label('Converted Audio')
-                            ->url(fn (Audio $record) => getFileUrl($record->converted_path))
                             ->hiddenLabel()
                             ->visible(fn (Audio $record) => ! empty($record->converted_path)),
                     ])

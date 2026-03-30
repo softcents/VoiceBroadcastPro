@@ -70,14 +70,14 @@ final class AudioTable
             ])
             ->recordActions([
                 ActionGroup::make([
-                    MediaAction::make('converted_audio')
+                    MediaAction::make('converted_url')
                         ->label('Play Converted')
                         ->icon(Tabler::Music)
                         ->media(fn (Audio $record) => getFileUrl($record->converted_path))
                         ->mediaType(MediaAction::TYPE_AUDIO)
                         ->autoplay()
                         ->visible(fn (Audio $record) => $record->conversion_status === AudioConversionStatus::Completed),
-                    MediaAction::make('original_audio')
+                    MediaAction::make('original_url')
                         ->label('Play Original')
                         ->icon(Tabler::Music)
                         ->media(fn (Audio $record) => getFileUrl($record->original_path))
