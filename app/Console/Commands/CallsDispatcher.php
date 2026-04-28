@@ -35,6 +35,7 @@ final class CallsDispatcher extends Command
 
         $callers = Caller::where('enabled', true)
             ->with('server')
+            ->withCount(['calls as active_calls_count' => fn ($q) => $q->active()])
             ->get();
 
         if ($callers->isEmpty()) {
@@ -52,9 +53,11 @@ final class CallsDispatcher extends Command
 
             $this->components->twoColumnDetail('Processing Caller', "{$caller->caller_name} ({$caller->caller_number})");
 
-            // 1. Calculate Active Calls for this Caller
-            $activeCallsCount = $caller->activeCallsCount();
-            $availableSlots = $caller->availableSlots();
+            // 1. Calculate Active Calls for this Caller (preloaded via withCount)
+            $activeCallsCount = $caller->active_calls_count;
+            $availableSlots = $caller->max_concurrency > 0
+                ? max(0, $caller->max_concurrency - $activeCallsCount)
+                : 1000;
 
             $this->components->twoColumnDetail('Active Calls', (string) $activeCallsCount);
             $this->components->twoColumnDetail('Slots Available', $caller->max_concurrency > 0 ? (string) $availableSlots : 'Unlimited');

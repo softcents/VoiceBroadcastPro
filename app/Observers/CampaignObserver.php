@@ -16,6 +16,7 @@ use App\Models\User;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use RuntimeException;
 use Throwable;
@@ -111,7 +112,11 @@ final class CampaignObserver implements ShouldHandleEventsAfterCommit
 
     private function notifyAdmins(Campaign $campaign): void
     {
-        $admins = User::admin()->get();
+        $admins = Cache::remember(
+            'users:admins',
+            now()->addMinutes(15),
+            fn () => User::admin()->get()
+        );
 
         Notification::make()
             ->title('New Campaign Pending Approval')

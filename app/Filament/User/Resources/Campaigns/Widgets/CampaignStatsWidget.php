@@ -10,6 +10,7 @@ use Filament\Actions\Action;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 final class CampaignStatsWidget extends StatsOverviewWidget
 {
@@ -17,7 +18,7 @@ final class CampaignStatsWidget extends StatsOverviewWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected ?string $pollingInterval = '10s';
+    protected ?string $pollingInterval = '30s';
 
     protected function getColumns(): int
     {
@@ -30,21 +31,38 @@ final class CampaignStatsWidget extends StatsOverviewWidget
             return [];
         }
 
-        $calls = $this->record->calls();
-        $totalCalls = $calls->count();
-        $completedCalls = (clone $calls)->where('status', CallStatus::Completed)->count();
-        $failedCalls = (clone $calls)->where('status', CallStatus::Failed)->count();
-        $pendingCalls = (clone $calls)->where('status', CallStatus::Pending)->count();
-        $answeredCalls = (clone $calls)->where('status', CallStatus::Answered)->count();
-        $busyCalls = (clone $calls)->where('status', CallStatus::Busy)->count();
-        $notAnsweredCalls = (clone $calls)->where('status', CallStatus::NotAnswered)->count();
+        $stats = $this->record->calls()
+            ->selectRaw('
+                COUNT(*) as total_calls,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as completed_calls,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as failed_calls,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as pending_calls,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as answered_calls,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as busy_calls,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as not_answered_calls,
+                COALESCE(SUM(cost), 0) as total_cost
+            ', [
+                CallStatus::Completed->value,
+                CallStatus::Failed->value,
+                CallStatus::Pending->value,
+                CallStatus::Answered->value,
+                CallStatus::Busy->value,
+                CallStatus::NotAnswered->value,
+            ])
+            ->first();
+
+        $totalCalls = (int) $stats->total_calls;
+        $completedCalls = (int) $stats->completed_calls;
+        $failedCalls = (int) $stats->failed_calls;
+        $pendingCalls = (int) $stats->pending_calls;
+        $answeredCalls = (int) $stats->answered_calls;
+        $busyCalls = (int) $stats->busy_calls;
+        $notAnsweredCalls = (int) $stats->not_answered_calls;
+        $totalCost = (float) $stats->total_cost;
 
         $answeredRate = $totalCalls > 0
             ? round((($completedCalls + $answeredCalls) / $totalCalls) * 100, 1)
             : 0;
-
-        $totalCost = (float) (clone $calls)->sum('cost');
-        $avgDuration = (float) ((clone $calls)->where('duration', '>', 0)->avg('duration') ?? 0);
 
         return [
             Stat::make('Total Calls', number_format($totalCalls))

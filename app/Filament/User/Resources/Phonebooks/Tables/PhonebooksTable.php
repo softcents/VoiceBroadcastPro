@@ -48,7 +48,6 @@ final class PhonebooksTable
             ])
             ->recordActions([
                 ActionGroup::make([
-                    ViewAction::make(),
                     EditAction::make(),
                     DeleteAction::make()
                         ->requiresConfirmation(),
