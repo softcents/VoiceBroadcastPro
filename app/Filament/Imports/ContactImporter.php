@@ -26,24 +26,34 @@ class ContactImporter extends Importer
             ImportColumn::make('phone_number')
                 ->label('Phone Number')
                 ->requiredMapping()
-                ->rules(['required', 'max:255', 'phone:BD'])
-                ->fillRecordUsing(function (Contact $record, string $state) {
-                    $record->phone_number = rescue(function () use ($state) {
-                        return new PhoneNumber($state, 'BD')->formatE164();
-                    }, null, false);
-
-                }),
+                ->rules(['required', 'max:255', 'phone:BD']),
         ];
     }
 
     public function resolveRecord(): Contact|Model
     {
+        $phone = rescue(
+            fn () => new PhoneNumber($this->data['phone_number'], 'BD')->formatE164(),
+            null,
+            false
+        );
+
+        $this->data['phone_number'] = $phone;
+
         return Contact::firstOrNew([
-            'phone_number' => rescue(function () {
-                return new PhoneNumber($this->data['phone_number'], 'BD')->formatE164();
-            }, null, false),
-            'phonebook_id' => $this->options['phonebook_id']
+            'phonebook_id' => $this->options['phonebook_id'],
+            'phone_number' => $phone,
         ]);
+    }
+
+    public static function getChunkSize(): int
+    {
+        return 1000;
+    }
+
+    public function getJobBatchSize(): ?int
+    {
+        return 500;
     }
 
     public static function getCompletedNotificationBody(Import $import): string
