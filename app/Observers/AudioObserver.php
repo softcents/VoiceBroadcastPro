@@ -16,12 +16,13 @@ use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Contracts\Events\ShouldHandleEventsAfterCommit;
 use Illuminate\Support\Facades\Bus;
+use Illuminate\Support\Facades\Cache;
 
 final class AudioObserver implements ShouldHandleEventsAfterCommit
 {
     public function created(Audio $audio): void
     {
-        $audio->load('user');
+        $audio->loadMissing('user');
 
         $this->notifyAdmins($audio);
 
@@ -39,7 +40,11 @@ final class AudioObserver implements ShouldHandleEventsAfterCommit
 
     private function notifyAdmins(Audio $audio): void
     {
-        $admins = User::admin()->get();
+        $admins = Cache::remember(
+            'users:admins',
+            now()->addMinutes(15),
+            fn () => User::admin()->get()
+        );
 
         Notification::make()
             ->title('New Audio Created')

@@ -28,7 +28,7 @@ final class ContactsTable
                     ->alignCenter(),
                 TextColumn::make('phonebook.name')
                     ->searchable()
-                    ->url(fn ($record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
+                    ->url(fn ($record) => PhonebookResource::getUrl('edit', ['record' => $record->phonebook_id])),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('phone_number')

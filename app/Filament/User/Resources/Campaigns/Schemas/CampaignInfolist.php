@@ -57,7 +57,7 @@ final class CampaignInfolist
                                             ->icon(Tabler::AddressBook)
                                             ->placeholder('N/A')
                                             ->visible(fn (Campaign $record) => $record->phonebook_id !== null)
-                                            ->url(fn (Campaign $record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
+                                            ->url(fn (Campaign $record) => PhonebookResource::getUrl('edit', ['record' => $record->phonebook_id])),
                                         TextEntry::make('status')
                                             ->label('Current Status')
                                             ->badge(),

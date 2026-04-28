@@ -17,8 +17,7 @@ final class CallsCleanup extends Command
 
     public function handle(): void
     {
-        $calls = Call::active()
-            ->with('user')
+        $stuckQuery = Call::active()
             ->where(function (Builder $query) {
                 $query
                     ->where(function (Builder $query) {
@@ -36,10 +35,9 @@ final class CallsCleanup extends Command
                             ->whereNotNull('answered_at')
                             ->where('answered_at', '<=', now()->subHour());
                     });
-            })
-            ->get();
+            });
 
-        $count = $calls->count();
+        $count = (clone $stuckQuery)->count();
 
         if ($count === 0) {
             $this->components->info('No stuck calls found');
@@ -47,9 +45,7 @@ final class CallsCleanup extends Command
             return;
         }
 
-        foreach ($calls as $call) {
-            $call->update(['status' => CallStatus::Failed]);
-        }
+        $stuckQuery->update(['status' => CallStatus::Failed]);
 
         $this->components->task("Fixed {$count} stuck call" . ($count !== 1 ? 's' : ''), fn() => true);
         $this->components->twoColumnDetail('Updated calls', (string)$count);

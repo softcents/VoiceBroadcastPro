@@ -7,7 +7,6 @@ namespace App\Filament\User\Resources\Phonebooks;
 use App\Filament\User\Resources\Phonebooks\Pages\CreatePhonebook;
 use App\Filament\User\Resources\Phonebooks\Pages\EditPhonebook;
 use App\Filament\User\Resources\Phonebooks\Pages\ListPhonebooks;
-use App\Filament\User\Resources\Phonebooks\Pages\ViewPhonebook;
 use App\Filament\User\Resources\Phonebooks\RelationManagers\ContactsRelationManager;
 use App\Filament\User\Resources\Phonebooks\Schemas\PhonebookForm;
 use App\Filament\User\Resources\Phonebooks\Schemas\PhonebookInfolist;
@@ -57,7 +56,6 @@ final class PhonebookResource extends Resource
         return [
             'index' => ListPhonebooks::route('/'),
             'create' => CreatePhonebook::route('/create'),
-            'view' => ViewPhonebook::route('/{record}'),
             'edit' => EditPhonebook::route('/{record}/edit'),
         ];
     }
