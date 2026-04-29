@@ -44,6 +44,7 @@ final class Call extends Model
         'ringing_at' => 'datetime',
         'answered_at' => 'datetime',
         'ended_at' => 'datetime',
+        'initiated_at' => 'datetime',
         'scheduled_at' => 'datetime',
         'duration' => 'float',
         'cost' => 'float',

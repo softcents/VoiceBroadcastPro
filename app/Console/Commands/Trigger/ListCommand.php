@@ -70,9 +70,6 @@ final class ListCommand extends Command
 
     /**
      * Transform action to string.
-     *
-     * @param array|Closure|string $action
-     * @return string
      */
     public function transformActionToString(array|Closure|string $action): string
     {
