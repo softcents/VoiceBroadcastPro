@@ -31,7 +31,7 @@ final class CelEventListener
     {
         Call::where('unique_id', $row['uniqueid'])->update([
             'status' => CallStatus::Ringing->value,
-            'ringing_at' => $row['eventtime'] ?? now(),
+            'ringing_at' => now(),
         ]);
     }
 
@@ -39,7 +39,7 @@ final class CelEventListener
     {
         Call::where('unique_id', $row['uniqueid'])->update([
             'status' => CallStatus::Answered->value,
-            'answered_at' => $row['eventtime'] ?? now(),
+            'answered_at' => now(),
         ]);
     }
 
@@ -81,10 +81,16 @@ final class CelEventListener
             $status = CallStatus::Busy;
         }
 
-        Call::where('unique_id', $row['uniqueid'])->update([
-            'status' => $status->value,
+        $call = Call::where('unique_id', $row['uniqueid'])->first();
+
+        if (! $call) {
+            return;
+        }
+
+        $call->update([
+            'status' => $status,
             'hangup_cause' => (string) $hangupCause,
-            'ended_at' => $row['eventtime'] ?? now(),
+            'ended_at' => now(),
             'duration' => $duration,
         ]);
     }

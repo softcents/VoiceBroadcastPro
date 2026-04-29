@@ -13,6 +13,7 @@ use App\Models\Call;
 use App\Models\Caller;
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -33,6 +34,7 @@ final class CallsDispatcher extends Command
     {
         $this->components->info('Dispatching calls based on Caller ID concurrency limits');
 
+        /** @var Collection|Caller[] $callers */
         $callers = Caller::where('enabled', true)
             ->with('server')
             ->withCount(['calls as active_calls_count' => fn ($q) => $q->active()])
@@ -73,13 +75,14 @@ final class CallsDispatcher extends Command
             $pendingCalls = Call::pending()
                 ->whereCallerId($caller->id)
                 ->where(function (Builder $query) {
-                    $query->where(function ($q) {
-                        $q->whereNull('campaign_id')
-                            ->where(function ($sq) {
-                                $sq->whereNull('scheduled_at')
-                                    ->orWherePast('scheduled_at');
-                            });
-                    })
+                    $query
+                        ->where(function ($q) {
+                            $q->whereNull('campaign_id')
+                                ->where(function ($sq) {
+                                    $sq->whereNull('scheduled_at')
+                                        ->orWherePast('scheduled_at');
+                                });
+                        })
                         ->orWhere(function ($q) {
                             $q->whereNotNull('campaign_id')
                                 ->whereHas('campaign', fn ($cq) => $cq->where('status', CampaignStatus::Processing));
@@ -106,7 +109,7 @@ final class CallsDispatcher extends Command
                         'initiated_at' => now(),
                     ]);
 
-                $jobs = $pendingCalls->map(function ($call) {
+                $jobs = $pendingCalls->map(function (Call $call) {
                     return match ($call->type) {
                         CallType::OTP => new ProcessOtpCall($call->id)->onQueue('otp'),
                         default => new ProcessMarketingCall($call->id)->onQueue('marketing'),
@@ -119,12 +122,6 @@ final class CallsDispatcher extends Command
                     ->dispatch();
 
                 $totalDispatched += $pendingCalls->count();
-
-                Log::info('Dispatcher: Calls batch dispatched', [
-                    'caller' => $caller->name,
-                    'batch_id' => $batch->id,
-                    'call_count' => $pendingCalls->count(),
-                ]);
             });
 
             $this->components->task("Dispatched {$pendingCalls->count()} calls", fn () => true);

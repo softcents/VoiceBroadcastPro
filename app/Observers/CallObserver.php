@@ -46,6 +46,8 @@ final class CallObserver
     public function updated(Call $call): void
     {
         if ($call->wasChanged('status')) {
+            ray($call)->showApp()->label("Call status changed to {$call->status->value}");
+
             $user = $call->user;
 
             if (! $user) {

@@ -7,8 +7,6 @@ namespace App\Models;
 use App\Enums\CallFromInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
-use App\Jobs\ProcessMarketingCall;
-use App\Jobs\ProcessOtpCall;
 use App\Models\Scopes\OwnedByAuthUser;
 use App\Observers\CallObserver;
 use App\Settings\CallingSetting;
@@ -92,16 +90,15 @@ final class Call extends Model
     {
         if ($this->canRetry) {
             $this->update([
+                'status' => CallStatus::Pending,
                 'called_at' => null,
                 'ringing_at' => null,
                 'answered_at' => null,
                 'ended_at' => null,
+                'initiated_at' => null,
             ]);
-            $this->increment('retries');
 
-            $this->type === CallType::Marketing
-                ? ProcessMarketingCall::dispatch($this->id)
-                : ProcessOtpCall::dispatch($this->id);
+            $this->increment('retries');
         } else {
             throw new RuntimeException('Call cannot be retried.');
         }

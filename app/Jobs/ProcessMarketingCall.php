@@ -157,7 +157,6 @@ final class ProcessMarketingCall implements ShouldQueue
             }
 
             $uniqueId = $response->json('id');
-            $creationTime = $response->json('creationtime');
 
             if (! $uniqueId) {
                 $this->refundAndFail($this->call->user, 'No unique ID returned from API');
@@ -166,9 +165,7 @@ final class ProcessMarketingCall implements ShouldQueue
             $this->call->update([
                 'unique_id' => $uniqueId,
                 'status' => CallStatus::Initiated,
-                'called_at' => $creationTime
-                    ? CarbonImmutable::createFromTimeString($creationTime)
-                    : CarbonImmutable::now(),
+                'called_at' => now(),
             ]);
 
         } catch (Exception $e) {
