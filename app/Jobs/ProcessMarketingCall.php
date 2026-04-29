@@ -138,19 +138,6 @@ final class ProcessMarketingCall implements ShouldQueue
                     ],
                 ]);
 
-            ray([
-                'endpoint' => "PJSIP/{$recipientNumber}@{$trunkName}",
-                'extension' => 'frolax.agency',
-                'context' => 'outgoing-http',
-                'priority' => 1,
-                'callerId' => "{$callerName} <{$callerNumber}>",
-                'variables' => [
-                    'STEP_COUNT' => '1',
-                    'STEP_1_TYPE' => 'url',
-                    'STEP_1_VALUE' => getFileUrl($audioPath),
-                ],
-            ])->showApp();
-
             if ($response->failed()) {
                 $serverError = $response->json('message')
                     ?? $response->json('error')
@@ -223,12 +210,6 @@ final class ProcessMarketingCall implements ShouldQueue
                 'status' => CallStatus::Failed,
             ]);
         });
-
-        Log::warning('Call refunded and failed', [
-            'call_id' => $this->call->id,
-            'reason' => $reason,
-            'refunded_amount' => $cost,
-        ]);
 
         throw new Exception("Call ID {$this->call->id} failed: {$reason}");
     }

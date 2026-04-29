@@ -27,8 +27,6 @@ final class CallObserver
 
         $this->deductCost($call);
 
-        ray($call->toArray());
-
         if ($call->caller->availableSlots() > 0) {
             $call->update([
                 'status' => CallStatus::Initiated,

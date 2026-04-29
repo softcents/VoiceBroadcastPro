@@ -12,8 +12,9 @@ use MySQLReplication\Event\DTO\EventDTO;
 /**
  * @see \App\Support\Trigger\Manager
  *
- * @method static \App\Support\Trigger\Trigger replication(?string $name = null)
+ * @method static \App\Support\Trigger\Trigger replication(int|\App\Models\Server|null $server = null)
  * @method static array replications()
+ * @method static \App\Support\Trigger\Trigger|null current()
  *
  * @see \App\Support\Trigger\Trigger
  *

@@ -5,10 +5,10 @@ declare(strict_types=1);
 use App\Enums\CallStatus;
 use App\Models\Asterisk\Cdr;
 use App\Models\Call;
-use App\Support\Facades\Trigger;
 use MySQLReplication\Event\DTO\WriteRowsDTO;
 
-Trigger::on('asteriskcdrdb.cel', 'write', function (WriteRowsDTO $event) {
+/** @var \App\Support\Trigger\Trigger $trigger */
+$trigger->on('asteriskcdrdb.cel', 'write', function (WriteRowsDTO $event) {
     $row = $event->values[0] ?? null;
 
     if (! is_array($row) || ! isset($row['eventtype'], $row['uniqueid'])) {

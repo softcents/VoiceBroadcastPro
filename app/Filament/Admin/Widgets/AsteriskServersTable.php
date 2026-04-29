@@ -21,20 +21,30 @@ final class AsteriskServersTable extends BaseWidget
             ->query(
                 Server::query()
                     ->orderBy('enabled', 'desc')
-                    ->orderBy('host')
+                    ->orderBy('database_host')
             )
             ->columns([
-                TextColumn::make('host')
+                TextColumn::make('name')
                     ->label('Server')
-                    ->description(fn (Server $record): string => $record->ari_base_url)
+                    ->description(fn (Server $record): string => $record->database_host
+                        ? $record->database_host.':'.($record->database_port ?: 3306)
+                        : '—')
                     ->searchable()
                     ->sortable(),
 
                 TextColumn::make('enabled')
-                    ->label('Status')
+                    ->label('Replication')
                     ->badge()
-                    ->color(fn (bool $state): string => $state ? 'success' : 'gray')
-                    ->formatStateUsing(fn (bool $state): string => $state ? 'Enabled' : 'Disabled'),
+                    ->color(fn (bool $state, Server $record): string => $state && $record->database_host ? 'success' : 'gray')
+                    ->formatStateUsing(fn (bool $state, Server $record): string => $state && $record->database_host ? 'Eligible' : 'Disabled')
+                    ->icon(fn (bool $state, Server $record): string => $state && $record->database_host
+                        ? 'heroicon-m-bolt'
+                        : 'heroicon-m-no-symbol'),
+
+                TextColumn::make('database_username')
+                    ->label('DB User')
+                    ->placeholder('—')
+                    ->toggleable(),
 
                 TextColumn::make('connection_status')
                     ->label('Connection')
@@ -72,7 +82,7 @@ final class AsteriskServersTable extends BaseWidget
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->heading('Server Connections')
-            ->description('Real-time status of Asterisk ARI server connections');
+            ->heading('Replication Sources')
+            ->description('Servers monitored by the trigger supervisor');
     }
 }

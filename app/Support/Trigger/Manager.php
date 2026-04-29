@@ -4,21 +4,28 @@ declare(strict_types=1);
 
 namespace App\Support\Trigger;
 
+use App\Models\Server;
 use InvalidArgumentException;
 
 final class Manager
 {
     /**
-     * Replications.
+     * Replications keyed by server id.
      *
-     * @var Trigger[]
+     * @var array<int, Trigger>
      */
     private array $replications = [];
+
+    /**
+     * The trigger currently being booted (used so route files can register
+     * against the active replication via the Trigger facade).
+     */
+    private ?Trigger $current = null;
 
     public function __construct(private array $config = []) {}
 
     /**
-     * call.
+     * Forward facade calls to the active or default replication.
      *
      * @param  string  $method
      * @param  array  $parameters
@@ -26,46 +33,93 @@ final class Manager
      */
     public function __call($method, $parameters)
     {
-        return $this->replication()->{$method}(...$parameters);
+        return ($this->current ?? $this->replication())->{$method}(...$parameters);
     }
 
     /**
-     * Create new replication.
+     * Get (and lazily build) the Trigger for a server.
      */
-    public function replication(?string $name = null): Trigger
+    public function replication(int|Server|null $server = null): Trigger
     {
-        $name ??= $this->config['default'] ?? 'default';
+        $server = $this->resolveServer($server);
 
-        if (! isset($this->replications[$name])) {
-            if (! isset($this->config['replications'][$name])) {
-                throw new InvalidArgumentException("Config 'trigger.replications.{$name}' is undefined", 1);
+        if (! isset($this->replications[$server->id])) {
+            $config = array_merge($this->config, [
+                'host' => $server->database_host,
+                'port' => (int) ($server->database_port ?: 3306),
+                'user' => $server->database_username,
+                'password' => $server->database_password,
+            ]);
+
+            $trigger = new Trigger((string) $server->id, $config);
+
+            // Expose the trigger so routes can use Trigger::on(...) (facade)
+            // or $trigger->on(...) and have registrations land on this instance.
+            $this->current = $trigger;
+
+            try {
+                $trigger->loadRoutes();
+            } finally {
+                $this->current = null;
             }
 
-            // load config
-            $config = $this->config['replications'][$name];
-
-            /* @var Trigger[] */
-            $this->replications[$name] = new Trigger($name, $config);
-
-            // load routes
-            $this->replications[$name]->loadRoutes();
-
-            // auto detect
-            if ($this->replications[$name]->getConfig('detect')) {
-                $this->replications[$name]->detectDatabasesAndTables();
+            if ($trigger->getConfig('detect')) {
+                $trigger->detectDatabasesAndTables();
             }
+
+            $this->replications[$server->id] = $trigger;
         }
 
-        return $this->replications[$name];
+        return $this->replications[$server->id];
     }
 
     /**
-     * Get all replications.
+     * Get all built replications.
      *
-     * @return Trigger[]
+     * @return array<int, Trigger>
      */
     public function replications(): array
     {
         return $this->replications;
+    }
+
+    /**
+     * The replication currently being booted, if any.
+     */
+    public function current(): ?Trigger
+    {
+        return $this->current;
+    }
+
+    private function resolveServer(int|Server|null $server): Server
+    {
+        if ($server instanceof Server) {
+            return $server;
+        }
+
+        if (is_int($server)) {
+            $found = Server::query()->whereKey($server)->first();
+
+            if (! $found) {
+                throw new InvalidArgumentException("Server #{$server} not found", 1);
+            }
+
+            return $found;
+        }
+
+        $default = Server::query()
+            ->where('enabled', true)
+            ->whereNotNull('database_host')
+            ->orderBy('id')
+            ->first();
+
+        if (! $default) {
+            throw new InvalidArgumentException(
+                'No enabled server with database connection info is available.',
+                1
+            );
+        }
+
+        return $default;
     }
 }

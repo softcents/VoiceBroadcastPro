@@ -4,34 +4,31 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Trigger;
 
-use App\Support\Facades\Trigger;
+use App\Support\Trigger\Trigger;
 use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Arr;
+use Symfony\Component\Console\Command\Command as CommandAlias;
 
 final class ListCommand extends Command
 {
-    /**
-     * The name and signature of the console command.
-     *
-     * @var string
-     */
-    protected $signature = 'trigger:list {--R|replication=default : replication} {--database= : Filter by database} {--table= : Filter by table} {--event= : Filter by event}';
+    protected $signature = 'trigger:list {--database= : Filter by database} {--table= : Filter by table} {--event= : Filter by event}';
 
-    /**
-     * The console command description.
-     *
-     * @var string
-     */
-    protected $description = 'List all trigger events.';
+    protected $description = 'List all trigger events registered in routes/trigger.php.';
 
-    /**
-     * Execute the console command.
-     */
-    public function handle()
+    public function handle(): int
     {
-        $actions = Trigger::replication($this->option('replication'))->getEvents();
+        $config = config('trigger');
+
+        $trigger = new Trigger('list', $config);
+        $trigger->loadRoutes();
+
+        if ($trigger->getConfig('detect')) {
+            $trigger->detectDatabasesAndTables();
+        }
+
+        $actions = $trigger->getEvents();
 
         collect(Arr::dot($actions))
             ->transform(function ($action, $key) use ($actions) {
@@ -67,32 +64,40 @@ final class ListCommand extends Command
             ->tap(function ($items) {
                 $this->table(['Database', 'Table', 'Event', 'Num', 'Action'], $items);
             });
+
+        return CommandAlias::SUCCESS;
     }
 
     /**
      * Transform action to string.
      *
-     * @param  array|Closure|object|string  $action
+     * @param array|Closure|string $action
      * @return string
      */
-    public function transformActionToString($action)
+    public function transformActionToString(array|Closure|string $action): string
     {
         if ($action instanceof Closure) {
-            $action = Closure::class;
-        } elseif (is_object($action)) {
-            $action = $action::class;
-        } elseif (is_array($action)) {
-            if (is_object($action[0])) {
-                $action[0] = $action[0]::class;
+            return Closure::class;
+        }
+
+        if (is_object($action)) {
+            return $action::class;
+        }
+
+        if (is_array($action)) {
+            [$class, $method] = $action + [1 => 'handle'];
+
+            if (is_object($class)) {
+                $class = $class::class;
             }
-            $action = sprintf('%s@%s', $action[0], $action[1] ?? 'handle');
-        } elseif (is_string($action)) {
-            if (! str_contains($action, '@')) {
-                if (is_subclass_of($action, ShouldQueue::class)) {
-                } else {
-                    $action .= '@handle';
-                }
-            }
+
+            return sprintf('%s@%s', $class, $method);
+        }
+
+        if (is_string($action) && ! str_contains($action, '@')) {
+            return is_subclass_of($action, ShouldQueue::class)
+                ? $action
+                : "{$action}@handle";
         }
 
         return $action;
