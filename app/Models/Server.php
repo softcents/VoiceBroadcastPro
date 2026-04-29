@@ -22,6 +22,11 @@ final class Server extends Model
 
     protected $hidden = ['password'];
 
+    protected $casts = [
+        'ari_password' => 'encrypted',
+        'database_password' => 'encrypted',
+    ];
+
     public function users(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'server_user');
@@ -32,10 +37,10 @@ final class Server extends Model
         return $this->hasMany(Caller::class);
     }
 
-    protected function domain(): Attribute
+    protected function ariBaseUrl(): Attribute
     {
         return Attribute::make(
-            get: fn () => "{$this->scheme}://{$this->host}".($this->port ? ":{$this->port}" : ''),
+            get: fn () => "{$this->ari_scheme}://{$this->ari_host}".($this->ari_port ? ":{$this->ari_port}" : ''),
         );
     }
 

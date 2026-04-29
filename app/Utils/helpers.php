@@ -20,8 +20,11 @@ function bytesToHuman(int $bytes): string
     }, 'N/A');
 }
 
-function getFileUrl(?string $path, $expires = 3600): ?string
+function getFileUrl(?string $path, $expires = 3600, $ts = false): ?string
 {
+    if ($ts) {
+        ray($path)->showApp();
+    }
     if (empty($path)) {
         return null;
     }

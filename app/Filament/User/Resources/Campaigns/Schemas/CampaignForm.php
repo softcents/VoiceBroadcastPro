@@ -92,7 +92,7 @@ final class CampaignForm
                                                 });
                                         }
                                     )
-                                    ->getOptionLabelFromRecordUsing(fn(Caller $record) => $record->name)
+                                    ->getOptionLabelFromRecordUsing(fn (Caller $record) => $record->name)
                                     ->preload()
                                     ->searchable(['caller_name', 'caller_number'])
                                     ->native(false)
@@ -111,7 +111,7 @@ final class CampaignForm
                                     ->getOptionLabelFromRecordUsing(function (Phonebook $record) {
                                         $record->loadCount('contacts');
 
-                                        return $record->name . ' (' . trans_choice(':count contact|:count contacts', $record->contacts_count) . ')';
+                                        return $record->name.' ('.trans_choice(':count contact|:count contacts', $record->contacts_count).')';
                                     })
                                     ->searchable()
                                     ->preload()

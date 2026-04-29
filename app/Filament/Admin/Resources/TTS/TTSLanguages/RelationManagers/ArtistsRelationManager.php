@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\TTS\TTSLanguages\RelationManagers;
 
 use App\Enums\TTSArtistGender;
-use App\Filament\Admin\Resources\TTS\TTSArtists\Schemas\TTSArtistForm;
-use App\Filament\Admin\Resources\TTS\TTSArtists\Tables\TTSArtistsTable;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\CreateAction;

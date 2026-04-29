@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Customers\Tables;
 
-use App\Enums\DepositStatus;
 use App\Enums\UserStatus;
 use App\Filament\Admin\Resources\Customers\Actions\AddBalanceAction;
 use App\Filament\Admin\Resources\Customers\Actions\ApprovalAction;
 use App\Filament\Admin\Resources\Customers\Actions\ImpersonateAction;
 use App\Models\User;
-use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -19,13 +17,9 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ForceDeleteBulkAction;
 use Filament\Actions\RestoreBulkAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
-use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
-use LaraZeus\Tabler\Tabler;
-use STS\FilamentImpersonate\Actions\Impersonate;
 
 final class CustomersTable
 {
@@ -71,7 +65,7 @@ final class CustomersTable
             ])
             ->recordActions([
                 ApprovalAction::make()
-                    ->hidden(fn(User $record) => $record->status !== UserStatus::Pending),
+                    ->hidden(fn (User $record) => $record->status !== UserStatus::Pending),
                 ActionGroup::make([
                     ViewAction::make()
                         ->label('View Details'),

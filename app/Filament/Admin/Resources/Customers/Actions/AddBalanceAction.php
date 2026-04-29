@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Customers\Actions;
 
 use App\Enums\DepositStatus;
@@ -10,7 +12,7 @@ use Filament\Notifications\Notification;
 use Filament\Support\Enums\Width;
 use LaraZeus\Tabler\Tabler;
 
-class AddBalanceAction
+final class AddBalanceAction
 {
     public static function make(): Action
     {

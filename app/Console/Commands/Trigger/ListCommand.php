@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Trigger;
 
-use Closure;
 use App\Support\Facades\Trigger;
+use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Support\Arr;

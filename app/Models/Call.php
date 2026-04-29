@@ -33,15 +33,6 @@ final class Call extends Model
     /** @use HasFactory<CallFactory> */
     use HasFactory;
 
-    protected CallingSetting $callSettings;
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-
-        $this->callSettings = app(CallingSetting::class);
-    }
-
     protected $guarded = [];
 
     protected $casts = [
@@ -118,7 +109,7 @@ final class Call extends Model
     protected function isRetryable(): Attribute
     {
         return Attribute::make(
-            get: fn() => in_array($this->status, [
+            get: fn () => in_array($this->status, [
                 CallStatus::Busy,
                 CallStatus::NotAnswered,
                 CallStatus::Failed,
@@ -128,8 +119,10 @@ final class Call extends Model
 
     protected function canRetry(): Attribute
     {
+        $callSettings = app(CallingSetting::class);
+
         return Attribute::make(
-            get: fn() => $this->isRetryable && $this->retries < $this->callSettings->max_retry_attempts,
+            get: fn () => $this->isRetryable && $this->retries < $callSettings->max_retry_attempts,
         );
     }
 
@@ -188,12 +181,14 @@ final class Call extends Model
     #[Scope]
     protected function retryable(Builder $query): Builder
     {
-        return $query->where(function (Builder $q) {
+        $callSettings = app(CallingSetting::class);
+
+        return $query->where(function (Builder $q) use ($callSettings) {
             $q->whereIn('status', [
                 CallStatus::Busy,
                 CallStatus::NotAnswered,
                 CallStatus::Failed,
-            ])->where('retries', '<', $this->callSettings->max_retry_attempts);
+            ])->where('retries', '<', $callSettings->max_retry_attempts);
         });
     }
 }

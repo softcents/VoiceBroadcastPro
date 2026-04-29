@@ -98,7 +98,7 @@ return [
     'middleware' => [
         'web',
         Authorize::class,
-//        AdminMiddleware::class,
+        //        AdminMiddleware::class,
     ],
 
     /*
@@ -113,7 +113,7 @@ return [
     */
 
     'only_paths' => [
-        'api/*',
+        //        'api/*',
     ],
 
     'ignore_paths' => [

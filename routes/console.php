@@ -10,4 +10,3 @@ Schedule::command('calls:cleanup')->everyThirtySeconds();
 Schedule::command('calls:dispatch')->everyThirtySeconds();
 Schedule::command('disposable:update')->daily();
 Schedule::command('telescope:prune')->daily(); // This will remove 1 days log
-

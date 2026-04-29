@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Http\Middleware;
 
 use App\Enums\UserStatus;
-use App\Enums\UserType;
 use Closure;
 use Filament\Facades\Filament;
 use Filament\Pages\Dashboard;

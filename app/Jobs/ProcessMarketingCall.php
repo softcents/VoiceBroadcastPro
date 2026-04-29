@@ -114,19 +114,42 @@ final class ProcessMarketingCall implements ShouldQueue
     private function initiateCall(string $audioPath): void
     {
         try {
+            $username = $this->call->caller->server->ari_username;
+            $password = $this->call->caller->server->ari_password;
+
+            $recipientNumber = $this->call->phone_number;
+            $trunkName = $this->call->caller->trunk_name;
+            $callerName = $this->call->caller->caller_name;
+            $callerNumber = $this->call->caller->caller_number;
+
             $response = Http::timeout(30)
-                ->withBasicAuth(
-                    username: $this->call->caller->server->username,
-                    password: $this->call->caller->server->password
-                )
-                ->baseUrl($this->call->caller->server->domain)
+                ->withBasicAuth($username, $password)
+                ->baseUrl($this->call->caller->server->ari_base_url)
                 ->post('ari/channels', [
-                    'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->trunk_name}",
+                    'endpoint' => "PJSIP/{$recipientNumber}@{$trunkName}",
+                    'extension' => 'frolax.agency',
+                    'context' => 'outgoing-http',
                     'priority' => 1,
-                    'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
-                    'app' => 'originate',
-                    'appArgs' => 'marketing,'.getFileUrl($audioPath),
+                    'callerId' => "{$callerName} <{$callerNumber}>",
+                    'variables' => [
+                        'STEP_COUNT' => '1',
+                        'STEP_1_TYPE' => 'url',
+                        'STEP_1_VALUE' => getFileUrl($audioPath),
+                    ],
                 ]);
+
+            ray([
+                'endpoint' => "PJSIP/{$recipientNumber}@{$trunkName}",
+                'extension' => 'frolax.agency',
+                'context' => 'outgoing-http',
+                'priority' => 1,
+                'callerId' => "{$callerName} <{$callerNumber}>",
+                'variables' => [
+                    'STEP_COUNT' => '1',
+                    'STEP_1_TYPE' => 'url',
+                    'STEP_1_VALUE' => getFileUrl($audioPath),
+                ],
+            ])->showApp();
 
             if ($response->failed()) {
                 $serverError = $response->json('message')
@@ -161,18 +184,13 @@ final class ProcessMarketingCall implements ShouldQueue
                     : CarbonImmutable::now(),
             ]);
 
-            Log::info('Call initiated successfully', [
-                'call_id' => $this->call->id,
-                'unique_id' => $uniqueId,
-            ]);
-
         } catch (Exception $e) {
             Log::error("Exception during API call for Call ID {$this->call->id}", [
                 'exception' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->refundAndFail($this->call->user, "Server API exception");
+            $this->refundAndFail($this->call->user, 'Server API exception');
         }
     }
 

@@ -13,7 +13,7 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 
 final class EnsureUserHasSufficientBalanceForCampaign implements ValidationRule
 {
-    public function __construct(protected ?int $phonebookId = null) {}
+    public function __construct(private ?int $phonebookId = null) {}
 
     /**
      * Run the validation rule.

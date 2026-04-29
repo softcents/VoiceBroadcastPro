@@ -11,9 +11,12 @@ use MySQLReplication\Event\DTO\EventDTO;
 
 /**
  * @see \App\Support\Trigger\Manager
+ *
  * @method static \App\Support\Trigger\Trigger replication(?string $name = null)
  * @method static array replications()
+ *
  * @see \App\Support\Trigger\Trigger
+ *
  * @method static Config configure(bool $keepUp)
  * @method static array getConfig()
  * @method static array getSubscribers()
@@ -30,7 +33,7 @@ use MySQLReplication\Event\DTO\EventDTO;
  * @method static void fire($events, EventDTO $event = null)
  * @method static array getEvents()
  */
-class Trigger extends Facade
+final class Trigger extends Facade
 {
     public static function getFacadeAccessor()
     {

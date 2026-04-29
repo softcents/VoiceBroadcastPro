@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Console\Commands\Trigger;
 
-use Doctrine\DBAL\Exception as DbalException;
 use App\Support\Facades\Trigger;
+use Doctrine\DBAL\Exception as DbalException;
 use Illuminate\Console\Command;
 use MySQLReplication\Exception\MySQLReplicationException;
 use PDOException;

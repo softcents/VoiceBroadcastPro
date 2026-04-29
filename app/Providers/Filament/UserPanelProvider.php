@@ -104,7 +104,7 @@ final class UserPanelProvider extends PanelProvider
             ])
             ->renderHook(
                 name: PanelsRenderHook::GLOBAL_SEARCH_BEFORE,
-                hook: fn(): string => Blade::render('@livewire(\'user-balance\')')
+                hook: fn (): string => Blade::render('@livewire(\'user-balance\')')
             )
             ->viteTheme('resources/css/app.css')
             ->spa()

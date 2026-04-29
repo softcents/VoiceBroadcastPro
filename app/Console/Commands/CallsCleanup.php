@@ -47,7 +47,7 @@ final class CallsCleanup extends Command
 
         $stuckQuery->update(['status' => CallStatus::Failed]);
 
-        $this->components->task("Fixed {$count} stuck call" . ($count !== 1 ? 's' : ''), fn() => true);
-        $this->components->twoColumnDetail('Updated calls', (string)$count);
+        $this->components->task("Fixed {$count} stuck call".($count !== 1 ? 's' : ''), fn () => true);
+        $this->components->twoColumnDetail('Updated calls', (string) $count);
     }
 }

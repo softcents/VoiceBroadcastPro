@@ -30,7 +30,7 @@ final class ViewCampaign extends ViewRecord
                 ->color('warning')
                 ->outlined()
                 ->requiresConfirmation()
-                ->visible(fn(Campaign $record): bool => $record->calls()->retryable()->exists())
+                ->visible(fn (Campaign $record): bool => $record->calls()->retryable()->exists())
                 ->action(function (Campaign $record): void {
                     DB::transaction(function () use ($record): void {
                         $record->calls()->retryable()->update([

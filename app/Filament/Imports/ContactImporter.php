@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Imports;
 
 use App\Models\Contact;
@@ -10,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Number;
 use Propaganistas\LaravelPhone\PhoneNumber;
 
-class ContactImporter extends Importer
+final class ContactImporter extends Importer
 {
     protected static ?string $model = Contact::class;
 
@@ -30,6 +32,22 @@ class ContactImporter extends Importer
         ];
     }
 
+    public static function getChunkSize(): int
+    {
+        return 1000;
+    }
+
+    public static function getCompletedNotificationBody(Import $import): string
+    {
+        $body = 'Your contact import has completed and '.Number::format($import->successful_rows).' '.str('row')->plural($import->successful_rows).' imported.';
+
+        if ($failedRowsCount = $import->getFailedRowsCount()) {
+            $body .= ' '.Number::format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to import.';
+        }
+
+        return $body;
+    }
+
     public function resolveRecord(): Contact|Model
     {
         $phone = rescue(
@@ -46,24 +64,8 @@ class ContactImporter extends Importer
         ]);
     }
 
-    public static function getChunkSize(): int
-    {
-        return 1000;
-    }
-
     public function getJobBatchSize(): ?int
     {
         return 500;
-    }
-
-    public static function getCompletedNotificationBody(Import $import): string
-    {
-        $body = 'Your contact import has completed and ' . Number::format($import->successful_rows) . ' ' . str('row')->plural($import->successful_rows) . ' imported.';
-
-        if ($failedRowsCount = $import->getFailedRowsCount()) {
-            $body .= ' ' . Number::format($failedRowsCount) . ' ' . str('row')->plural($failedRowsCount) . ' failed to import.';
-        }
-
-        return $body;
     }
 }

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+use App\Support\Trigger\Subscribers\Heartbeat;
+
 return [
     'default' => 'default',
 
@@ -31,7 +33,7 @@ return [
                 ? array_filter(array_map('trim', explode(',', (string) env('TRIGGER_SESSION_VARIABLES'))))
                 : [],
             'subscribers' => [
-                App\Support\Trigger\Subscribers\Heartbeat::class,
+                Heartbeat::class,
             ],
             'route' => app()->basePath('routes/trigger.php'),
         ],

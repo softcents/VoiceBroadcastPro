@@ -6,7 +6,7 @@ namespace App\Support\Trigger;
 
 use MySQLReplication\Event\EventSubscribers;
 
-class EventSubscriber extends EventSubscribers
+abstract class EventSubscriber extends EventSubscribers
 {
     public function __construct(protected Trigger $trigger) {}
 }

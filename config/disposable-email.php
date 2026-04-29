@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 return [
 
     /*
@@ -34,7 +36,7 @@ return [
     |
     */
 
-    'fetcher' => \Propaganistas\LaravelDisposableEmail\Fetcher\DefaultFetcher::class,
+    'fetcher' => Propaganistas\LaravelDisposableEmail\Fetcher\DefaultFetcher::class,
 
     /*
     |--------------------------------------------------------------------------

@@ -11,7 +11,6 @@ use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Number;
 
 final class AsteriskDaemonStats extends StatsOverviewWidget
 {

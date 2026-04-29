@@ -14,7 +14,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Support\Enums\TextSize;
-use Illuminate\Support\Number;
 use LaraZeus\Tabler\Tabler;
 
 final class AudioInfolist
@@ -102,7 +101,7 @@ final class AudioInfolist
                                 AudioPlayerEntry::make('original_path')
                                     ->label('Original Audio')
                                     ->hiddenLabel(),
-                                AudioPlayerEntry::make('converted_url')
+                                AudioPlayerEntry::make('converted_path')
                                     ->label('Converted Audio')
                                     ->hiddenLabel(),
                             ]),

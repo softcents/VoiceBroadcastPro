@@ -26,7 +26,7 @@ final class AsteriskServersTable extends BaseWidget
             ->columns([
                 TextColumn::make('host')
                     ->label('Server')
-                    ->description(fn (Server $record): string => $record->domain)
+                    ->description(fn (Server $record): string => $record->ari_base_url)
                     ->searchable()
                     ->sortable(),
 

@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Support\Trigger\Manager;
 use App\Support\TTS\TTSManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
-use App\Support\Trigger\Manager;
 use Illuminate\Support\ServiceProvider;
 
 final class AppServiceProvider extends ServiceProvider

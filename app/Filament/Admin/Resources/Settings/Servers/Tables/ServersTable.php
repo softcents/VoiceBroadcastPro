@@ -38,13 +38,13 @@ final class ServersTable
                     ->label('Connection Status')
                     ->searchable()
                     ->badge()
-                    ->formatStateUsing(fn(string $state) => str($state)->headline()->value())
+                    ->formatStateUsing(fn (string $state) => str($state)->headline()->value())
                     ->color(fn ($state) => match ($state) {
                         'connected' => 'success',
                         'disconnected' => 'danger',
                         default => 'gray',
                     })
-                    ->icon(fn($state) => match ($state) {
+                    ->icon(fn ($state) => match ($state) {
                         'connected' => Tabler::CircleDashedCheck,
                         'disconnected' => Tabler::CircleDashedX,
                         default => Tabler::InfoCircle,
