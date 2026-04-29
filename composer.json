@@ -13,11 +13,11 @@
         "ext-pcntl": "*",
         "ext-pdo": "*",
         "ext-posix": "*",
-        "eightynine/filament-excel-import": "4.x-dev",
         "filament/filament": "^4.2",
         "filament/spatie-laravel-settings-plugin": "*",
         "flowframe/laravel-trend": "^0.4.0",
         "hugomyb/filament-media-action": "^4.1",
+        "krowinski/php-mysql-replication": "dev-master",
         "lara-zeus/tabler-icons-enum": "^1.0",
         "laravel/framework": "^12.0",
         "laravel/horizon": "^5.40",
@@ -119,20 +119,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "path",
-            "url": "./plugins/*",
-            "options": {
-                "symlink": true
-            }
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/bishwajitcadhikary/filament-excel-import.git",
-            "canonical": false
-        }
-    ]
+    "minimum-stability": "stable",
+    "prefer-stable": true
 }

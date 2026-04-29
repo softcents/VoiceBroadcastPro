@@ -6,7 +6,7 @@ namespace App\Filament\User\Resources\Deposits\Tables;
 
 use App\Enums\DepositStatus;
 use App\Models\Deposit;
-use App\Services\Payment\PaymentService;
+use App\Support\Payment\PaymentService;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;

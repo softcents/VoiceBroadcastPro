@@ -10,7 +10,7 @@ use App\Http\Requests\Deposit\StoreDepositRequest;
 use App\Http\Resources\DepositResource;
 use App\Models\Deposit;
 use App\Models\User;
-use App\Services\Payment\PaymentService;
+use App\Support\Payment\PaymentService;
 use Exception;
 use Illuminate\Container\Attributes\CurrentUser;
 use Knuckles\Scribe\Attributes\Authenticated;
