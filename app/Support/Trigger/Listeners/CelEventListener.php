@@ -29,7 +29,7 @@ final class CelEventListener
 
     private static function handleChanStart(array $row): void
     {
-        Call::where('unique_id', $row['uniqueid'])->update([
+        self::updateCall($row['uniqueid'], [
             'status' => CallStatus::Ringing->value,
             'ringing_at' => now(),
         ]);
@@ -37,7 +37,7 @@ final class CelEventListener
 
     private static function handleAnswer(array $row): void
     {
-        Call::where('unique_id', $row['uniqueid'])->update([
+        self::updateCall($row['uniqueid'], [
             'status' => CallStatus::Answered->value,
             'answered_at' => now(),
         ]);
@@ -81,17 +81,22 @@ final class CelEventListener
             $status = CallStatus::Busy;
         }
 
-        $call = Call::where('unique_id', $row['uniqueid'])->first();
-
-        if (! $call) {
-            return;
-        }
-
-        $call->update([
+        self::updateCall($row['uniqueid'], [
             'status' => $status,
             'hangup_cause' => (string) $hangupCause,
             'ended_at' => now(),
             'duration' => $duration,
         ]);
+    }
+
+    private static function updateCall($uniqueId, array $changes): void
+    {
+        $call = Call::where('unique_id', $uniqueId)->first();
+
+        if (! $call) {
+            return;
+        }
+
+        $call->update($changes);
     }
 }
