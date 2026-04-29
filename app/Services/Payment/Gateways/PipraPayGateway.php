@@ -21,22 +21,21 @@ final class PipraPayGateway implements PaymentGateway
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-            'mh-piprapay-api-key' => config('services.piprapay.api_key'),
-        ])->post(config('services.piprapay.base_url').'/create-charge', [
+            'MHS-PIPRAPAY-API-KEY' => config('services.piprapay.api_key'),
+        ])->post(config('services.piprapay.base_url').'/checkout/redirect', [
             'full_name' => $deposit->user->name,
-            'email_mobile' => $deposit->user->email,
-            'amount' => $deposit->amount, // Accessor returns float (e.g., 100.00)
-            'redirect_url' => route('payments.piprapay.callback', ['deposit' => $deposit->id]),
-            'return_type' => 'GET',
-            'cancel_url' => route('payments.piprapay.cancel', ['deposit' => $deposit->id]),
-            'webhook_url' => route('webhooks.piprapay', ['deposit' => $deposit->id]),
+            'email_address' => $deposit->user->email,
+            'mobile_number' => $deposit->user->phone ?? '01000000000',
+            'amount' => (string) $deposit->amount,
             'currency' => $deposit->currency,
             'metadata' => [
                 'deposit_id' => $deposit->id,
             ],
+            'return_url' => route('payments.piprapay.callback', ['deposit' => $deposit->id]),
+            'webhook_url' => route('webhooks.piprapay', ['deposit' => $deposit->id]),
         ]);
 
-        if ($response->successful() && $response->json('status')) {
+        if ($response->successful() && $response->json('pp_url')) {
             return [
                 'url' => $response->json('pp_url'),
                 'id' => $response->json('pp_id'),
@@ -51,8 +50,8 @@ final class PipraPayGateway implements PaymentGateway
         $response = Http::withHeaders([
             'Accept' => 'application/json',
             'Content-Type' => 'application/json',
-            'mh-piprapay-api-key' => config('services.piprapay.api_key'),
-        ])->post(config('services.piprapay.base_url').'/verify-payments', [
+            'MHS-PIPRAPAY-API-KEY' => config('services.piprapay.api_key'),
+        ])->post(config('services.piprapay.base_url').'/verify-payment', [
             'pp_id' => $paymentId,
         ]);
 

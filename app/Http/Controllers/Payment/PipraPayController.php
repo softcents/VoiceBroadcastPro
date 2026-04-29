@@ -8,14 +8,26 @@ use App\Enums\DepositStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Deposit;
 use App\Services\Payment\PaymentService;
+use Illuminate\Http\Request;
 
 final class PipraPayController extends Controller
 {
-    public function __construct(protected PaymentService $paymentService) {}
-
-    public function callback(Deposit $deposit)
+    public function __construct(Request $request, protected PaymentService $paymentService)
     {
+        parent::__construct($request);
+    }
+
+    public function callback(Request $request, Deposit $deposit)
+    {
+        // If the payment is already completed, just redirect to success page
         if ($deposit->status === DepositStatus::Completed) {
+            return to_route('payments.success');
+        }
+
+        // If the payment is canceled by gateway, just redirect to canceled page
+        if ($request->get('pp_status') === 'canceled') {
+            $deposit->update(['status' => DepositStatus::Cancelled]);
+
             return to_route('payments.cancel');
         }
 
@@ -24,21 +36,12 @@ final class PipraPayController extends Controller
         if ($verified) {
             $this->paymentService->confirm($deposit);
 
-            $deposit->user->increment('balance', $deposit->amount);
-
             return to_route('payments.success');
         }
 
         $deposit->update(['status' => DepositStatus::Failed]);
 
         return to_route('payments.failed');
-    }
-
-    public function cancel(Deposit $deposit)
-    {
-        $deposit->update(['status' => DepositStatus::Cancelled]);
-
-        return to_route('payments.cancel');
     }
 
     public function ipn(Deposit $deposit)

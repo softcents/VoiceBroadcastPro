@@ -21,7 +21,6 @@ Route::group(['prefix' => 'payments', 'as' => 'payments.'], function () {
 
     Route::group(['prefix' => 'pipra-pay', 'as' => 'piprapay.'], function () {
         Route::get('callback/{deposit}', [PipraPayController::class, 'callback'])->name('callback');
-        Route::get('cancel/{deposit}', [PipraPayController::class, 'cancel'])->name('cancel');
     });
 });
 

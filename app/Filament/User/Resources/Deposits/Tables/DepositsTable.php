@@ -62,33 +62,33 @@ final class DepositsTable
             ])
             ->recordActions([
                 ActionGroup::make([
-                    Action::make('pay')
-                        ->label('Pay Now')
-                        ->icon(Heroicon::OutlinedCreditCard)
-                        ->color('success')
-                        ->visible(fn (Deposit $record) => $record->status === DepositStatus::Pending)
-                        ->action(function (Deposit $record) {
-                            try {
-                                $service = app(PaymentService::class);
-                                $result = $service->initiate($record);
-
-                                if (isset($result['url'])) {
-                                    redirect()->away($result['url']);
-                                }
-
-                                Notification::make()
-                                    ->title('Payment URL not found.')
-                                    ->danger()
-                                    ->send();
-
-                            } catch (Exception $e) {
-                                Notification::make()
-                                    ->title('Payment initiation failed')
-                                    ->body($e->getMessage())
-                                    ->danger()
-                                    ->send();
-                            }
-                        }),
+                    //                    Action::make('pay')
+                    //                        ->label('Pay Now')
+                    //                        ->icon(Heroicon::OutlinedCreditCard)
+                    //                        ->color('success')
+                    //                        ->visible(fn (Deposit $record) => $record->status === DepositStatus::Pending)
+                    //                        ->action(function (Deposit $record) {
+                    //                            try {
+                    //                                $service = app(PaymentService::class);
+                    //                                $result = $service->initiate($record);
+                    //
+                    //                                if (isset($result['url'])) {
+                    //                                    redirect()->away($result['url']);
+                    //                                }
+                    //
+                    //                                Notification::make()
+                    //                                    ->title('Payment URL not found.')
+                    //                                    ->danger()
+                    //                                    ->send();
+                    //
+                    //                            } catch (Exception $e) {
+                    //                                Notification::make()
+                    //                                    ->title('Payment initiation failed')
+                    //                                    ->body($e->getMessage())
+                    //                                    ->danger()
+                    //                                    ->send();
+                    //                            }
+                    //                        }),
                     Action::make('verify_deposit')
                         ->label('Verify Deposit')
                         ->icon(Heroicon::OutlinedCheckCircle)

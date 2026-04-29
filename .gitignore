@@ -31,3 +31,4 @@ frankenphp-worker.php
 
 .coverage
 /plugins/*
+.temp
