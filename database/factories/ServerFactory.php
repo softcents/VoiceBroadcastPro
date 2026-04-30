@@ -21,11 +21,15 @@ final class ServerFactory extends Factory
     {
         return [
             'name' => fake()->company(),
-            'scheme' => fake()->randomElement(['http', 'https']),
-            'host' => fake()->ipv4(),
-            'port' => 8088,
-            'username' => fake()->userName(),
-            'password' => fake()->password(),
+            'ari_scheme' => fake()->randomElement(['http', 'https']),
+            'ari_host' => fake()->ipv4(),
+            'ari_port' => 8088,
+            'ari_username' => fake()->userName(),
+            'ari_password' => fake()->password(),
+            'database_host' => fake()->ipv4(),
+            'database_port' => 3306,
+            'database_username' => fake()->userName(),
+            'database_password' => fake()->password(),
             'enabled' => fake()->boolean(),
         ];
     }
