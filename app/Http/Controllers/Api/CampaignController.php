@@ -13,7 +13,6 @@ use App\Models\Campaign;
 use App\Models\User;
 use Illuminate\Container\Attributes\CurrentUser;
 use Knuckles\Scribe\Attributes\Authenticated;
-use Knuckles\Scribe\Attributes\BodyParam;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Response;

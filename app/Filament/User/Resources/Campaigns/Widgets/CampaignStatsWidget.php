@@ -10,7 +10,6 @@ use Filament\Actions\Action;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
 
 final class CampaignStatsWidget extends StatsOverviewWidget
 {
@@ -94,11 +93,11 @@ final class CampaignStatsWidget extends StatsOverviewWidget
                 ->description('No response')
                 ->color('gray'),
 
-            Stat::make('Answer Rate', $answeredRate . '%')
+            Stat::make('Answer Rate', $answeredRate.'%')
                 ->description('Completed / Total')
                 ->color($answeredRate >= 50 ? 'success' : ($answeredRate >= 25 ? 'warning' : 'danger')),
 
-            Stat::make('Total Cost', '৳' . number_format($totalCost, 2))
+            Stat::make('Total Cost', '৳'.number_format($totalCost, 2))
                 ->description('Campaign expenditure')
                 ->color('primary'),
         ];

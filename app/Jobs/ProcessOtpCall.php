@@ -75,23 +75,32 @@ final class ProcessOtpCall implements ShouldQueue
             return;
         }
 
+        $username = $this->call->caller->server->ari_username;
+        $password = $this->call->caller->server->ari_password;
+
         $recipientNumber = $this->call->phone_number;
         $trunkName = $this->call->caller->trunk_name;
-        $callerNumber = $this->call->caller->caller_number;
         $callerName = $this->call->caller->caller_name;
+        $callerNumber = $this->call->caller->caller_number;
         $otp = $this->call->otp;
 
-        $response = Http::withBasicAuth(
-            username: $this->call->caller->server->username,
-            password: $this->call->caller->server->password
-        )
-            ->baseUrl($this->call->caller->server->domain)
+        $response = Http::withBasicAuth($username, $password)
+            ->baseUrl($this->call->caller->server->ari_base_url)
             ->post('ari/channels', [
                 'endpoint' => "PJSIP/{$recipientNumber}@{$trunkName}",
+                'extension' => 'frolax.agency',
+                'context' => 'outgoing-http',
                 'priority' => 1,
                 'callerId' => "{$callerName} <{$callerNumber}>",
-                'app' => 'originate',
-                'appArgs' => "otp,$otp",
+                'variables' => [
+                    'STEP_COUNT' => '3',
+                    'STEP_1_TYPE' => 'url',
+                    'STEP_1_VALUE' => url('sounds/pre-otp.wav'),
+                    'STEP_2_TYPE' => 'digits',
+                    'STEP_2_VALUE' => $otp,
+                    'STEP_3_TYPE' => 'url',
+                    'STEP_3_VALUE' => url('sounds/post-otp.wav'),
+                ],
             ]);
 
         if ($response->failed()) {

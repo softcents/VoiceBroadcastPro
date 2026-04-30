@@ -10,8 +10,6 @@ use Filament\Notifications\Notification;
 use Filament\Support\Enums\IconPosition;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\Facades\Artisan;
-use Illuminate\Support\Number;
 
 final class AsteriskDaemonStats extends StatsOverviewWidget
 {
@@ -23,31 +21,23 @@ final class AsteriskDaemonStats extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $pidFile = storage_path('app/private/asterisk-ari.pid');
-        $running = false;
-        $pid = null;
+        $pid = $this->readPid();
+        $running = $pid !== null && posix_kill($pid, 0);
         $uptime = 'N/A';
         $memory = 'N/A';
 
-        if (file_exists($pidFile)) {
-            $pid = (int) mb_trim(file_get_contents($pidFile));
-
-            if ($pid && posix_kill($pid, 0)) {
-                $running = true;
-
-                // Get process info
-                $processInfo = shell_exec("ps -p {$pid} -o etime,rss | tail -n 1");
-                if ($processInfo) {
-                    $parts = preg_split('/\s+/', mb_trim($processInfo), 2);
-                    if (count($parts) >= 2) {
-                        $uptime = $parts[0];
-                        $memory = bytesToHuman($parts[1] * 1024); // RSS is in KB
-                    }
+        if ($running) {
+            $processInfo = shell_exec("ps -p {$pid} -o etime,rss | tail -n 1");
+            if ($processInfo) {
+                $parts = preg_split('/\s+/', mb_trim($processInfo), 2);
+                if (count($parts) >= 2) {
+                    $uptime = $parts[0];
+                    $memory = bytesToHuman($parts[1] * 1024); // RSS is in KB
                 }
             }
         }
 
-        $statusStat = Stat::make('Daemon Status', $running ? 'Running' : 'Stopped')
+        $statusStat = Stat::make('Supervisor Status', $running ? 'Running' : 'Stopped')
             ->description($running ? "Process ID: {$pid}" : 'Not running')
             ->descriptionIcon($running ? 'heroicon-m-circle-stack' : 'heroicon-m-x-circle', IconPosition::Before)
             ->color($running ? 'success' : 'danger')
@@ -72,8 +62,14 @@ final class AsteriskDaemonStats extends StatsOverviewWidget
                 ->descriptionIcon('heroicon-m-cpu-chip', IconPosition::Before)
                 ->color('warning'),
 
-            Stat::make('Active Connections', Server::where('connection_status', 'connected')->count())
-                ->description('Connected servers')
+            Stat::make(
+                'Replication Workers',
+                Server::query()
+                    ->where('enabled', true)
+                    ->whereNotNull('database_host')
+                    ->count()
+            )
+                ->description('Servers eligible for replication')
                 ->descriptionIcon('heroicon-m-signal', IconPosition::Before)
                 ->color('success'),
         ];
@@ -81,43 +77,43 @@ final class AsteriskDaemonStats extends StatsOverviewWidget
 
     protected function getHeaderActions(): array
     {
-        $pidFile = storage_path('app/private/asterisk-ari.pid');
-        $running = false;
-
-        if (file_exists($pidFile)) {
-            $pid = (int) mb_trim(file_get_contents($pidFile));
-            $running = $pid && posix_kill($pid, 0);
-        }
+        $pid = $this->readPid();
+        $running = $pid !== null && posix_kill($pid, 0);
 
         return [
             Action::make('start')
-                ->label('Start Daemon')
+                ->label('Start Supervisor')
                 ->color('success')
                 ->icon('heroicon-o-play-circle')
                 ->visible(! $running)
                 ->action(function () {
-                    shell_exec('cd '.base_path().' && nohup php artisan asterisk:start > /dev/null 2>&1 &');
+                    shell_exec('cd '.base_path().' && nohup php artisan trigger:start > /dev/null 2>&1 &');
 
                     Notification::make()
                         ->success()
-                        ->title('Daemon Starting')
-                        ->body('The Asterisk daemon is starting...')
+                        ->title('Supervisor Starting')
+                        ->body('The trigger supervisor is starting...')
                         ->send();
                 }),
 
-            Action::make('restart')
-                ->label('Restart')
+            Action::make('reload')
+                ->label('Reload')
                 ->color('warning')
                 ->icon('heroicon-o-arrow-path')
                 ->visible($running)
                 ->requiresConfirmation()
+                ->modalDescription('All replication workers will be respawned.')
                 ->action(function () {
-                    Artisan::call('asterisk:restart');
+                    $pid = $this->readPid();
+
+                    if ($pid !== null && posix_kill($pid, 0)) {
+                        posix_kill($pid, SIGUSR1);
+                    }
 
                     Notification::make()
                         ->success()
-                        ->title('Daemon Restarting')
-                        ->body('All server connections will be refreshed.')
+                        ->title('Supervisor Reloading')
+                        ->body('Replication workers are being respawned.')
                         ->send();
                 }),
 
@@ -127,15 +123,32 @@ final class AsteriskDaemonStats extends StatsOverviewWidget
                 ->icon('heroicon-o-stop-circle')
                 ->visible($running)
                 ->requiresConfirmation()
-                ->modalDescription('All active connections will be closed.')
+                ->modalDescription('All replication workers will be terminated.')
                 ->action(function () {
-                    Artisan::call('asterisk:stop');
+                    $pid = $this->readPid();
+
+                    if ($pid !== null && posix_kill($pid, 0)) {
+                        posix_kill($pid, SIGTERM);
+                    }
 
                     Notification::make()
                         ->success()
-                        ->title('Daemon Stopped')
+                        ->title('Supervisor Stopped')
                         ->send();
                 }),
         ];
+    }
+
+    private function readPid(): ?int
+    {
+        $pidFile = storage_path('app/private/trigger.pid');
+
+        if (! file_exists($pidFile)) {
+            return null;
+        }
+
+        $pid = (int) mb_trim(file_get_contents($pidFile));
+
+        return $pid > 0 ? $pid : null;
     }
 }

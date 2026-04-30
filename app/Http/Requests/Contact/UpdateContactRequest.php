@@ -61,7 +61,7 @@ final class UpdateContactRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'phone_number' => rescue(fn()=> new PhoneNumber($this->input('phone_number'), 'BD')->formatE164()),
+            'phone_number' => rescue(fn () => new PhoneNumber($this->input('phone_number'), 'BD')->formatE164()),
         ]);
     }
 }

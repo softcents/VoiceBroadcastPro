@@ -28,5 +28,3 @@ Route::group(['prefix' => 'webhooks', 'as' => 'webhooks.'], function () {
     Route::post('asterisk', AsteriskController::class)->name('asterisk');
     Route::post('pipra-pay/{deposit}', [PipraPayController::class, 'ipn'])->name('piprapay');
 });
-
-Route::get('tts', function () {});

@@ -114,18 +114,28 @@ final class ProcessMarketingCall implements ShouldQueue
     private function initiateCall(string $audioPath): void
     {
         try {
+            $username = $this->call->caller->server->ari_username;
+            $password = $this->call->caller->server->ari_password;
+
+            $recipientNumber = $this->call->phone_number;
+            $trunkName = $this->call->caller->trunk_name;
+            $callerName = $this->call->caller->caller_name;
+            $callerNumber = $this->call->caller->caller_number;
+
             $response = Http::timeout(30)
-                ->withBasicAuth(
-                    username: $this->call->caller->server->username,
-                    password: $this->call->caller->server->password
-                )
-                ->baseUrl($this->call->caller->server->domain)
+                ->withBasicAuth($username, $password)
+                ->baseUrl($this->call->caller->server->ari_base_url)
                 ->post('ari/channels', [
-                    'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->trunk_name}",
+                    'endpoint' => "PJSIP/{$recipientNumber}@{$trunkName}",
+                    'extension' => 'frolax.agency',
+                    'context' => 'outgoing-http',
                     'priority' => 1,
-                    'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
-                    'app' => 'originate',
-                    'appArgs' => 'marketing,'.getFileUrl($audioPath),
+                    'callerId' => "{$callerName} <{$callerNumber}>",
+                    'variables' => [
+                        'STEP_COUNT' => '1',
+                        'STEP_1_TYPE' => 'url',
+                        'STEP_1_VALUE' => getFileUrl($audioPath),
+                    ],
                 ]);
 
             if ($response->failed()) {
@@ -147,7 +157,6 @@ final class ProcessMarketingCall implements ShouldQueue
             }
 
             $uniqueId = $response->json('id');
-            $creationTime = $response->json('creationtime');
 
             if (! $uniqueId) {
                 $this->refundAndFail($this->call->user, 'No unique ID returned from API');
@@ -156,14 +165,7 @@ final class ProcessMarketingCall implements ShouldQueue
             $this->call->update([
                 'unique_id' => $uniqueId,
                 'status' => CallStatus::Initiated,
-                'called_at' => $creationTime
-                    ? CarbonImmutable::createFromTimeString($creationTime)
-                    : CarbonImmutable::now(),
-            ]);
-
-            Log::info('Call initiated successfully', [
-                'call_id' => $this->call->id,
-                'unique_id' => $uniqueId,
+                'called_at' => now(),
             ]);
 
         } catch (Exception $e) {
@@ -172,7 +174,7 @@ final class ProcessMarketingCall implements ShouldQueue
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->refundAndFail($this->call->user, "Server API exception");
+            $this->refundAndFail($this->call->user, 'Server API exception');
         }
     }
 
@@ -205,12 +207,6 @@ final class ProcessMarketingCall implements ShouldQueue
                 'status' => CallStatus::Failed,
             ]);
         });
-
-        Log::warning('Call refunded and failed', [
-            'call_id' => $this->call->id,
-            'reason' => $reason,
-            'refunded_amount' => $cost,
-        ]);
 
         throw new Exception("Call ID {$this->call->id} failed: {$reason}");
     }

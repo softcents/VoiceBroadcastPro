@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\User\Pages;
 
 use App\Enums\DepositStatus;
-use App\Services\Payment\PaymentService;
+use App\Support\Payment\PaymentService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\Dashboard as BaseDashboard;

@@ -7,8 +7,6 @@ namespace App\Models;
 use App\Enums\CallFromInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
-use App\Jobs\ProcessMarketingCall;
-use App\Jobs\ProcessOtpCall;
 use App\Models\Scopes\OwnedByAuthUser;
 use App\Observers\CallObserver;
 use App\Settings\CallingSetting;
@@ -33,15 +31,6 @@ final class Call extends Model
     /** @use HasFactory<CallFactory> */
     use HasFactory;
 
-    protected CallingSetting $callSettings;
-
-    public function __construct(array $attributes = [])
-    {
-        parent::__construct($attributes);
-
-        $this->callSettings = app(CallingSetting::class);
-    }
-
     protected $guarded = [];
 
     protected $casts = [
@@ -53,6 +42,7 @@ final class Call extends Model
         'ringing_at' => 'datetime',
         'answered_at' => 'datetime',
         'ended_at' => 'datetime',
+        'initiated_at' => 'datetime',
         'scheduled_at' => 'datetime',
         'duration' => 'float',
         'cost' => 'float',
@@ -100,16 +90,15 @@ final class Call extends Model
     {
         if ($this->canRetry) {
             $this->update([
+                'status' => CallStatus::Pending,
                 'called_at' => null,
                 'ringing_at' => null,
                 'answered_at' => null,
                 'ended_at' => null,
+                'initiated_at' => null,
             ]);
-            $this->increment('retries');
 
-            $this->type === CallType::Marketing
-                ? ProcessMarketingCall::dispatch($this->id)
-                : ProcessOtpCall::dispatch($this->id);
+            $this->increment('retries');
         } else {
             throw new RuntimeException('Call cannot be retried.');
         }
@@ -118,7 +107,7 @@ final class Call extends Model
     protected function isRetryable(): Attribute
     {
         return Attribute::make(
-            get: fn() => in_array($this->status, [
+            get: fn () => in_array($this->status, [
                 CallStatus::Busy,
                 CallStatus::NotAnswered,
                 CallStatus::Failed,
@@ -128,8 +117,10 @@ final class Call extends Model
 
     protected function canRetry(): Attribute
     {
+        $callSettings = app(CallingSetting::class);
+
         return Attribute::make(
-            get: fn() => $this->isRetryable && $this->retries < $this->callSettings->max_retry_attempts,
+            get: fn () => $this->isRetryable && $this->retries < $callSettings->max_retry_attempts,
         );
     }
 
@@ -188,12 +179,14 @@ final class Call extends Model
     #[Scope]
     protected function retryable(Builder $query): Builder
     {
-        return $query->where(function (Builder $q) {
+        $callSettings = app(CallingSetting::class);
+
+        return $query->where(function (Builder $q) use ($callSettings) {
             $q->whereIn('status', [
                 CallStatus::Busy,
                 CallStatus::NotAnswered,
                 CallStatus::Failed,
-            ])->where('retries', '<', $this->callSettings->max_retry_attempts);
+            ])->where('retries', '<', $callSettings->max_retry_attempts);
         });
     }
 }

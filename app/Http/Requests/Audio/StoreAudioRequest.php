@@ -32,26 +32,26 @@ final class StoreAudioRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'type' => [
                 'required',
-                Rule::enum(AudioType::class)
+                Rule::enum(AudioType::class),
             ],
             'message' => [
                 'required_if:type,tts',
                 'prohibited_if:type,upload',
                 'nullable',
-                'string'
+                'string',
             ],
             'file' => [
                 'required_if:type,upload',
                 'prohibited_if:type,tts',
                 'nullable',
                 File::types(['mp3', 'wav', 'ogg', 'm4a'])
-                    ->max('10mb')
+                    ->max('10mb'),
             ],
             'tts_artist_id' => [
                 'required_if:type,tts',
                 'prohibited_if:type,upload',
                 'nullable',
-                'exists:tts_artists,id'
+                'exists:tts_artists,id',
             ],
         ];
     }

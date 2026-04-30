@@ -6,8 +6,8 @@ namespace App\Jobs;
 
 use App\Enums\AudioTTSStatus;
 use App\Models\Audio;
-use App\Services\TTS\Contracts\TTSDriver;
-use App\Services\TTS\TTSManager;
+use App\Support\TTS\Contracts\TTSDriver;
+use App\Support\TTS\TTSManager;
 use Exception;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;

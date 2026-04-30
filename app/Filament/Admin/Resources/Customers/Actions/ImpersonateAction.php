@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\Admin\Resources\Customers\Actions;
 
 use LaraZeus\Tabler\Tabler;
 use STS\FilamentImpersonate\Actions\Impersonate;
 
-class ImpersonateAction
+final class ImpersonateAction
 {
     public static function make()
     {

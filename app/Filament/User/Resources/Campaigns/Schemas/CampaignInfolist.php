@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Campaigns\Schemas;
 
-use App\Filament\Infolists\Components\AudioPlayerEntry;
 use App\Filament\User\Resources\Phonebooks\PhonebookResource;
 use App\Models\Campaign;
 use Filament\Infolists\Components\TextEntry;

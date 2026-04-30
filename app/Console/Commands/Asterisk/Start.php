@@ -104,7 +104,7 @@ final class Start extends Command
 
         // Cleanup removed servers
         foreach ($this->connections as $serverId => $conn) {
-            if (!in_array($serverId, $activeServerIds, true)) {
+            if (! in_array($serverId, $activeServerIds, true)) {
                 $this->components->task("Closing connection to server $serverId", fn () => true);
                 $conn->close();
                 unset($this->connections[$serverId]);
@@ -121,7 +121,7 @@ final class Start extends Command
         $this->connections[$server->id] = true;
 
         $appName = 'originate';
-        $base = $server->host .($server->port ? ":$server->port" : '');
+        $base = $server->host.($server->port ? ":$server->port" : '');
 
         $url = "ws://$base/ari/events?api_key=$server->username:$server->password&app=$appName";
 
@@ -296,7 +296,7 @@ final class Start extends Command
                 ->timeout(5)
                 ->send($method, $url, ['json' => $data]);
 
-            if ($response->failed() && !in_array($response->status(), $ignoreCodes, true)) {
+            if ($response->failed() && ! in_array($response->status(), $ignoreCodes, true)) {
                 $this->components->error("ARI API error [$server->host]: ".$response->body());
             }
         } catch (Exception $e) {
@@ -320,7 +320,7 @@ final class Start extends Command
             $call->events()->create([
                 'data' => $eventData,
             ]);
-        }catch (Throwable $e) {
+        } catch (Throwable $e) {
             ray($e, $eventData);
             // Ignore event logging failures
         }

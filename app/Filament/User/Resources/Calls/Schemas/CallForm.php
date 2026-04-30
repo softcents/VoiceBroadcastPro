@@ -41,7 +41,7 @@ final class CallForm
                             ->searchable(['caller_name', 'caller_number'])
                             ->preload()
                             ->required()
-                            ->getOptionLabelFromRecordUsing(fn(Caller $caller) => $caller->name),
+                            ->getOptionLabelFromRecordUsing(fn (Caller $caller) => $caller->name),
                         PhoneInput::make('phone_number')
                             ->label('Phone Number')
                             ->onlyCountries(['BD'])

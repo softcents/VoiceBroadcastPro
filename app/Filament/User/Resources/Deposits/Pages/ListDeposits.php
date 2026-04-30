@@ -6,7 +6,7 @@ namespace App\Filament\User\Resources\Deposits\Pages;
 
 use App\Enums\DepositStatus;
 use App\Filament\User\Resources\Deposits\DepositResource;
-use App\Services\Payment\PaymentService;
+use App\Support\Payment\PaymentService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Pages\ListRecords;

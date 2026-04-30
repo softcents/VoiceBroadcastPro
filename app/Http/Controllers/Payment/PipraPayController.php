@@ -7,7 +7,7 @@ namespace App\Http\Controllers\Payment;
 use App\Enums\DepositStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Deposit;
-use App\Services\Payment\PaymentService;
+use App\Support\Payment\PaymentService;
 use Illuminate\Http\Request;
 
 final class PipraPayController extends Controller

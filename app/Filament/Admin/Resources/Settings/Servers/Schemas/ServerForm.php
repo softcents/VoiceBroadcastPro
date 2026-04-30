@@ -6,8 +6,10 @@ namespace App\Filament\Admin\Resources\Settings\Servers\Schemas;
 
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
+use Filament\Schemas\Components\Actions;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use LaraZeus\Tabler\Tabler;
 
@@ -39,51 +41,88 @@ final class ServerForm
                             ->prefixIcon(Tabler::Activity),
                     ]),
 
-                Section::make('ARI Connection')
-                    ->description('Configuration for Asterisk REST Interface.')
-                    ->icon(Tabler::HttpConnect)
+                Tabs::make()
                     ->columnSpan(2)
-                    ->schema([
-                        Grid::make(3)
+                    ->id('server-settings-tabs')
+                    ->persistTab()
+                    ->tabs([
+                        Tabs\Tab::make('ARI Connection')
+                            ->icon(Tabler::Link)
                             ->schema([
-                                Select::make('scheme')
-                                    ->label('Scheme')
-                                    ->options(['http' => 'HTTP', 'https' => 'HTTPS'])
-                                    ->native(false)
-                                    ->selectablePlaceholder(false)
-                                    ->required()
-                                    ->prefixIcon(Tabler::ShieldLock),
-                                TextInput::make('host')
+                                Grid::make(3)
+                                    ->schema([
+                                        Select::make('ari_scheme')
+                                            ->label('Scheme')
+                                            ->options(['http' => 'HTTP', 'https' => 'HTTPS'])
+                                            ->native(false)
+                                            ->selectablePlaceholder(false)
+                                            ->required()
+                                            ->prefixIcon(Tabler::ShieldLock),
+                                        TextInput::make('ari_host')
+                                            ->label('Host')
+                                            ->placeholder('e.g. 127.0.0.1')
+                                            ->required()
+                                            ->columnSpan(1)
+                                            ->prefixIcon(Tabler::Network),
+                                        TextInput::make('ari_port')
+                                            ->prefixIcon(Tabler::Adjustments)
+                                            ->label('Port')
+                                            ->placeholder('e.g. 8088')
+                                            ->numeric()
+                                            ->default(8088)
+                                            ->required(),
+                                    ]),
+                                Grid::make()
+                                    ->schema([
+                                        TextInput::make('ari_username')
+                                            ->label('Username')
+                                            ->prefixIcon(Tabler::User)
+                                            ->required()
+                                            ->placeholder('Enter your username'),
+                                        TextInput::make('ari_password')
+                                            ->prefixIcon(Tabler::Key)
+                                            ->label('Password')
+                                            ->placeholder('Enter your password')
+                                            ->password()
+                                            ->revealable()
+                                            ->required(fn ($operation) => $operation === 'create')
+                                            ->dehydrated(fn ($state, $operation) => $operation === 'create' || filled($state))
+                                            ->helperText(fn ($operation) => $operation === 'edit' ? 'Leave blank to keep existing password.' : null),
+                                    ]),
+                            ]),
+                        Tabs\Tab::make('Database Connection')
+                            ->icon(Tabler::Database)
+                            ->columns()
+                            ->schema([
+                                TextInput::make('database_host')
                                     ->label('Host')
                                     ->placeholder('e.g. 127.0.0.1')
                                     ->required()
                                     ->columnSpan(1)
                                     ->prefixIcon(Tabler::Network),
-                                TextInput::make('port')
+                                TextInput::make('database_port')
                                     ->prefixIcon(Tabler::Adjustments)
                                     ->label('Port')
-                                    ->placeholder('e.g. 8088')
+                                    ->placeholder('e.g. 3306')
                                     ->numeric()
                                     ->default(8088)
                                     ->required(),
-                            ]),
-
-                        Grid::make()
-                            ->schema([
-                                TextInput::make('username')
-                                    ->label('Username')
+                                TextInput::make('database_username')
                                     ->prefixIcon(Tabler::User)
-                                    ->required()
-                                    ->placeholder('Enter your username'),
-                                TextInput::make('password')
+                                    ->label('Username')
+                                    ->placeholder('Enter your username')
+                                    ->required(),
+                                TextInput::make('database_password')
                                     ->prefixIcon(Tabler::Key)
                                     ->label('Password')
                                     ->placeholder('Enter your password')
                                     ->password()
                                     ->revealable()
-                                    ->required(fn($operation) => $operation === 'create')
-                                    ->dehydrated(fn($state, $operation) => $operation === 'create' || filled($state))
-                                    ->helperText(fn($operation) => $operation === 'edit' ? 'Leave blank to keep existing password.' : null),
+                                    ->required(fn ($operation) => $operation === 'create'),
+
+                                Actions::make([
+
+                                ]),
                             ]),
                     ]),
             ]);

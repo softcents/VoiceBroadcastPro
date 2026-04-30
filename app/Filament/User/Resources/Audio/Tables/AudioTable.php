@@ -17,7 +17,6 @@ use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Hugomyb\FilamentMediaAction\Actions\MediaAction;
-use Illuminate\Support\Facades\Storage;
 use LaraZeus\Tabler\Tabler;
 
 final class AudioTable

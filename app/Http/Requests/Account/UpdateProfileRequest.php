@@ -8,7 +8,6 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Propaganistas\LaravelPhone\PhoneNumber;
-use Propaganistas\LaravelPhone\Rules\Phone;
 
 final class UpdateProfileRequest extends FormRequest
 {
@@ -65,7 +64,7 @@ final class UpdateProfileRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         $this->merge([
-            'phone' => rescue(fn() => new PhoneNumber($this->input('phone'), 'BD')->formatE164()),
+            'phone' => rescue(fn () => new PhoneNumber($this->input('phone'), 'BD')->formatE164()),
         ]);
     }
 }

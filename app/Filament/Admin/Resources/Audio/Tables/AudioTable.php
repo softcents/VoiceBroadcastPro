@@ -25,7 +25,6 @@ use Filament\Tables\Table;
 use Hugomyb\FilamentMediaAction\Actions\MediaAction;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Bus;
-use Illuminate\Support\Facades\Storage;
 use LaraZeus\Tabler\Tabler;
 
 final class AudioTable

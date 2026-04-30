@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use App\Enums\UserAudioType;
+use App\Enums\UserStatus;
 use App\Enums\UserType;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -40,6 +41,9 @@ final class DatabaseSeeder extends Seeder
             'audio_type' => UserAudioType::Both,
             'pulse_rate' => 0.50,
             'pulse_duration' => 30,
+            'status' => UserStatus::Approved,
+            'auto_approve_audio' => true,
+            'auto_approve_campaigns' => true,
         ]);
 
         $this->call([

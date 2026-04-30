@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Filament\User\Pages;
 
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Component;
 
-class EditProfile extends \Filament\Auth\Pages\EditProfile
+final class EditProfile extends \Filament\Auth\Pages\EditProfile
 {
     protected function getNameFormComponent(): Component
     {

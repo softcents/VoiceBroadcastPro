@@ -9,7 +9,6 @@ use App\Filament\Admin\Resources\Customers\Actions\ApprovalAction;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Filament\Admin\Resources\Customers\Schemas\CustomerInfolist;
 use App\Models\User;
-use Filament\Actions;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\RestoreAction;

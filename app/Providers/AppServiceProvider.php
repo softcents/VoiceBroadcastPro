@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
-use App\Services\TTS\TTSManager;
+use App\Support\Trigger\Manager;
+use App\Support\TTS\TTSManager;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
 use Illuminate\Support\ServiceProvider;
@@ -19,6 +20,9 @@ final class AppServiceProvider extends ServiceProvider
         $this->app->singleton(TTSManager::class, function ($app) {
             return new TTSManager($app);
         });
+
+        $this->app->bind('trigger.manager', fn ($app) => new Manager($app->make('config')->get('trigger')));
+
     }
 
     /**

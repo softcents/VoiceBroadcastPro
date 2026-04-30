@@ -13,37 +13,6 @@ use App\Models\Call;
 
 final class CallObserver
 {
-    private function deductCost(Call $call): void
-    {
-        $call->loadMissing(['user', 'audio']);
-
-        $user = $call->user;
-        $audio = $call->audio;
-
-        if (! $user || ! $audio) {
-            return;
-        }
-
-        // Calculate and reserve cost
-        $cost = $audio->calculateCostForUser($user);
-
-        if ($cost > 0) {
-            $user->decrement('balance', $cost);
-
-            $user->transactions()->create([
-                'type' => TransactionType::Debit,
-                'amount' => $cost,
-                'currency' => 'BDT',
-                'description' => "Reserved balance for call ID {$call->id}",
-                'reference_type' => Call::class,
-                'reference_id' => $call->id,
-            ]);
-
-            $call->cost = $cost;
-            $call->saveQuietly();
-        }
-    }
-
     /**
      * Handle the Call "created" event.
      */
@@ -58,12 +27,10 @@ final class CallObserver
 
         $this->deductCost($call);
 
-        ray($call->toArray());
-
-        if ($call->caller->availableSlots() > 0){
+        if ($call->caller->availableSlots() > 0) {
             $call->update([
                 'status' => CallStatus::Initiated,
-                'initiated_at' => now()
+                'initiated_at' => now(),
             ]);
 
             match ($call->type) {
@@ -79,6 +46,8 @@ final class CallObserver
     public function updated(Call $call): void
     {
         if ($call->wasChanged('status')) {
+            ray($call)->showApp()->label("Call status changed to {$call->status->value}");
+
             $user = $call->user;
 
             if (! $user) {
@@ -142,8 +111,7 @@ final class CallObserver
                     $call->cost = 0;
                     $call->saveQuietly();
                 }
-            }
-            elseif ($call->status === CallStatus::Pending){
+            } elseif ($call->status === CallStatus::Pending) {
                 // Re-deduct cost if call is retried
                 if ($call->cost <= 0) {
                     $this->deductCost($call);
@@ -174,5 +142,36 @@ final class CallObserver
     public function forceDeleted(Call $call): void
     {
         //
+    }
+
+    private function deductCost(Call $call): void
+    {
+        $call->loadMissing(['user', 'audio']);
+
+        $user = $call->user;
+        $audio = $call->audio;
+
+        if (! $user || ! $audio) {
+            return;
+        }
+
+        // Calculate and reserve cost
+        $cost = $audio->calculateCostForUser($user);
+
+        if ($cost > 0) {
+            $user->decrement('balance', $cost);
+
+            $user->transactions()->create([
+                'type' => TransactionType::Debit,
+                'amount' => $cost,
+                'currency' => 'BDT',
+                'description' => "Reserved balance for call ID {$call->id}",
+                'reference_type' => Call::class,
+                'reference_id' => $call->id,
+            ]);
+
+            $call->cost = $cost;
+            $call->saveQuietly();
+        }
     }
 }
