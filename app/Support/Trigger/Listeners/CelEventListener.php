@@ -70,18 +70,34 @@ final class CelEventListener
             return;
         }
 
-        $cdr = Cdr::using('103.191.241.11', 'cdrread', 'StrongPass123')
-            ->where('uniqueid', $row['uniqueid'])
-            ->first();
+        $call = Call::with('caller.server')->where('unique_id', $row['uniqueid'])->first();
 
-        $duration = (int) ($cdr?->billsec ?? 0);
+        if (! $call) {
+            return;
+        }
+
+        $server = $call->caller?->server;
+
+        $duration = 0;
+
+        if ($server && $server->database_host) {
+            $cdr = Cdr::using(
+                $server->database_host,
+                $server->database_username,
+                $server->database_password,
+            )
+                ->where('uniqueid', $row['uniqueid'])
+                ->first();
+
+            $duration = (int) ($cdr?->billsec ?? 0);
+        }
 
         // If marked completed but never actually answered, treat as busy
         if ($status === CallStatus::Completed && $duration === 0) {
             $status = CallStatus::Busy;
         }
 
-        self::updateCall($row['uniqueid'], [
+        $call->update([
             'status' => $status,
             'hangup_cause' => (string) $hangupCause,
             'ended_at' => now(),
