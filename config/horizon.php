@@ -222,10 +222,10 @@ return [
             'queue' => ['otp', 'marketing'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 20,
+            'maxProcesses' => 6,
             'maxTime' => 0,
-            'maxJobs' => 0,
-            'memory' => 128,
+            'maxJobs' => 100,
+            'memory' => 192,
             'tries' => 1,
             'timeout' => 120,
             'nice' => 0,
@@ -239,10 +239,11 @@ return [
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
+
             'call-1' => [
-                'maxProcesses' => 20,
+                'maxProcesses' => 6,
                 'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
+                'balanceCooldown' => 5,
             ],
         ],
 
