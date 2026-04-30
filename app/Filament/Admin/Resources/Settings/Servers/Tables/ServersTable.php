@@ -22,17 +22,11 @@ final class ServersTable
                 TextColumn::make('name')
                     ->label('Name')
                     ->searchable(),
-                TextColumn::make('scheme')
-                    ->label('Scheme')
+                TextColumn::make('ari_host')
+                    ->label('ARI Host')
                     ->searchable(),
-                TextColumn::make('host')
-                    ->label('Host')
-                    ->searchable(),
-                TextColumn::make('host')
-                    ->label('Host')
-                    ->searchable(),
-                TextColumn::make('port')
-                    ->label('Port')
+                TextColumn::make('database_host')
+                    ->label('DB Host')
                     ->searchable(),
                 TextColumn::make('connection_status')
                     ->label('Connection Status')
