@@ -60,9 +60,9 @@ final class CelEventListener
         // Asterisk Q.850 hangup causes
         $status = match ($hangupCause) {
             16 => CallStatus::Completed,   // Normal clearing — call answered and ended
-            17 => CallStatus::Busy,        // User busy
-            19 => CallStatus::NotAnswered, // No answer
-            21, 0 => CallStatus::Failed,   // Call rejected / Unknown / cancelled before connect
+            //            17 => CallStatus::Busy,        // User busy
+            //            19 => CallStatus::NotAnswered, // No answer
+            17, 19, 21, 0 => CallStatus::Failed,   // Call rejected / Unknown / cancelled before connect
             default => null,
         };
 

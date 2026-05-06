@@ -54,4 +54,18 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
             self::Failed => Tabler::CircleX,
         };
     }
+
+    public function isCompleted(): bool
+    {
+        return $this === self::Completed;
+    }
+
+    public function isRefundable(): bool
+    {
+        return in_array($this, [
+            self::Failed,
+            self::Busy,
+            self::NotAnswered,
+        ], true);
+    }
 }

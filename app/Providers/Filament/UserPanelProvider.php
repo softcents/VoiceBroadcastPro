@@ -108,6 +108,7 @@ final class UserPanelProvider extends PanelProvider
             )
             ->viteTheme('resources/css/app.css')
             ->spa()
+            ->databaseTransactions()
             ->unsavedChangesAlerts();
     }
 }
