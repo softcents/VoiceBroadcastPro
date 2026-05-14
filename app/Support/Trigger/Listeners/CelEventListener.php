@@ -94,7 +94,8 @@ final class CelEventListener
 
         // If marked completed but never actually answered, treat as busy
         if ($status === CallStatus::Completed && $duration === 0) {
-            $status = CallStatus::Busy;
+            // $status = CallStatus::Busy;
+            $status = CallStatus::Failed;
         }
 
         $call->update([

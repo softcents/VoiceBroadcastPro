@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Calls\Schemas;
 
 use App\Filament\Admin\Resources\Campaigns\CampaignResource;
 use App\Filament\Admin\Resources\Contacts\ContactResource;
+use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Models\Call;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
@@ -133,6 +134,11 @@ final class CallInfolist
                                         TextEntry::make('audio.title')
                                             ->label('Audio')
                                             ->placeholder('Not Assigned'),
+                                        TextEntry::make('user.name')
+                                            ->label('User')
+                                            ->icon(Tabler::User)
+                                            ->placeholder('No user found')
+                                            ->url(fn ($record) => $record->user_id ? CustomerResource::getUrl('view', ['record' => $record->user_id]) : null),
                                     ]),
                             ]),
                     ]),

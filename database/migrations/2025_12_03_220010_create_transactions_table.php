@@ -17,7 +17,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('type', array_column(TransactionType::cases(), 'value')); // deposit, expense, refund
+            $table->enum('type', array_column(TransactionType::cases(), 'value'));
             $table->decimal('amount', 15, 4)->default(0);
             $table->string('currency')->default('BDT');
             $table->string('description');

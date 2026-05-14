@@ -70,18 +70,7 @@ final class ConvertAudio implements ShouldQueue
             // Update audio record
             $this->updateAudioRecord($outputPath, $duration);
 
-            Log::info('Audio converted successfully', [
-                'audio_id' => $this->audio->id,
-                'output_path' => $outputPath,
-            ]);
-
         } catch (Exception $e) {
-            Log::error('Audio conversion failed', [
-                'audio_id' => $this->audio->id,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString(),
-            ]);
-
             // Mark audio as failed
             $this->audio->update([
                 'conversion_status' => AudioConversionStatus::Failed,

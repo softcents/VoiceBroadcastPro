@@ -6,6 +6,7 @@ namespace App\Filament\Admin\Resources\Calls;
 
 use App\Filament\Admin\Resources\Calls\Pages\ListCalls;
 use App\Filament\Admin\Resources\Calls\Pages\ViewCall;
+use App\Filament\Admin\Resources\Calls\RelationManagers\TransactionsRelationManager;
 use App\Filament\Admin\Resources\Calls\Schemas\CallForm;
 use App\Filament\Admin\Resources\Calls\Schemas\CallInfolist;
 use App\Filament\Admin\Resources\Calls\Tables\CallsTable;
@@ -41,6 +42,13 @@ final class CallResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return CallInfolist::configure($schema);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            TransactionsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
