@@ -38,7 +38,7 @@ final class ViewCampaign extends ViewRecord
                             'unique_id' => null,
                             'initiated_at' => null,
                             'called_at' => null,
-                            'ringed_at' => null,
+                            'ringing_at' => null,
                             'answered_at' => null,
                             'ended_at' => null,
                         ]);
