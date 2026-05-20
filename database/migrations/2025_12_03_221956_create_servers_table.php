@@ -17,19 +17,22 @@ return new class extends Migration
             $table->id();
             $table->string('name');
 
-            $table->enum('scheme', ['http', 'https'])->default('http');
-            $table->string('host');
-            $table->string('port')->nullable();
-            $table->string('username');
-            $table->string('password');
+            $table->enum('ari_scheme', ['http', 'https'])->default('http');
+            $table->string('ari_host');
+            $table->string('ari_port')->nullable();
+            $table->string('ari_username');
+            $table->string('ari_password');
 
             $table->string('database_host');
-            $table->integer('database_port')->default(3306);
-            $table->string('database_name')->default('asteriskcdrdb');
-            $table->string('database_username');
-            $table->string('database_password');
+            $table->unsignedInteger('database_port')->default(3306);
+            $table->string('database_username')->nullable();
+            $table->string('database_password')->nullable();
 
             $table->boolean('enabled')->default(false);
+            $table->timestamp('connected_at')->nullable();
+            $table->timestamp('disconnected_at')->nullable();
+            $table->string('connection_status')->nullable();
+
             $table->timestamps();
         });
     }

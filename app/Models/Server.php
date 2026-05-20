@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 final class Server extends Model
@@ -26,11 +25,6 @@ final class Server extends Model
         'ari_password' => 'encrypted',
         'database_password' => 'encrypted',
     ];
-
-    public function users(): BelongsToMany
-    {
-        return $this->belongsToMany(User::class, 'server_user');
-    }
 
     public function callers(): HasMany
     {

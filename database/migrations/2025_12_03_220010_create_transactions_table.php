@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use App\Enums\TransactionType;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -17,11 +16,12 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->enum('type', array_column(TransactionType::cases(), 'value'));
+            $table->string('type');
             $table->decimal('amount', 15, 4)->default(0);
             $table->string('currency')->default('BDT');
             $table->string('description');
             $table->nullableMorphs('reference');
+            $table->index(['user_id', 'created_at']);
             $table->timestamps();
         });
     }

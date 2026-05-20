@@ -23,9 +23,11 @@ return new class extends Migration
             $table->string('title');
             $table->string('description')->nullable();
             $table->string('status')->default('pending');
-            $table->string('source')->default('manual');
+            $table->string('approval')->default('pending');
             $table->string('file_path')->nullable();
             $table->dateTime('scheduled_at')->nullable();
+            $table->index(['user_id', 'status']);
+            $table->index(['status', 'scheduled_at']);
             $table->timestamps();
         });
     }

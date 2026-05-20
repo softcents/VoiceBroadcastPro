@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('transaction_id')->nullable();
             $table->enum('status', array_column(DepositStatus::cases(), 'value'))->default(DepositStatus::Pending);
             $table->json('meta_data')->nullable();
+            $table->index(['user_id', 'status']);
             $table->timestamps();
         });
     }

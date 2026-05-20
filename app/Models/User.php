@@ -68,11 +68,6 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->hasMany(Template::class);
     }
 
-    public function servers(): BelongsToMany
-    {
-        return $this->belongsToMany(Server::class, 'server_user');
-    }
-
     public function callers(): BelongsToMany
     {
         return $this->belongsToMany(Caller::class, 'caller_user');

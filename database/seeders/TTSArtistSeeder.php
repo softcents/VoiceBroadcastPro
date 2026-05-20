@@ -16,7 +16,7 @@ final class TTSArtistSeeder extends Seeder
     public function run(): void
     {
         $artists = [
-            'af-ZA' => ['female' => ['af-ZA-AdriNeural'], 'male' => ['af-ZA-WillemNeural']],
+            /*'af-ZA' => ['female' => ['af-ZA-AdriNeural'], 'male' => ['af-ZA-WillemNeural']],
             'am-ET' => ['female' => ['am-ET-MekdesNeural'], 'male' => ['am-ET-AmehaNeural']],
             'ar-AE' => ['female' => ['ar-AE-FatimaNeural'], 'male' => ['ar-AE-HamdanNeural']],
             'ar-BH' => ['female' => ['ar-BH-LailaNeural'], 'male' => ['ar-BH-AliNeural']],
@@ -36,10 +36,10 @@ final class TTSArtistSeeder extends Seeder
             'ar-YE' => ['female' => ['ar-YE-MaryamNeural'], 'male' => ['ar-YE-SalehNeural']],
             'as-IN' => ['female' => ['as-IN-YashicaNeural'], 'male' => ['as-IN-PriyomNeural']],
             'az-AZ' => ['female' => ['az-AZ-BanuNeural'], 'male' => ['az-AZ-BabekNeural']],
-            'bg-BG' => ['female' => ['bg-BG-KalinaNeural'], 'male' => ['bg-BG-BorislavNeural']],
+            'bg-BG' => ['female' => ['bg-BG-KalinaNeural'], 'male' => ['bg-BG-BorislavNeural']],*/
             'bn-BD' => ['female' => ['bn-BD-NabanitaNeural'], 'male' => ['bn-BD-PradeepNeural']],
             'bn-IN' => ['female' => ['bn-IN-TanishaaNeural'], 'male' => ['bn-IN-BashkarNeural']],
-            'bs-BA' => ['female' => ['bs-BA-VesnaNeural'], 'male' => ['bs-BA-GoranNeural']],
+            /*'bs-BA' => ['female' => ['bs-BA-VesnaNeural'], 'male' => ['bs-BA-GoranNeural']],
             'ca-ES' => ['female' => ['ca-ES-JoanaNeural', 'ca-ES-AlbaNeural'], 'male' => ['ca-ES-EnricNeural']],
             'cs-CZ' => ['female' => ['cs-CZ-VlastaNeural'], 'male' => ['cs-CZ-AntoninNeural']],
             'cy-GB' => ['female' => ['cy-GB-NiaNeural'], 'male' => ['cy-GB-AledNeural']],
@@ -191,7 +191,7 @@ final class TTSArtistSeeder extends Seeder
             'zh-CN-sichuan' => ['male' => ['zh-CN-sichuan-YunxiNeural']],
             'zh-HK' => ['female' => ['zh-HK-HiuMaanNeural', 'zh-HK-HiuGaaiNeural'], 'male' => ['zh-HK-WanLungNeural']],
             'zh-TW' => ['female' => ['zh-TW-HsiaoChenNeural', 'zh-TW-HsiaoYuNeural'], 'male' => ['zh-TW-YunJheNeural']],
-            'zu-ZA' => ['female' => ['zu-ZA-ThandoNeural'], 'male' => ['zu-ZA-ThembaNeural']],
+            'zu-ZA' => ['female' => ['zu-ZA-ThandoNeural'], 'male' => ['zu-ZA-ThembaNeural']],*/
         ];
 
         foreach ($artists as $languageCode => $genders) {

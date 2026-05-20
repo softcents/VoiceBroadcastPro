@@ -17,6 +17,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('call_id')->constrained()->cascadeOnDelete();
             $table->json('data')->nullable();
+            $table->index(['call_id', 'created_at']);
             $table->timestamps();
         });
     }

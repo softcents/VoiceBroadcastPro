@@ -15,7 +15,7 @@ final class TTSLanguageSeeder extends Seeder
     public function run(): void
     {
         $languages = [
-            'Afrikaans (South Africa)' => 'af-ZA',
+            /*'Afrikaans (South Africa)' => 'af-ZA',
             'Amharic (Ethiopia)' => 'am-ET',
             'Arabic (United Arab Emirates)' => 'ar-AE',
             'Arabic (Bahrain)' => 'ar-BH',
@@ -35,9 +35,9 @@ final class TTSLanguageSeeder extends Seeder
             'Arabic (Yemen)' => 'ar-YE',
             'Assamese (India)' => 'as-IN',
             'Azerbaijani (Latin, Azerbaijan)' => 'az-AZ',
-            'Bulgarian (Bulgaria)' => 'bg-BG',
+            'Bulgarian (Bulgaria)' => 'bg-BG',*/
             'Bangla (Bangladesh)' => 'bn-BD',
-            'Bengali (India)' => 'bn-IN',
+            /*'Bengali (India)' => 'bn-IN',
             'Bosnian (Bosnia and Herzegovina)' => 'bs-BA',
             'Catalan' => 'ca-ES',
             'Czech (Czechia)' => 'cs-CZ',
@@ -168,10 +168,10 @@ final class TTSLanguageSeeder extends Seeder
             'Chinese (Southwestern Mandarin, Simplified)' => 'zh-CN-sichuan',
             'Chinese (Cantonese, Traditional)' => 'zh-HK',
             'Chinese (Taiwanese Mandarin, Traditional)' => 'zh-TW',
-            'isiZulu (South Africa)' => 'zu-ZA',
+            'isiZulu (South Africa)' => 'zu-ZA',*/
         ];
 
-        foreach (['azure', 'frolax'] as $engine) {
+        foreach (['azure'/*, 'frolax'*/] as $engine) {
             foreach ($languages as $name => $code) {
                 TTSLanguage::create([
                     'code' => $code,

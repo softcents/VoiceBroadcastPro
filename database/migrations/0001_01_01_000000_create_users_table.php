@@ -21,11 +21,17 @@ return new class extends Migration
             $table->string('avatar_url')->nullable();
 
             $table->enum('type', ['admin', 'user'])->default('user');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'banned'])->default('pending');
             $table->string('audio_type')->default('upload');
+            $table->boolean('auto_approve_audio')->default(false);
+            $table->boolean('auto_approve_campaigns')->default(false);
 
             $table->decimal('balance', 15, 4)->default(0);
             $table->decimal('pulse_rate', 15, 4)->default(0.10);
             $table->unsignedInteger('pulse_duration')->default(10);
+            $table->string('company_name')->nullable();
+            $table->string('front_nid')->nullable();
+            $table->string('back_nid')->nullable();
 
             $table->string('password');
             $table->rememberToken();
