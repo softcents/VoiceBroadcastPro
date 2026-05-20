@@ -20,7 +20,6 @@ final class CampaignResource extends JsonResource
             'id' => $this->id,
             'title' => $this->title,
             'description' => $this->description,
-            'source' => $this->source,
             'status' => $this->status,
             'scheduled_at' => $this->scheduled_at,
             'audio' => new AudioResource($this->whenLoaded('audio')),

@@ -41,7 +41,7 @@ final class CallsTable
                 TextColumn::make('type')
                     ->label('Type')
                     ->badge(),
-                TextColumn::make('from_interface')
+                TextColumn::make('interface')
                     ->label('From')
                     ->badge(),
                 TextColumn::make('duration')
@@ -74,8 +74,8 @@ final class CallsTable
                     ->label('Type')
                     ->options(CallType::class)
                     ->searchable(),
-                SelectFilter::make('from_interface')
-                    ->label('From Interface')
+                SelectFilter::make('interface')
+                    ->label('Interface')
                     ->options(CallFromInterface::class)
                     ->multiple()
                     ->searchable(),

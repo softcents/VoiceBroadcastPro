@@ -34,13 +34,8 @@ final class ViewCampaign extends ViewRecord
                 ->action(function (Campaign $record): void {
                     DB::transaction(function () use ($record): void {
                         $record->calls()->retryable()->update([
-                            'status' => CallStatus::Pending,
+                            'status'    => CallStatus::Pending,
                             'unique_id' => null,
-                            'initiated_at' => null,
-                            'called_at' => null,
-                            'ringing_at' => null,
-                            'answered_at' => null,
-                            'ended_at' => null,
                         ]);
 
                         $record->update([

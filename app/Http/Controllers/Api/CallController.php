@@ -37,7 +37,7 @@ final class CallController extends Controller
     public function store(#[CurrentUser] User $user, StoreCallRequest $request)
     {
         $call = $user->calls()->create([
-            'from_interface' => CallFromInterface::API,
+            'interface' => CallFromInterface::API,
         ] + $request->validated());
 
         return new CallResource($call->unsetRelation('user'));

@@ -22,7 +22,7 @@ final class CampaignStatsWidget extends StatsOverviewWidget
 
         return [
             Stat::make('Total Calls', $this->record->calls()->count()),
-            Stat::make('Answered', $this->record->calls()->where('status', CallStatus::Answered)->count()),
+            Stat::make('Completed', $this->record->calls()->where('status', CallStatus::Completed)->count()),
             Stat::make('Failed', $this->record->calls()->where('status', CallStatus::Failed)->count()),
         ];
     }

@@ -25,7 +25,7 @@ return new class extends Migration
             $table->text('content')->nullable();
             $table->string('status')->default('pending')->index();
             $table->string('type')->default('marketing'); // otp, marketing.
-            $table->string('from_interface')->default('web');
+            $table->string('interface')->default('web');
             $table->integer('otp')->nullable();
 
             // Asterisk
@@ -35,12 +35,6 @@ return new class extends Migration
             $table->decimal('cost', 10, 4)->default(0);
             $table->unsignedInteger('retries')->default(0);
             $table->string('hangup_cause')->nullable();
-            $table->timestamp('initiated_at')->nullable();
-
-            $table->timestamp('called_at')->nullable();
-            $table->timestamp('ringing_at')->nullable();
-            $table->timestamp('answered_at')->nullable();
-            $table->timestamp('ended_at')->nullable();
 
             $table->timestamp('scheduled_at')->nullable();
             $table->index(['caller_id', 'status']);

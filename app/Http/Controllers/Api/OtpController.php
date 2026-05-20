@@ -70,7 +70,7 @@ final class OtpController extends Controller
             'status' => CallStatus::Pending,
             'otp' => $request->input('code'),
             'caller_id' => $request->input('caller_id'),
-            'from_interface' => CallFromInterface::API,
+            'interface' => CallFromInterface::API,
         ]);
 
         return new CallResource($call->unsetRelation('user')->unsetRelation('audio'));

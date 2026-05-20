@@ -8,7 +8,6 @@ use App\Filament\User\Resources\Campaigns\CampaignResource;
 use App\Filament\User\Resources\Contacts\ContactResource;
 use App\Models\Call;
 use Filament\Infolists\Components\TextEntry;
-use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -56,58 +55,23 @@ final class CallInfolist
 
                         Section::make('Timestamps')
                             ->schema([
-                                Grid::make(1)
+                                Group::make()
+                                    ->columns(3)
                                     ->schema([
-                                        Group::make()
-                                            ->columns(4)
-                                            ->schema([
-                                                TextEntry::make('scheduled_at')
-                                                    ->icon(Tabler::Stopwatch)
-                                                    ->iconColor('gray')
-                                                    ->label('Scheduled At')
-                                                    ->dateTime()
-                                                    ->placeholder('Not Scheduled'),
-                                                TextEntry::make('created_at')
-                                                    ->icon(Tabler::CalendarPlus)
-                                                    ->label('Created At')
-                                                    ->dateTime(),
-                                                TextEntry::make('updated_at')
-                                                    ->icon(Tabler::CalendarUp)
-                                                    ->label('Updated At')
-                                                    ->dateTime(),
-                                            ]),
-                                        Group::make()
-                                            ->columns(4)
-                                            ->schema([
-                                                TextEntry::make('called_at')
-                                                    ->icon(Tabler::PhoneIncoming)
-                                                    ->iconColor('info')
-                                                    ->label('Called At')
-                                                    ->dateTime()
-                                                    ->placeholder('-')
-                                                    ->dateTime()
-                                                    ->placeholder('-'),
-                                                TextEntry::make('ringing_at')
-                                                    ->icon(Tabler::PhoneRinging)
-                                                    ->iconColor('warning')
-                                                    ->label('Ringing At')
-                                                    ->dateTime()
-                                                    ->placeholder('-')
-                                                    ->dateTime()
-                                                    ->placeholder('-'),
-                                                TextEntry::make('answered_at')
-                                                    ->icon(Tabler::PhoneSpark)
-                                                    ->iconColor('success')
-                                                    ->label('Answered At')
-                                                    ->dateTime()
-                                                    ->placeholder('-'),
-                                                TextEntry::make('ended_at')
-                                                    ->icon(Tabler::PhoneOff)
-                                                    ->iconColor('danger')
-                                                    ->label('Ended At')
-                                                    ->dateTime()
-                                                    ->placeholder('-'),
-                                            ]),
+                                        TextEntry::make('scheduled_at')
+                                            ->icon(Tabler::Stopwatch)
+                                            ->iconColor('gray')
+                                            ->label('Scheduled At')
+                                            ->dateTime()
+                                            ->placeholder('Not Scheduled'),
+                                        TextEntry::make('created_at')
+                                            ->icon(Tabler::CalendarPlus)
+                                            ->label('Created At')
+                                            ->dateTime(),
+                                        TextEntry::make('updated_at')
+                                            ->icon(Tabler::CalendarUp)
+                                            ->label('Updated At')
+                                            ->dateTime(),
                                     ]),
                             ]),
 

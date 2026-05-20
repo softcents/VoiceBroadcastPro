@@ -17,41 +17,19 @@ final class AsteriskController extends Controller
 
         switch ($request->validated('event')) {
             case 'ringing':
-                $call->update([
-                    'status' => CallStatus::Ringing,
-                    'ringing_at' => $request->validated('timestamp'),
-                ]);
-                break;
             case 'answered':
-                $call->update([
-                    'status' => CallStatus::Answered,
-                    'answered_at' => $request->validated('timestamp'),
-                ]);
+                $call->update(['status' => CallStatus::Processing]);
                 break;
             case 'completed':
                 $call->update([
-                    'status' => CallStatus::Completed,
-                    'ended_at' => $request->validated('timestamp'),
-                    'duration' => $call->answered_at?->diffInSeconds($request->validated('timestamp')),
+                    'status'   => CallStatus::Completed,
+                    'duration' => $call->duration,
                 ]);
                 break;
             case 'busy':
-                $call->update([
-                    'status' => CallStatus::Busy,
-                    'ended_at' => $request->validated('timestamp'),
-                ]);
-                break;
             case 'not_answered':
-                $call->update([
-                    'status' => CallStatus::NotAnswered,
-                    'ended_at' => $request->validated('timestamp'),
-                ]);
-                break;
             case 'failed':
-                $call->update([
-                    'status' => CallStatus::Failed,
-                    'ended_at' => $request->validated('timestamp'),
-                ]);
+                $call->update(['status' => CallStatus::Failed]);
                 break;
         }
     }

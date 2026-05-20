@@ -7,7 +7,6 @@ namespace App\Jobs;
 use App\Enums\CallStatus;
 use App\Enums\TransactionType;
 use App\Models\Call;
-use Carbon\CarbonImmutable;
 use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -126,8 +125,7 @@ final class ProcessOtpCall implements ShouldQueue
 
         $this->call->update([
             'unique_id' => $response->json('id'),
-            'status' => CallStatus::Initiated,
-            'called_at' => CarbonImmutable::createFromTimeString($response->json('creationtime')),
+            'status'    => CallStatus::Processing,
         ]);
     }
 

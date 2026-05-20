@@ -18,8 +18,8 @@ final class CallerSeeder extends Seeder
             [
                 'server_id' => 1,
                 'caller_name' => 'SoftCents',
-                'caller_number' => '09617510222',
-                'trunk_name' => '09617510222',
+                'caller_number' => '09644551801',
+                'trunk_name' => '09644551801',
                 'max_concurrency' => 10,
                 'enabled' => true,
             ],

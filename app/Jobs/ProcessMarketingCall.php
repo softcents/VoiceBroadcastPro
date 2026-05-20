@@ -8,7 +8,6 @@ use App\Enums\CallStatus;
 use App\Enums\TransactionType;
 use App\Models\Call;
 use App\Models\User;
-use Carbon\CarbonImmutable;
 use Exception;
 use Illuminate\Bus\Batchable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -164,8 +163,7 @@ final class ProcessMarketingCall implements ShouldQueue
 
             $this->call->update([
                 'unique_id' => $uniqueId,
-                'status' => CallStatus::Initiated,
-                'called_at' => now(),
+                'status'    => CallStatus::Processing,
             ]);
 
         } catch (Exception $e) {
