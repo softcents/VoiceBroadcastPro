@@ -24,20 +24,20 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::Pending    => 'gray',
+            self::Pending => 'gray',
             self::Processing => 'info',
-            self::Completed  => 'success',
-            self::Failed     => 'danger',
+            self::Completed => 'success',
+            self::Failed => 'danger',
         };
     }
 
     public function getIcon(): Tabler
     {
         return match ($this) {
-            self::Pending    => Tabler::Clock,
+            self::Pending => Tabler::Clock,
             self::Processing => Tabler::PhoneCalling,
-            self::Completed  => Tabler::PhoneCheck,
-            self::Failed     => Tabler::CircleX,
+            self::Completed => Tabler::PhoneCheck,
+            self::Failed => Tabler::CircleX,
         };
     }
 

@@ -9,35 +9,27 @@ use App\Models\User;
 
 final class CampaignPolicy
 {
-    /**
-     * Determine whether the user can view any models.
-     */
     public function viewAny(User $user): bool
     {
         return true;
     }
 
-    /**
-     * Determine whether the user can view the model.
-     */
     public function view(User $user, Campaign $campaign): bool
     {
-        return true;
+        return $user->isAdmin() || $user->id === $campaign->user_id;
     }
 
-    /**
-     * Determine whether the user can create models.
-     */
     public function create(User $user): bool
     {
         return true;
     }
 
-    /**
-     * Determine whether the user can update the model.
-     */
     public function update(User $user, Campaign $campaign): bool
     {
+        if (! $user->isAdmin() && $user->id !== $campaign->user_id) {
+            return false;
+        }
+
         if ($campaign->scheduled_at === null) {
             return false;
         }
@@ -45,11 +37,8 @@ final class CampaignPolicy
         return ! $campaign->scheduled_at->isPast();
     }
 
-    /**
-     * Determine whether the user can delete the model.
-     */
     public function delete(User $user, Campaign $campaign): bool
     {
-        return true;
+        return $user->isAdmin() || $user->id === $campaign->user_id;
     }
 }

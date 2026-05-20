@@ -46,12 +46,12 @@ final class CampaignStatsWidget extends StatsOverviewWidget
             ])
             ->first();
 
-        $totalCalls      = (int) $stats->total_calls;
-        $completedCalls  = (int) $stats->completed_calls;
-        $failedCalls     = (int) $stats->failed_calls;
-        $pendingCalls    = (int) $stats->pending_calls;
+        $totalCalls = (int) $stats->total_calls;
+        $completedCalls = (int) $stats->completed_calls;
+        $failedCalls = (int) $stats->failed_calls;
+        $pendingCalls = (int) $stats->pending_calls;
         $processingCalls = (int) $stats->processing_calls;
-        $totalCost       = (float) $stats->total_cost;
+        $totalCost = (float) $stats->total_cost;
 
         $completedRate = $totalCalls > 0
             ? round(($completedCalls / $totalCalls) * 100, 1)

@@ -24,10 +24,10 @@ final class AudioObserver implements ShouldHandleEventsAfterCommit
     {
         $audio->loadMissing('user');
 
-        $this->notifyAdmins($audio);
-
         if ($audio->user->auto_approve_audio) {
             $this->autoApproveAndProcess($audio);
+        } else {
+            $this->notifyAdmins($audio);
         }
     }
 

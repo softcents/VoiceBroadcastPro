@@ -33,13 +33,13 @@ final class Call extends Model
     protected $guarded = [];
 
     protected $casts = [
-        'status'       => CallStatus::class,
-        'type'         => CallType::class,
-        'interface'    => CallFromInterface::class,
+        'status' => CallStatus::class,
+        'type' => CallType::class,
+        'interface' => CallFromInterface::class,
         'phone_number' => E164PhoneNumberCast::class,
         'scheduled_at' => 'datetime',
-        'duration'     => 'float',
-        'cost'         => 'float',
+        'duration' => 'float',
+        'cost' => 'float',
     ];
 
     public function user(): BelongsTo
@@ -135,7 +135,7 @@ final class Call extends Model
 
         return $query->where(function (Builder $q) use ($callSettings) {
             $q->where('status', CallStatus::Failed)
-              ->where('retries', '<', $callSettings->max_retry_attempts);
+                ->where('retries', '<', $callSettings->max_retry_attempts);
         });
     }
 }

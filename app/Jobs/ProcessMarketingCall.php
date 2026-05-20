@@ -163,7 +163,7 @@ final class ProcessMarketingCall implements ShouldQueue
 
             $this->call->update([
                 'unique_id' => $uniqueId,
-                'status'    => CallStatus::Processing,
+                'status' => CallStatus::Processing,
             ]);
 
         } catch (Exception $e) {

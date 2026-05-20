@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\DepositStatus;
+use App\Models\Scopes\OwnedByAuthUser;
 use Database\Factories\DepositFactory;
+use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[ScopedBy(OwnedByAuthUser::class)]
 final class Deposit extends Model
 {
     /** @use HasFactory<DepositFactory> */

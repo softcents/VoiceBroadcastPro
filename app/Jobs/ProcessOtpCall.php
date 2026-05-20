@@ -125,7 +125,7 @@ final class ProcessOtpCall implements ShouldQueue
 
         $this->call->update([
             'unique_id' => $response->json('id'),
-            'status'    => CallStatus::Processing,
+            'status' => CallStatus::Processing,
         ]);
     }
 

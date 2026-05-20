@@ -22,7 +22,7 @@ final class AsteriskController extends Controller
                 break;
             case 'completed':
                 $call->update([
-                    'status'   => CallStatus::Completed,
+                    'status' => CallStatus::Completed,
                     'duration' => $call->duration,
                 ]);
                 break;

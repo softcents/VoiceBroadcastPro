@@ -32,10 +32,10 @@ final class CampaignChartWidget extends ChartWidget
             ->toArray();
 
         $statusColors = [
-            CallStatus::Pending->value    => 'rgb(156, 163, 175)', // gray
+            CallStatus::Pending->value => 'rgb(156, 163, 175)', // gray
             CallStatus::Processing->value => 'rgb(59, 130, 246)',  // blue/info
-            CallStatus::Completed->value  => 'rgb(16, 185, 129)',  // emerald/success
-            CallStatus::Failed->value     => 'rgb(239, 68, 68)',   // red/danger
+            CallStatus::Completed->value => 'rgb(16, 185, 129)',  // emerald/success
+            CallStatus::Failed->value => 'rgb(239, 68, 68)',   // red/danger
         ];
 
         $labels = [];
@@ -52,10 +52,10 @@ final class CampaignChartWidget extends ChartWidget
         return [
             'datasets' => [
                 [
-                    'label'           => 'Calls',
-                    'data'            => $values,
+                    'label' => 'Calls',
+                    'data' => $values,
                     'backgroundColor' => $colors,
-                    'borderWidth'     => 0,
+                    'borderWidth' => 0,
                 ],
             ],
             'labels' => $labels,

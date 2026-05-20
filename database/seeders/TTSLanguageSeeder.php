@@ -171,7 +171,7 @@ final class TTSLanguageSeeder extends Seeder
             'isiZulu (South Africa)' => 'zu-ZA',*/
         ];
 
-        foreach (['azure'/*, 'frolax'*/] as $engine) {
+        foreach (['azure'/* , 'frolax' */] as $engine) {
             foreach ($languages as $name => $code) {
                 TTSLanguage::create([
                     'code' => $code,
