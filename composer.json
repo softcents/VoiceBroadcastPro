@@ -10,6 +10,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.4",
+        "ext-bcmath": "*",
         "ext-pcntl": "*",
         "ext-pdo": "*",
         "ext-posix": "*",
@@ -17,6 +18,7 @@
         "filament/spatie-laravel-settings-plugin": "^5.0",
         "flowframe/laravel-trend": "^0.5.0",
         "hugomyb/filament-media-action": "^5.0",
+        "knuckleswtf/scribe": "^5.10",
         "krowinski/php-mysql-replication": "dev-master",
         "lara-zeus/tabler-icons-enum": "^2.0",
         "laravel/framework": "^13.0",
@@ -38,13 +40,11 @@
         "spatie/laravel-settings": "^3.6",
         "stechstudio/filament-impersonate": "^4.0",
         "webbingbrasil/filament-copyactions": "^4.0",
-        "ysfkaya/filament-phone-input": "^4.0",
-        "ext-bcmath": "*"
+        "ysfkaya/filament-phone-input": "^4.0"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^4.2",
         "fakerphp/faker": "^1.23",
-        "knuckleswtf/scribe": "^5.6",
         "laravel/boost": "^2.4",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
