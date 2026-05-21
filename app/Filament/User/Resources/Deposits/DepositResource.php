@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\User\Resources\Deposits;
 
 use App\Filament\User\Resources\Deposits\Pages\ListDeposits;
+use App\Filament\User\Resources\Deposits\Pages\ViewDeposit;
 use App\Filament\User\Resources\Deposits\Schemas\DepositInfolist;
 use App\Filament\User\Resources\Deposits\Tables\DepositsTable;
 use App\Models\Deposit;
@@ -45,7 +46,7 @@ final class DepositResource extends Resource
     {
         return [
             'index' => ListDeposits::route('/'),
-            'view' => Pages\ViewDeposit::route('/{record}'),
+            'view' => ViewDeposit::route('/{record}'),
         ];
     }
 

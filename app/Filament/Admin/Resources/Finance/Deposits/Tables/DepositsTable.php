@@ -49,18 +49,7 @@ final class DepositsTable
                     ->searchable(),
                 TextColumn::make('status')
                     ->label('Status')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => ucfirst($state->value))
-                    ->color(fn ($state) => match ($state) {
-                        DepositStatus::Pending => Color::Yellow,
-                        DepositStatus::Completed => Color::Green,
-                        DepositStatus::Cancelled => 'danger',
-                    })
-                    ->icon(fn ($state) => match ($state) {
-                        DepositStatus::Pending => Heroicon::OutlinedClock,
-                        DepositStatus::Completed => Heroicon::OutlinedCheckCircle,
-                        DepositStatus::Cancelled => Heroicon::OutlinedXCircle,
-                    }),
+                    ->badge(),
                 TextColumn::make('created_at')
                     ->label('Created At')
                     ->dateTime()
@@ -71,58 +60,6 @@ final class DepositsTable
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
-            ])
-            ->filters([
-                //
-            ])
-            ->recordActions([
-                ActionGroup::make([
-                    Action::make('edit_status')
-                        ->label('Edit Status')
-                        ->icon(Heroicon::OutlinedPencil)
-                        ->schema([
-                            Select::make('status')
-                                ->label('Status')
-                                ->options(DepositStatus::class)
-                                ->default(fn ($record) => $record->status)
-                                ->required()
-                                ->searchable()
-                                ->selectablePlaceholder(false),
-                        ])
-                        ->modalWidth(Width::Small)
-                        ->visible(fn ($record) => ! in_array($record->status, [DepositStatus::Completed, DepositStatus::Cancelled]))
-                        ->action(function (Deposit $record, array $data) {
-                            $newStatus = $data['status'];
-                            if (! $newStatus instanceof DepositStatus) {
-                                $newStatus = DepositStatus::tryFrom($newStatus);
-                            }
-
-                            // If transitioning to completed, add funds
-                            if ($newStatus === DepositStatus::Completed && $record->status !== DepositStatus::Completed) {
-                                $record->user->increment('balance', $record->amount);
-
-                                Transaction::create([
-                                    'user_id' => $record->user_id,
-                                    'type' => TransactionType::Credit,
-                                    'amount' => $record->amount,
-                                    'currency' => $record->currency,
-                                    'description' => 'Deposit via '.ucfirst($record->gateway),
-                                    'transactionable_type' => Deposit::class,
-                                    'transactionable_id' => $record->id,
-                                ]);
-                            }
-
-                            $record->update(['status' => $newStatus]);
-                        }),
-                    DeleteAction::make()
-                        ->label('Delete Deposit')
-                        ->requiresConfirmation(),
-                ]),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 }

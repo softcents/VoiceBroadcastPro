@@ -16,13 +16,19 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('type');
-            $table->decimal('amount', 15, 4)->default(0);
-            $table->string('currency')->default('BDT');
-            $table->string('description');
             $table->nullableMorphs('transactionable');
-            $table->index(['user_id', 'created_at']);
+
+            $table->string('type')->index();
+            $table->string('currency')->default('BDT');
+            $table->decimal('amount', 15, 4)->default(0);
+            $table->decimal('balance_before', 15, 4)->default(0);
+            $table->decimal('balance_after', 15, 4)->default(0);
+
+            $table->string('description');
+
             $table->timestamps();
+
+            $table->index(['user_id', 'created_at']);
         });
     }
 
