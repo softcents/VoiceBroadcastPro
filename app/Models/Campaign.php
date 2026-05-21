@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Contracts\Transactionable;
 use App\Enums\CampaignApproval;
 use App\Enums\CampaignStatus;
 use App\Models\Scopes\OwnedByAuthUser;
@@ -18,11 +19,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 #[ScopedBy(OwnedByAuthUser::class)]
 #[ObservedBy(CampaignObserver::class)]
 #[Guarded(['id'])]
-final class Campaign extends Model
+final class Campaign extends Model implements Transactionable
 {
     /** @use HasFactory<CampaignFactory> */
     use HasFactory;
@@ -83,5 +85,10 @@ final class Campaign extends Model
     protected function approved(Builder $query): Builder
     {
         return $query->where('approval', CampaignApproval::Approved);
+    }
+
+    public function transactions(): MorphMany
+    {
+        return $this->morphMany(Transaction::class, 'transactionable');
     }
 }
