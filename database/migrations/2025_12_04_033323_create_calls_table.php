@@ -28,19 +28,22 @@ return new class extends Migration
             $table->string('interface')->default('web');
             $table->integer('otp')->nullable();
 
-            // Asterisk
-            $table->string('unique_id')->nullable()->index();
+            $table->string('unique_id')->nullable()->index(); // asterisk unique id
 
             $table->decimal('duration')->default(0);
             $table->decimal('cost', 10, 4)->default(0);
-            $table->unsignedInteger('retries')->default(0);
             $table->string('hangup_cause')->nullable();
 
+            $table->unsignedTinyInteger('retries')->default(0);
+            $table->unsignedTinyInteger('poll_attempt')->nullable();
+
             $table->timestamp('scheduled_at')->nullable();
+            $table->timestamp('next_poll_at')->nullable();
+            $table->timestamps();
+
             $table->index(['caller_id', 'status']);
             $table->index(['campaign_id', 'status']);
             $table->index(['user_id', 'created_at']);
-            $table->timestamps();
         });
     }
 

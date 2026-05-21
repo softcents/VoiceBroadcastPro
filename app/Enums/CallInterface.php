@@ -11,7 +11,7 @@ use Filament\Support\Contracts\HasLabel;
 use Illuminate\Contracts\Support\Htmlable;
 use LaraZeus\Tabler\Tabler;
 
-enum CallFromInterface: string implements HasColor, HasIcon, HasLabel
+enum CallInterface: string implements HasColor, HasIcon, HasLabel
 {
     case Web = 'web';
     case Mobile = 'mobile';

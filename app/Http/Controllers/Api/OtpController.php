@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\CallFromInterface;
+use App\Enums\CallInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
 use App\Http\Controllers\Controller;
@@ -70,7 +70,7 @@ final class OtpController extends Controller
             'status' => CallStatus::Pending,
             'otp' => $request->input('code'),
             'caller_id' => $request->input('caller_id'),
-            'interface' => CallFromInterface::API,
+            'interface' => CallInterface::API,
         ]);
 
         return new CallResource($call->unsetRelation('user')->unsetRelation('audio'));

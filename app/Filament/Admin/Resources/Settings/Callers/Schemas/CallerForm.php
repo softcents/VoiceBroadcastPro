@@ -31,24 +31,26 @@ final class CallerForm
                             ->label('Trunk Name')
                             ->helperText('Name of the sip trunk configured in the server')
                             ->required(),
-                        Section::make()
-                            ->heading('Caller Information')
-                            ->description('Details about the caller ID to be used')
-                            ->schema([
-                                TextInput::make('caller_name')
-                                    ->label('Caller Name')
-                                    ->required(),
-                                TextInput::make('caller_number')
-                                    ->label('Caller Number')
-                                    ->required(),
-                                TextInput::make('max_concurrency')
-                                    ->label('Max Concurrency')
-                                    ->hint('Set to 0 for unlimited.')
-                                    ->numeric()
-                                    ->default(0)
-                                    ->required()
-                                    ->helperText('Maximum number of concurrent calls this caller ID can handle.'),
-                            ]),
+                        TextInput::make('max_concurrency')
+                            ->label('Max Concurrency')
+                            ->hint('Set to 0 for unlimited.')
+                            ->numeric()
+                            ->default(0)
+                            ->required()
+                            ->helperText('Maximum number of concurrent calls this caller ID can handle.'),
+                        Select::make('enabled')
+                            ->label('Enabled')
+                            ->boolean()
+                            ->required(),
+                    ]),
+                Section::make()
+                    ->schema([
+                        TextInput::make('caller_name')
+                            ->label('Caller Name')
+                            ->required(),
+                        TextInput::make('caller_number')
+                            ->label('Caller Number')
+                            ->required(),
                         Select::make('users')
                             ->relationship('users', 'name', modifyQueryUsing: function (Builder $query) {
                                 return $query->where('type', UserType::User);
@@ -57,9 +59,6 @@ final class CallerForm
                             ->multiple()
                             ->preload()
                             ->searchable(),
-                        Toggle::make('enabled')
-                            ->label('Enabled')
-                            ->required(),
                     ]),
             ]);
     }

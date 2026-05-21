@@ -30,7 +30,7 @@ final class UserFactory extends Factory
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->email(),
-            'type' => fake()->randomElement(UserType::cases()),
+            'type' => UserType::User,
             'phone' => '+88017'.fake()->numerify('#######'),
             'balance' => fake()->randomFloat(2, 0, 1000),
             'pulse_rate' => fake()->randomFloat(2, 0.10, 1.0),

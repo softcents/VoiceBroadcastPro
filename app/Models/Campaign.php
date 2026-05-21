@@ -9,6 +9,7 @@ use App\Enums\CampaignStatus;
 use App\Models\Scopes\OwnedByAuthUser;
 use App\Observers\CampaignObserver;
 use Database\Factories\CampaignFactory;
+use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
@@ -20,12 +21,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[ScopedBy(OwnedByAuthUser::class)]
 #[ObservedBy(CampaignObserver::class)]
+#[Guarded(['id'])]
 final class Campaign extends Model
 {
     /** @use HasFactory<CampaignFactory> */
     use HasFactory;
-
-    protected $guarded = [];
 
     protected $casts = [
         'status' => CampaignStatus::class,

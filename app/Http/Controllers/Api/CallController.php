@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
-use App\Enums\CallFromInterface;
+use App\Enums\CallInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Call\StoreCallRequest;
 use App\Http\Resources\CallResource;
@@ -37,7 +37,7 @@ final class CallController extends Controller
     public function store(#[CurrentUser] User $user, StoreCallRequest $request)
     {
         $call = $user->calls()->create([
-            'interface' => CallFromInterface::API,
+            'interface' => CallInterface::API,
         ] + $request->validated());
 
         return new CallResource($call->unsetRelation('user'));

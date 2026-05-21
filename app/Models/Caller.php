@@ -86,4 +86,19 @@ final class Caller extends Model
     {
         return $query->where('enabled', true);
     }
+
+    #[Scope]
+    protected function online(Builder $query): Builder
+    {
+        return $query->where('is_online', true);
+    }
+
+    #[Scope]
+    protected function syncable(Builder $query): Builder
+    {
+        return $query->enabled()->where(function (Builder $query) {
+            $query->whereNull('last_synced_at')
+                ->orWhere('last_synced_at', '<', now()->subMinutes(5));
+        });
+    }
 }

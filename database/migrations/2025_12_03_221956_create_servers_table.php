@@ -29,9 +29,6 @@ return new class extends Migration
             $table->string('database_password')->nullable();
 
             $table->boolean('enabled')->default(false);
-            $table->timestamp('connected_at')->nullable();
-            $table->timestamp('disconnected_at')->nullable();
-            $table->string('connection_status')->nullable();
 
             $table->timestamps();
         });

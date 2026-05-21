@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Settings\Servers\ServerResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
@@ -23,11 +24,9 @@ final class CallersTable
                     ->label('Server')
                     ->searchable()
                     ->url(fn ($record) => ServerResource::getUrl('edit', ['record' => $record->server_id])),
-                TextColumn::make('caller_name')
-                    ->label('Caller Name')
-                    ->searchable(),
                 TextColumn::make('caller_number')
-                    ->label('Caller Number')
+                    ->label('Caller')
+                    ->description(fn ($record) => $record->caller_name)
                     ->searchable(),
                 TextColumn::make('max_concurrency')
                     ->label('Max Concurrency')
@@ -36,12 +35,16 @@ final class CallersTable
                     ->badge()
                     ->alignCenter()
                     ->formatStateUsing(fn (int $state): string => $state === 0 ? 'Unlimited' : trans_choice(':count Call|:count Calls', $state, ['count' => $state])),
-                TextColumn::make('users_count')
-                    ->label('Assigned')
-                    ->counts('users')
-                    ->alignCenter()
+                TextColumn::make('users.name')
+                    ->label('Users')
+                    ->searchable()
                     ->badge()
-                    ->formatStateUsing(fn (int $state): string => $state === 0 ? 'None' : trans_choice(':count User|:count Users', $state, ['count' => $state])),
+                    ->limitList(2),
+                IconColumn::make('is_online')
+                    ->label('Online')
+                    ->sortable()
+                    ->boolean()
+                    ->alignCenter(),
                 ToggleColumn::make('enabled')
                     ->label('Enabled')
                     ->sortable()

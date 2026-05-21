@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace App\Models;
 
-use App\Enums\CallFromInterface;
+use App\Enums\CallInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
 use App\Models\Scopes\OwnedByAuthUser;
 use App\Observers\CallObserver;
 use App\Settings\CallingSetting;
 use Database\Factories\CallFactory;
+use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
@@ -25,17 +26,16 @@ use RuntimeException;
 
 #[ScopedBy(OwnedByAuthUser::class)]
 #[ObservedBy(CallObserver::class)]
+#[Guarded(['id'])]
 final class Call extends Model
 {
     /** @use HasFactory<CallFactory> */
     use HasFactory;
 
-    protected $guarded = [];
-
     protected $casts = [
         'status' => CallStatus::class,
         'type' => CallType::class,
-        'interface' => CallFromInterface::class,
+        'interface' => CallInterface::class,
         'phone_number' => E164PhoneNumberCast::class,
         'scheduled_at' => 'datetime',
         'duration' => 'float',

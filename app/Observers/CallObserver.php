@@ -38,10 +38,7 @@ final class CallObserver
 
             $this->reserveCost($lockedCall, $user);
 
-            // Use saveQuietly to avoid re-triggering the updated() handler.
-            // The Pending status here represents "reserved and ready to dial".
-            $lockedCall->status = CallStatus::Pending;
-            $lockedCall->saveQuietly();
+            $lockedCall->updateQuietly(['status' => CallStatus::Pending]);
         });
     }
 

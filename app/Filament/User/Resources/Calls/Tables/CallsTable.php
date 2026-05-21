@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Calls\Tables;
 
-use App\Enums\CallFromInterface;
+use App\Enums\CallInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
 use App\Models\Call;
@@ -76,7 +76,7 @@ final class CallsTable
                     ->searchable(),
                 SelectFilter::make('interface')
                     ->label('Interface')
-                    ->options(CallFromInterface::class)
+                    ->options(CallInterface::class)
                     ->multiple()
                     ->searchable(),
             ])

@@ -20,7 +20,12 @@ return new class extends Migration
             $table->string('caller_number');
             $table->string('trunk_name');
             $table->unsignedInteger('max_concurrency')->default(0);
+
+
+            $table->boolean('is_online')->default(false);
             $table->boolean('enabled')->default(false);
+            $table->timestamp('last_synced_at')->nullable();
+
             $table->timestamps();
         });
     }

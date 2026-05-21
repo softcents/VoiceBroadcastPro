@@ -17,6 +17,7 @@ final class ServerSeeder extends Seeder
         $servers = [
             [
                 'name' => 'Dedicated VPS',
+
                 'ari_host' => '163.227.239.130',
                 'ari_scheme' => 'http',
                 'ari_port' => 8088,
@@ -26,7 +27,7 @@ final class ServerSeeder extends Seeder
                 'database_host' => '163.227.239.130',
                 'database_port' => 3306,
                 'database_username' => 'trigger',
-                'database_password' => '163.227.239.130',
+                'database_password' => 'R7jH5ZTnmgBwCdov',
                 'enabled' => true,
             ],
         ];

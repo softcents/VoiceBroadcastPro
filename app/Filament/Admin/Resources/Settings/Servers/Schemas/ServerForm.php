@@ -83,11 +83,10 @@ final class ServerForm
                                             ->prefixIcon(Tabler::Key)
                                             ->label('Password')
                                             ->placeholder('Enter your password')
+                                            ->formatStateUsing(fn ($record) => $record->ari_password)
                                             ->password()
                                             ->revealable()
-                                            ->required(fn ($operation) => $operation === 'create')
-                                            ->dehydrated(fn ($state, $operation) => $operation === 'create' || filled($state))
-                                            ->helperText(fn ($operation) => $operation === 'edit' ? 'Leave blank to keep existing password.' : null),
+                                            ->required(),
                                     ]),
                             ]),
                         Tabs\Tab::make('Database Connection')
@@ -116,9 +115,10 @@ final class ServerForm
                                     ->prefixIcon(Tabler::Key)
                                     ->label('Password')
                                     ->placeholder('Enter your password')
+                                    ->formatStateUsing(fn ($record) => $record->database_password)
                                     ->password()
                                     ->revealable()
-                                    ->required(fn ($operation) => $operation === 'create'),
+                                    ->required(),
 
                                 Actions::make([
 
