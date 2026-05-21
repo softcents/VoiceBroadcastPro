@@ -13,15 +13,12 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('app:dispatch-call {--limit=100}')]
+#[Signature('app:dispatch-call')]
 #[Description('Dispatch pending calls onto the queue, respecting server/caller concurrency limits via job middleware')]
 final class DispatchCall extends Command
 {
-    public function handle(): int
+    public function handle()
     {
-        $limit = (int) $this->option('limit');
-
-        $dispatched = 0;
 
         Call::query()
             ->withoutGlobalScopes()
@@ -33,7 +30,6 @@ final class DispatchCall extends Command
             ->whereNotNull('caller_id')
             ->orderBy('scheduled_at')
             ->orderBy('id')
-            ->limit($limit)
             ->get(['id', 'type'])
             ->each(function (Call $call) use (&$dispatched): void {
                 match ($call->type) {
@@ -41,11 +37,6 @@ final class DispatchCall extends Command
                     CallType::OTP => ProcessOtpCallJob::dispatch($call->id),
                 };
 
-                $dispatched++;
             });
-
-        $this->info("Dispatched {$dispatched} call(s).");
-
-        return self::SUCCESS;
     }
 }
