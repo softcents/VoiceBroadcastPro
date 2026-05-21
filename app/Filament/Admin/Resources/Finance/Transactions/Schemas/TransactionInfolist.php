@@ -58,12 +58,12 @@ final class TransactionInfolist
                             ->icon(Tabler::User)
                             ->badge()
                             ->url(fn (Transaction $record) => $record->user_id ? CustomerResource::getUrl('view', ['record' => $record->user_id]) : null),
-                        TextEntry::make('reference_type')
+                        TextEntry::make('transactionable_type')
                             ->label('Reference Type')
                             ->icon(Tabler::FileText)
                             ->formatStateUsing(fn ($state) => $state ? class_basename($state) : null)
                             ->placeholder('No reference'),
-                        TextEntry::make('reference_id')
+                        TextEntry::make('transactionable_id')
                             ->label('Reference ID')
                             ->icon(Tabler::Hash)
                             ->numeric()

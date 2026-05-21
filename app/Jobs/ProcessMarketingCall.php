@@ -195,8 +195,8 @@ final class ProcessMarketingCall implements ShouldQueue
                 'amount' => $cost,
                 'currency' => 'BDT',
                 'description' => "Refund for call ID {$this->call->id}: {$reason}",
-                'reference_type' => Call::class,
-                'reference_id' => $this->call->id,
+                'transactionable_type' => Call::class,
+                'transactionable_id' => $this->call->id,
             ]);
 
             // Update call status and reset cost

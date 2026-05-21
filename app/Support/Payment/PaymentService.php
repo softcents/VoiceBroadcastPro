@@ -48,8 +48,8 @@ final class PaymentService
             'amount' => $deposit->amount,
             'currency' => $deposit->currency,
             'description' => 'Deposit via '.$deposit->gateway,
-            'reference_type' => Deposit::class,
-            'reference_id' => $deposit->id,
+            'transactionable_type' => Deposit::class,
+            'transactionable_id' => $deposit->id,
         ]);
 
         $deposit->user->increment('balance', $deposit->amount);

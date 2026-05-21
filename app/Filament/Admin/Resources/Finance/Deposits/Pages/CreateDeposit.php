@@ -29,8 +29,8 @@ final class CreateDeposit extends CreateRecord
                 'amount' => $deposit->amount,
                 'currency' => $deposit->currency,
                 'description' => 'Deposit via '.ucfirst($deposit->gateway),
-                'reference_type' => Deposit::class,
-                'reference_id' => $deposit->id,
+                'transactionable_type' => Deposit::class,
+                'transactionable_id' => $deposit->id,
             ]);
         }
     }

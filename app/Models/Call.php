@@ -69,7 +69,7 @@ final class Call extends Model
 
     public function transactions(): MorphMany
     {
-        return $this->morphMany(Transaction::class, 'reference');
+        return $this->morphMany(Transaction::class, 'transactionable');
     }
 
     /**

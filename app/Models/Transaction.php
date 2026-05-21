@@ -23,8 +23,8 @@ final class Transaction extends Model
         'amount',
         'currency',
         'description',
-        'reference_type',
-        'reference_id',
+        'transactionable_type',
+        'transactionable_id',
     ];
 
     public function user(): BelongsTo
@@ -32,7 +32,7 @@ final class Transaction extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function reference(): MorphTo
+    public function transactionable(): MorphTo
     {
         return $this->morphTo();
     }

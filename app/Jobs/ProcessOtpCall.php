@@ -58,8 +58,8 @@ final class ProcessOtpCall implements ShouldQueue
                 'amount' => $cost,
                 'currency' => 'BDT',
                 'description' => "Initial charge for OTP call ID {$this->call->id}",
-                'reference_type' => Call::class,
-                'reference_id' => $this->call->id,
+                'transactionable_type' => Call::class,
+                'transactionable_id' => $this->call->id,
             ]);
 
             $this->call->cost = $cost;
@@ -112,8 +112,8 @@ final class ProcessOtpCall implements ShouldQueue
                     'amount' => $cost,
                     'currency' => 'BDT',
                     'description' => "Refund for failed OTP call initiation ID {$this->call->id}",
-                    'reference_type' => Call::class,
-                    'reference_id' => $this->call->id,
+                    'transactionable_type' => Call::class,
+                    'transactionable_id' => $this->call->id,
                 ]);
 
                 $this->call->cost = 0;

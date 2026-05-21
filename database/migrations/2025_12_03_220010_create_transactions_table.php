@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('amount', 15, 4)->default(0);
             $table->string('currency')->default('BDT');
             $table->string('description');
-            $table->nullableMorphs('reference');
+            $table->nullableMorphs('transactionable');
             $table->index(['user_id', 'created_at']);
             $table->timestamps();
         });

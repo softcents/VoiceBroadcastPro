@@ -107,8 +107,8 @@ final class DepositsTable
                                     'amount' => $record->amount,
                                     'currency' => $record->currency,
                                     'description' => 'Deposit via '.ucfirst($record->gateway),
-                                    'reference_type' => Deposit::class,
-                                    'reference_id' => $record->id,
+                                    'transactionable_type' => Deposit::class,
+                                    'transactionable_id' => $record->id,
                                 ]);
                             }
 

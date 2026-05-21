@@ -96,8 +96,8 @@ final class CampaignObserver
                     'amount' => $cost,
                     'currency' => 'BDT',
                     'description' => "Call charge for call ID $call->id",
-                    'reference_type' => Call::class,
-                    'reference_id' => $call->id,
+                    'transactionable_type' => Call::class,
+                    'transactionable_id' => $call->id,
                     'created_at' => $now,
                     'updated_at' => $now,
                 ];

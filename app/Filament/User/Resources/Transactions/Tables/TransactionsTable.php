@@ -39,20 +39,20 @@ final class TransactionsTable
                     ->searchable()
                     ->wrap()
                     ->toggleable(),
-                TextColumn::make('reference_type')
+                TextColumn::make('transactionable_type')
                     ->label('Reference')
                     ->searchable()
-                    ->formatStateUsing(fn (Transaction $record) => match ($record->reference_type) {
+                    ->formatStateUsing(fn (Transaction $record) => match ($record->transactionable_type) {
                         Deposit::class => 'Deposit',
                         Call::class => 'Call',
                         default => 'N/A',
                     }),
-                TextColumn::make('reference_id')
+                TextColumn::make('transactionable_id')
                     ->label('Reference ID')
                     ->numeric()
                     ->sortable()
-                    ->url(fn (Transaction $record) => match ($record->reference_type) {
-                        Deposit::class => $record->reference ? DepositResource::getUrl('view', ['record' => $record->reference_id]) : 'javascript:void(0);',
+                    ->url(fn (Transaction $record) => match ($record->transactionable_type) {
+                        Deposit::class => $record->transactionable ? DepositResource::getUrl('view', ['record' => $record->transactionable_id]) : 'javascript:void(0);',
                         default => null,
                     }),
                 TextColumn::make('created_at')
@@ -71,7 +71,7 @@ final class TransactionsTable
                     ->label('Type')
                     ->options(TransactionType::class)
                     ->searchable(),
-                SelectFilter::make('reference_type')
+                SelectFilter::make('transactionable_type')
                     ->label('Reference Type')
                     ->options([
                         Deposit::class => 'Deposit',

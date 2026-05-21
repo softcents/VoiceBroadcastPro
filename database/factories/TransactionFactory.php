@@ -25,8 +25,8 @@ final class TransactionFactory extends Factory
             'amount' => $this->faker->randomFloat(2, 10, 1000),
             'currency' => 'BDT',
             'description' => $this->faker->sentence(),
-            'reference_type' => null,
-            'reference_id' => null,
+            'transactionable_type' => null,
+            'transactionable_id' => null,
         ];
     }
 }

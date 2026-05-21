@@ -229,8 +229,8 @@ final class CallObserver
             'amount' => $amount,
             'currency' => 'BDT',
             'description' => $description,
-            'reference_type' => Call::class,
-            'reference_id' => $call->id,
+            'transactionable_type' => Call::class,
+            'transactionable_id' => $call->id,
         ]);
     }
 }

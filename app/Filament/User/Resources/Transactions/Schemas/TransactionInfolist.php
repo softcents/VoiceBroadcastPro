@@ -60,22 +60,22 @@ final class TransactionInfolist
                                         TextEntry::make('user.name')
                                             ->label('User')
                                             ->icon(Tabler::User),
-                                        TextEntry::make('reference_type')
-                                            ->label('Reference')
+                                        TextEntry::make('transactionable_type')
+                                            ->label('Transaction Type')
                                             ->formatStateUsing(fn (string $state) => class_basename($state))
                                             ->placeholder('-'),
-                                        TextEntry::make('reference_id')
-                                            ->label('Reference ID')
+                                        TextEntry::make('transactionable_id')
+                                            ->label('Transaction ID')
                                             ->numeric()
                                             ->url(function (Transaction $record) {
-                                                if ($record->reference_type === Deposit::class && $record->reference) {
-                                                    return DepositResource::getUrl('view', ['record' => $record->reference_id]);
+                                                if ($record->transactionable_type === Deposit::class && $record->transactionable) {
+                                                    return DepositResource::getUrl('view', ['record' => $record->transactionable_id]);
                                                 }
-                                                if ($record->reference_type === Call::class && $record->reference) {
-                                                    return CallResource::getUrl('view', ['record' => $record->reference_id]);
+                                                if ($record->transactionable_type === Call::class && $record->transactionable) {
+                                                    return CallResource::getUrl('view', ['record' => $record->transactionable_id]);
                                                 }
 
-                                                return 'javascript:void(0);';
+                                                return null;
                                             })
                                             ->placeholder('-'),
                                         TextEntry::make('currency')

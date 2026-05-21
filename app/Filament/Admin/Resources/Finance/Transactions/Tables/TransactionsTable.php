@@ -36,7 +36,7 @@ final class TransactionsTable
                     ->label('Description')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('reference_type')
+                TextColumn::make('transactionable_type')
                     ->label('Reference Type')
                     ->searchable()
                     ->formatStateUsing(function ($state) {
@@ -46,20 +46,20 @@ final class TransactionsTable
                             default => 'N/A',
                         };
                     }),
-                TextColumn::make('reference_id')
+                TextColumn::make('transactionable_id')
                     ->label('Reference ID')
                     ->numeric()
                     ->sortable()
                     ->formatStateUsing(function (Transaction $record) {
-                        return match ($record->reference_type) {
-                            Deposit::class => "View Deposit #{$record->reference_id}",
-                            Call::class => "View Call #{$record->reference_id}",
+                        return match ($record->transactionable_type) {
+                            Deposit::class => "View Deposit #{$record->transactionable_id}",
+                            Call::class => "View Call #{$record->transactionable_id}",
                             default => 'N/A',
                         };
                     })
-                    ->url(fn ($record) => match ($record->reference_type) {
-                        Deposit::class => DepositResource::getUrl('view', ['record' => $record->reference_id]),
-                        Call::class => CallResource::getUrl('view', ['record' => $record->reference_id]),
+                    ->url(fn ($record) => match ($record->transactionable_type) {
+                        Deposit::class => DepositResource::getUrl('view', ['record' => $record->transactionable_id]),
+                        Call::class => CallResource::getUrl('view', ['record' => $record->transactionable_id]),
                         default => null,
                     }),
                 TextColumn::make('created_at')
