@@ -24,10 +24,10 @@ final class DepositFactory extends Factory
             'user_id' => User::factory(),
             'amount' => $this->faker->randomFloat(2, 10, 1000),
             'currency' => 'BDT',
-            'gateway' => 'piprapay',
+            'payment_method' => 'piprapay',
             'status' => 'pending',
             'transaction_id' => $this->faker->uuid(),
-            'meta_data' => [],
+            'meta' => [],
         ];
     }
 }
