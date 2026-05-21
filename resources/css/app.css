@@ -10,8 +10,8 @@
 @source '../**/*.blade.php';
 @source '../**/*.js';
 
-@layer components {
-    .fi-sidebar-nav-groups {
-        row-gap: calc(var(--spacing)*1);
-    }
-}
+/*@layer components {*/
+/*    .fi-sidebar-nav-groups {*/
+/*        row-gap: calc(var(--spacing)*1);*/
+/*    }*/
+/*}*/

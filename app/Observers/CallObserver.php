@@ -74,7 +74,6 @@ final class CallObserver
         $this->recordTransaction(
             user: $user,
             call: $call,
-            type: TransactionType::Debit,
             amount: $cost,
             description: "Reserved balance for call ID {$call->id}",
         );
@@ -86,12 +85,11 @@ final class CallObserver
     private function recordTransaction(
         User $user,
         Call $call,
-        TransactionType $type,
         float $amount,
         string $description,
     ): void {
         $user->transactions()->create([
-            'type' => $type,
+            'type' => TransactionType::Debit,
             'amount' => $amount,
             'currency' => 'BDT',
             'description' => $description,

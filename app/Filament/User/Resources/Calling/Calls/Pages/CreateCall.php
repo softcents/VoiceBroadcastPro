@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Calling\Calls\Pages;
 
+use App\Actions\CreateNewCall;
 use App\Filament\User\Resources\Calling\Calls\CallResource;
+use Exception;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
 use Illuminate\Database\Eloquent\Model;
 
@@ -14,10 +17,21 @@ final class CreateCall extends CreateRecord
 
     protected ?bool $hasDatabaseTransactions = true;
 
+    /**
+     * @throws Exception
+     */
     protected function handleRecordCreation(array $data): Model
     {
-        $data['user_id'] = auth()->id();
+        try {
+            return app(CreateNewCall::class)->handle(auth()->user(), $data);
+        } catch (Exception $e) {
+            Notification::make()
+                ->title('Call Creation Failed')
+                ->body('Something went wrong while creating the call. Please try again.')
+                ->danger()
+                ->send();
 
-        return parent::handleRecordCreation($data);
+            throw $e;
+        }
     }
 }

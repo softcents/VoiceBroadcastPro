@@ -44,7 +44,7 @@ return [
     |
     */
 
-    'path' => env('HORIZON_PATH', 'admin/horizon'),
+    'path' => env('HORIZON_PATH', 'horizon'),
 
     /*
     |--------------------------------------------------------------------------
@@ -88,7 +88,8 @@ return [
 
     'middleware' => [
         'web',
-        AdminMiddleware::class,
+        'auth',
+        // AdminMiddleware::class
     ],
 
     /*
@@ -189,7 +190,7 @@ return [
     |
     */
 
-    'memory_limit' => 64,
+    'memory_limit' => 512,
 
     /*
     |--------------------------------------------------------------------------
@@ -203,7 +204,7 @@ return [
     */
 
     'defaults' => [
-        'default-1' => [
+        'default' => [
             'connection' => 'redis',
             'queue' => ['default'],
             'balance' => 'auto',
@@ -216,44 +217,63 @@ return [
             'timeout' => 60,
             'nice' => 0,
         ],
-
-        'call-1' => [
+        'call' => [
             'connection' => 'redis',
-            'queue' => ['otp', 'marketing'],
+            'queue' => ['default'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
             'maxProcesses' => 6,
             'maxTime' => 0,
-            'maxJobs' => 100,
-            'memory' => 192,
+            'maxJobs' => 0,
+            'memory' => 128,
             'tries' => 1,
-            'timeout' => 120,
+            'timeout' => 60,
             'nice' => 0,
         ],
     ],
 
     'environments' => [
         'production' => [
-            'default-1' => [
-                'maxProcesses' => 1,
+            'default' => [
+                'maxProcesses' => 10,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
-
-            'call-1' => [
-                'maxProcesses' => 6,
+            'call' => [
+                'maxProcesses' => 20,
                 'balanceMaxShift' => 1,
-                'balanceCooldown' => 5,
+                'balanceCooldown' => 3,
             ],
         ],
 
         'local' => [
-            'default-1' => [
-                'maxProcesses' => 30,
-            ],
-            'call-1' => [
-                'maxProcesses' => 10,
+            'default' => [
+                'maxProcesses' => 3,
             ],
         ],
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | File Watcher Configuration
+    |--------------------------------------------------------------------------
+    |
+    | The following list of directories and files will be watched when using
+    | the `horizon:listen` command. Whenever any directories or files are
+    | changed, Horizon will automatically restart to apply all changes.
+    |
+    */
+
+    'watch' => [
+        'app',
+        'bootstrap',
+        'config/**/*.php',
+        'database/**/*.php',
+        'public/**/*.php',
+        'resources/**/*.php',
+        'routes',
+        'composer.lock',
+        'composer.json',
+        '.env',
     ],
 ];

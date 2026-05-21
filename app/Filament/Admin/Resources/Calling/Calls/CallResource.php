@@ -8,7 +8,6 @@ use App\Enums\AdminNavigationGroup;
 use App\Filament\Admin\Resources\Calling\Calls\Pages\ListCalls;
 use App\Filament\Admin\Resources\Calling\Calls\Pages\ViewCall;
 use App\Filament\Admin\Resources\Calling\Calls\RelationManagers\TransactionsRelationManager;
-use App\Filament\Admin\Resources\Calling\Calls\Schemas\CallForm;
 use App\Filament\Admin\Resources\Calling\Calls\Schemas\CallInfolist;
 use App\Filament\Admin\Resources\Calling\Calls\Tables\CallsTable;
 use App\Models\Call;
@@ -32,11 +31,6 @@ final class CallResource extends Resource
     protected static string|UnitEnum|null $navigationGroup = AdminNavigationGroup::Calling;
 
     protected static ?int $navigationSort = 2;
-
-    public static function form(Schema $schema): Schema
-    {
-        return CallForm::configure($schema);
-    }
 
     public static function table(Table $table): Table
     {
