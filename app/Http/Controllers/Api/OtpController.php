@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\CreateNewOtpCall;
 use App\Enums\CallInterface;
-use App\Enums\CallStatus;
 use App\Enums\CallType;
+use App\Exceptions\BusinessException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Otp\StoreOtpRequest;
 use App\Http\Resources\CallResource;
@@ -19,6 +20,7 @@ use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
+use Throwable;
 
 #[Group('OTP', 'Manage one-time password calls')]
 #[Authenticated]
@@ -64,15 +66,28 @@ final class OtpController extends Controller
     #[ResponseFromApiResource(CallResource::class, Call::class, status: 201)]
     public function store(#[CurrentUser] User $user, StoreOtpRequest $request)
     {
-        $call = $user->calls()->create([
-            'phone_number' => $request->input('recipient'),
-            'type' => CallType::OTP,
-            'status' => CallStatus::Pending,
-            'otp' => $request->input('code'),
-            'caller_id' => $request->input('caller_id'),
-            'interface' => CallInterface::API,
-        ]);
+        try {
+            $call = app(CreateNewOtpCall::class)->handle(
+                $user,
+                [
+                    'phone_number' => $request->input('recipient'),
+                    'otp' => $request->input('code'),
+                    'caller_id' => $request->input('caller_id'),
+                ],
+                CallInterface::API,
+            );
 
-        return new CallResource($call->unsetRelation('user')->unsetRelation('audio'));
+            return new CallResource($call->unsetRelation('user')->unsetRelation('audio'));
+        } catch (BusinessException $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'errors' => ['balance' => [$e->getMessage()]],
+            ], 422);
+        } catch (Throwable) {
+            return response()->json([
+                'message' => 'OTP Call Creation Failed',
+                'errors' => ['general' => ['Something went wrong while creating the OTP call. Please try again.']],
+            ], 500);
+        }
     }
 }

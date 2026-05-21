@@ -11,3 +11,6 @@ Schedule::command('app:sync-trunk-status')->everyThirtySeconds()
 Schedule::command('app:poll-call-cdr')->everyThirtySeconds()
     ->runInBackground()
     ->withoutOverlapping();
+Schedule::command('app:dispatch-call')->everyTenSeconds()
+    ->runInBackground()
+    ->withoutOverlapping();

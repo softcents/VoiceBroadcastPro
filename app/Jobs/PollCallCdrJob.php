@@ -78,9 +78,9 @@ final class PollCallCdrJob implements ShouldQueue
         }
 
         $actualCost = $this->calculateEstimatedCost($actualDuration, $user);
-        $estimatedCost = (int) $call->cost;
+        $estimatedCost = (float) $call->cost;
 
-        $diff = $actualCost - $estimatedCost;
+        $diff = (float) $actualCost - $estimatedCost;
 
         // update call
         $call->update([
@@ -91,8 +91,8 @@ final class PollCallCdrJob implements ShouldQueue
             'next_poll_at' => null,
         ]);
 
-        // no change needed
-        if ($diff === 0) {
+        // no change needed (tolerate float noise within 1 paisa)
+        if (abs($diff) < 0.01) {
             return;
         }
 

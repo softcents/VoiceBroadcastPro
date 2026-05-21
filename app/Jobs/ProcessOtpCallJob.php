@@ -5,143 +5,153 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Enums\CallStatus;
-use App\Enums\TransactionType;
+use App\Jobs\Concerns\RefundsCallCost;
+use App\Jobs\Middleware\LimitCallerCalls;
+use App\Jobs\Middleware\LimitServerCalls;
 use App\Models\Call;
 use Exception;
 use Illuminate\Bus\Batchable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Http\Client\ConnectionException;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class ProcessOtpCallJob implements ShouldQueue
+final class ProcessOtpCallJob implements ShouldBeUnique, ShouldQueue
 {
-    use Batchable, Queueable;
+    use Batchable, Queueable, RefundsCallCost;
 
-    protected ?Call $call;
+    public int $tries = 50;
 
-    public function __construct(int $callId)
+    public int $timeout = 120;
+
+    public int $maxExceptions = 3;
+
+    public int $uniqueFor = 3600;
+
+    private ?Call $call = null;
+
+    public function __construct(public readonly int $callId) {}
+
+    public function uniqueId(): string
     {
-        $this->call = Call::with(['caller.server'])->find($callId);
+        return (string) $this->callId;
     }
 
     /**
-     * Execute the job.
-     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [
+            new LimitServerCalls($this->callId),
+            new LimitCallerCalls($this->callId),
+        ];
+    }
+
+    /**
      * @throws Throwable
      */
     public function handle(): void
     {
-        $user = $this->call->user;
+        $this->call = Call::with(['caller.server'])
+            ->withoutGlobalScopes()
+            ->find($this->callId);
 
-        $pulseRate = $user->pulse_rate;
-
-        if (! $user || $user->balance < $pulseRate) {
-            $this->call->update(['status' => CallStatus::Failed]);
+        if (! $this->call) {
+            Log::warning("OTP Call ID {$this->callId} not found in queue");
 
             return;
         }
 
-        $cost = $pulseRate;
+        // Already settled — nothing to do.
+        if (in_array($this->call->status, [CallStatus::Failed, CallStatus::Completed, CallStatus::Processing], true)) {
+            return;
+        }
 
-        // Deduct balance and create transaction
+        if (! $this->call->caller?->server) {
+            $this->refundCallCost($this->callId, 'Caller/server configuration missing');
+
+            return;
+        }
+
+        $this->initiateCall();
+    }
+
+    public function failed(Throwable $exception): void
+    {
         try {
-            DB::beginTransaction();
-
-            $user->decrement('balance', $cost);
-
-            $user->transactions()->create([
-                'type' => TransactionType::Debit,
-                'amount' => $cost,
-                'currency' => 'BDT',
-                'description' => "Initial charge for OTP call ID {$this->call->id}",
-                'transactionable_type' => Call::class,
-                'transactionable_id' => $this->call->id,
+            $this->refundCallCost($this->callId, 'Job permanently failed: '.$exception->getMessage());
+        } catch (Throwable $e) {
+            Log::error('OTP refund failed during failed() handler', [
+                'call_id' => $this->callId,
+                'exception' => $e->getMessage(),
             ]);
-
-            $this->call->cost = $cost;
-            $this->call->saveQuietly();
-
-            DB::commit();
-        } catch (Exception $e) {
-            DB::rollBack();
-            Log::error("Failed to deduct balance for OTP Call ID: {$this->call->id}. Error: {$e->getMessage()}");
-            $this->call->update(['status' => CallStatus::Failed]);
-
-            return;
         }
 
-        $username = $this->call->caller->server->ari_username;
-        $password = $this->call->caller->server->ari_password;
-
-        $recipientNumber = $this->call->phone_number;
-        $trunkName = $this->call->caller->trunk_name;
-        $callerName = $this->call->caller->caller_name;
-        $callerNumber = $this->call->caller->caller_number;
-        $otp = $this->call->otp;
-
-        $response = Http::withBasicAuth($username, $password)
-            ->baseUrl($this->call->caller->server->ari_base_url)
-            ->post('ari/channels', [
-                'endpoint' => "PJSIP/{$recipientNumber}@{$trunkName}",
-                'extension' => 'frolax.agency',
-                'context' => 'outgoing-http',
-                'priority' => 1,
-                'callerId' => "{$callerName} <{$callerNumber}>",
-                'variables' => [
-                    'STEP_COUNT' => '3',
-                    'STEP_1_TYPE' => 'url',
-                    'STEP_1_VALUE' => url('sounds/pre-otp.wav'),
-                    'STEP_2_TYPE' => 'digits',
-                    'STEP_2_VALUE' => $otp,
-                    'STEP_3_TYPE' => 'url',
-                    'STEP_3_VALUE' => url('sounds/post-otp.wav'),
-                ],
-            ]);
-
-        if ($response->failed()) {
-            // Refund balance
-            DB::transaction(function () use ($user, $cost) {
-                $user->increment('balance', $cost);
-
-                $user->transactions()->create([
-                    'type' => TransactionType::Credit,
-                    'amount' => $cost,
-                    'currency' => 'BDT',
-                    'description' => "Refund for failed OTP call initiation ID {$this->call->id}",
-                    'transactionable_type' => Call::class,
-                    'transactionable_id' => $this->call->id,
-                ]);
-
-                $this->call->cost = 0;
-                $this->call->saveQuietly();
-            });
-
-            throw new ConnectionException("Failed to initiate call for Call ID: {$this->call->id}");
-        }
-
-        $this->call->update([
-            'unique_id' => $response->json('id'),
-            'status' => CallStatus::Processing,
+        Log::error("ProcessOtpCall failed for Call ID: {$this->callId}", [
+            'exception' => $exception->getMessage(),
         ]);
     }
 
     /**
-     * Handle a job failure.
+     * @throws Throwable
      */
-    public function failed(Throwable $exception): void
+    private function initiateCall(): void
     {
-        if (isset($this->call)) {
-            $this->call->update([
-                'status' => CallStatus::Failed,
-            ]);
-        }
+        try {
+            $server = $this->call->caller->server;
 
-        Log::error('ProcessOtpCall failed for Call ID: '.($this->call?->id ?? 'unknown'), [
-            'exception' => $exception->getMessage(),
-        ]);
+            $response = Http::timeout(30)
+                ->withBasicAuth($server->ari_username, $server->ari_password)
+                ->baseUrl($server->ari_base_url)
+                ->post('ari/channels', [
+                    'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->trunk_name}",
+                    'extension' => 'frolax.agency',
+                    'context' => 'outgoing-http',
+                    'priority' => 1,
+                    'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
+                    'variables' => [
+                        'STEP_COUNT' => '3',
+                        'STEP_1_TYPE' => 'url',
+                        'STEP_1_VALUE' => url('sounds/pre-otp.wav'),
+                        'STEP_2_TYPE' => 'digits',
+                        'STEP_2_VALUE' => $this->call->otp,
+                        'STEP_3_TYPE' => 'url',
+                        'STEP_3_VALUE' => url('sounds/post-otp.wav'),
+                    ],
+                ]);
+
+            if ($response->failed()) {
+                Log::error("OTP API request failed for Call ID {$this->call->id}", [
+                    'status' => $response->status(),
+                    'response' => $response->body(),
+                ]);
+
+                $this->refundCallCost($this->callId, "API request failed with status {$response->status()}");
+
+                return;
+            }
+
+            $uniqueId = $response->json('id');
+
+            if (! $uniqueId) {
+                $this->refundCallCost($this->callId, 'No unique ID returned from API');
+
+                return;
+            }
+
+            $this->call->update([
+                'unique_id' => $uniqueId,
+                'status' => CallStatus::Processing,
+            ]);
+        } catch (Exception $e) {
+            Log::error("Exception during OTP API call for Call ID {$this->call->id}", [
+                'exception' => $e->getMessage(),
+            ]);
+
+            $this->refundCallCost($this->callId, 'Server API exception: '.$e->getMessage());
+        }
     }
 }

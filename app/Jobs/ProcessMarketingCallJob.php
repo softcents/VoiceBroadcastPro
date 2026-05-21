@@ -5,28 +5,31 @@ declare(strict_types=1);
 namespace App\Jobs;
 
 use App\Enums\CallStatus;
-use App\Enums\TransactionType;
+use App\Jobs\Concerns\RefundsCallCost;
+use App\Jobs\Middleware\LimitCallerCalls;
+use App\Jobs\Middleware\LimitServerCalls;
 use App\Models\Call;
-use App\Models\User;
 use Exception;
 use Illuminate\Bus\Batchable;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-final class ProcessMarketingCallJob implements ShouldQueue
+final class ProcessMarketingCallJob implements ShouldBeUnique, ShouldQueue
 {
-    use Batchable, Queueable;
+    use Batchable, Queueable, RefundsCallCost;
 
-    public int $tries = 1;
+    public int $tries = 50;
 
     public int $timeout = 120;
 
     public int $maxExceptions = 3;
+
+    public int $uniqueFor = 3600;
 
     private ?Call $call = null;
 
@@ -34,14 +37,30 @@ final class ProcessMarketingCallJob implements ShouldQueue
         public readonly int $callId
     ) {}
 
+    public function uniqueId(): string
+    {
+        return (string) $this->callId;
+    }
+
     /**
-     * Execute the job.
-     *
+     * @return array<int, object>
+     */
+    public function middleware(): array
+    {
+        return [
+            new LimitServerCalls($this->callId),
+            new LimitCallerCalls($this->callId),
+        ];
+    }
+
+    /**
      * @throws Throwable
      */
     public function handle(): void
     {
-        $this->call = Call::with(['audio', 'caller.server', 'user'])->find($this->callId);
+        $this->call = Call::with(['audio', 'caller.server', 'user'])
+            ->withoutGlobalScopes()
+            ->find($this->callId);
 
         if (! $this->call) {
             Log::warning("Call ID {$this->callId} not found in queue");
@@ -49,87 +68,74 @@ final class ProcessMarketingCallJob implements ShouldQueue
             return;
         }
 
-        $user = $this->call->user;
+        // Already settled — nothing to do.
+        if (in_array($this->call->status, [CallStatus::Failed, CallStatus::Completed, CallStatus::Processing], true)) {
+            return;
+        }
 
-        if (! $user) {
-            $this->failCall('User not found');
+        if (! $this->call->user) {
+            $this->refundCallCost($this->callId, 'User not found');
 
             return;
         }
 
-        // Validate required relationships
         if (! $this->call->audio) {
-            $this->refundAndFail($user, 'Audio record not found');
+            $this->refundCallCost($this->callId, 'Audio record not found');
+
+            return;
         }
 
-        if (! $this->call->caller) {
-            $this->refundAndFail($user, 'Caller configuration not found');
+        if (! $this->call->caller?->server) {
+            $this->refundCallCost($this->callId, 'Caller/server configuration not found');
+
+            return;
         }
 
-        if (! $this->call->caller->server) {
-            $this->refundAndFail($user, 'Server configuration not found');
-        }
-
-        // Check audio file exists before proceeding
         $audioPath = $this->call->audio->converted_path;
 
         if (! $audioPath || ! Storage::exists($audioPath)) {
-            $this->refundAndFail($user, 'Audio file not found');
+            $this->refundCallCost($this->callId, 'Audio file not found');
+
+            return;
         }
 
-        // Initiate the call via API
         $this->initiateCall($audioPath);
     }
 
-    /**
-     * Handle a job failure.
-     */
     public function failed(Throwable $exception): void
     {
-        if ($this->call) {
-            // Only update status if not already failed (avoid double-update)
-            if ($this->call->status !== CallStatus::Failed) {
-                $this->call->update(['status' => CallStatus::Failed]);
-            }
-
-            Log::error('ProcessMarketingCall job failed', [
-                'call_id' => $this->call->id,
-                'exception' => $exception->getMessage(),
-                'trace' => $exception->getTraceAsString(),
-            ]);
-        } else {
-            Log::error('ProcessMarketingCall job failed - Call not loaded', [
+        try {
+            $this->refundCallCost($this->callId, 'Job permanently failed: '.$exception->getMessage());
+        } catch (Throwable $e) {
+            Log::error('Refund failed during failed() handler', [
                 'call_id' => $this->callId,
-                'exception' => $exception->getMessage(),
+                'exception' => $e->getMessage(),
             ]);
         }
+
+        Log::error('ProcessMarketingCall job failed', [
+            'call_id' => $this->callId,
+            'exception' => $exception->getMessage(),
+        ]);
     }
 
     /**
-     * Initiate the call via the telephony API.
-     *
      * @throws Throwable
      */
     private function initiateCall(string $audioPath): void
     {
         try {
-            $username = $this->call->caller->server->ari_username;
-            $password = $this->call->caller->server->ari_password;
-
-            $recipientNumber = $this->call->phone_number;
-            $trunkName = $this->call->caller->trunk_name;
-            $callerName = $this->call->caller->caller_name;
-            $callerNumber = $this->call->caller->caller_number;
+            $server = $this->call->caller->server;
 
             $response = Http::timeout(30)
-                ->withBasicAuth($username, $password)
-                ->baseUrl($this->call->caller->server->ari_base_url)
+                ->withBasicAuth($server->ari_username, $server->ari_password)
+                ->baseUrl($server->ari_base_url)
                 ->post('ari/channels', [
-                    'endpoint' => "PJSIP/{$recipientNumber}@{$trunkName}",
+                    'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->trunk_name}",
                     'extension' => 'frolax.agency',
                     'context' => 'outgoing-http',
                     'priority' => 1,
-                    'callerId' => "{$callerName} <{$callerNumber}>",
+                    'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
                     'variables' => [
                         'STEP_COUNT' => '1',
                         'STEP_1_TYPE' => 'url',
@@ -149,76 +155,30 @@ final class ProcessMarketingCallJob implements ShouldQueue
                     'response' => $response->body(),
                 ]);
 
-                $this->refundAndFail(
-                    $this->call->user,
-                    "API request failed with status {$statusCode}."
-                );
+                $this->refundCallCost($this->callId, "API request failed with status {$statusCode}");
+
+                return;
             }
 
             $uniqueId = $response->json('id');
 
             if (! $uniqueId) {
-                $this->refundAndFail($this->call->user, 'No unique ID returned from API');
+                $this->refundCallCost($this->callId, 'No unique ID returned from API');
+
+                return;
             }
 
             $this->call->update([
                 'unique_id' => $uniqueId,
                 'status' => CallStatus::Processing,
             ]);
-
         } catch (Exception $e) {
             Log::error("Exception during API call for Call ID {$this->call->id}", [
                 'exception' => $e->getMessage(),
                 'trace' => $e->getTraceAsString(),
             ]);
 
-            $this->refundAndFail($this->call->user, 'Server API exception');
+            $this->refundCallCost($this->callId, 'Server API exception: '.$e->getMessage());
         }
-    }
-
-    /**
-     * Refund the reserved balance and fail the call.
-     *
-     * @throws Throwable
-     */
-    private function refundAndFail(User $user, string $reason): never
-    {
-        $cost = $this->call->cost;
-
-        DB::transaction(function () use ($user, $cost, $reason) {
-            // Refund the user's balance
-            $user->increment('balance', $cost);
-
-            // Create transaction record
-            $user->transactions()->create([
-                'type' => TransactionType::Credit,
-                'amount' => $cost,
-                'currency' => 'BDT',
-                'description' => "Refund for call ID {$this->call->id}: {$reason}",
-                'transactionable_type' => Call::class,
-                'transactionable_id' => $this->call->id,
-            ]);
-
-            // Update call status and reset cost
-            $this->call->update([
-                'cost' => 0,
-                'status' => CallStatus::Failed,
-            ]);
-        });
-
-        throw new Exception("Call ID {$this->call->id} failed: {$reason}");
-    }
-
-    /**
-     * Fail the call without refunding (used when no cost was incurred).
-     */
-    private function failCall(string $reason): void
-    {
-        $this->call->update(['status' => CallStatus::Failed]);
-
-        Log::warning('Call failed without refund', [
-            'call_id' => $this->call->id,
-            'reason' => $reason,
-        ]);
     }
 }
