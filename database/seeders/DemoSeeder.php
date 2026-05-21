@@ -29,16 +29,8 @@ final class DemoSeeder extends Seeder
         ]);
 
         $contacts = [
-            [
-                'first_name' => 'Bishwajit',
-                'last_name' => 'Grameenphone',
-                'phone_number' => '+8801322635808',
-            ],
-            [
-                'first_name' => 'Bishwajit',
-                'last_name' => 'Teletalk',
-                'phone_number' => '+8801712345678',
-            ],
+            ['phone_number' => '+8801322635808'],
+            ['phone_number' => '+8801712345678'],
         ];
 
         foreach ($contacts as $contact) {

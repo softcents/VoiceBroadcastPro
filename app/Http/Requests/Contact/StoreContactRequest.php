@@ -28,8 +28,6 @@ final class StoreContactRequest extends FormRequest
     {
         return [
             'phonebook_id' => ['required', 'integer', 'exists:phonebooks,id'],
-            'first_name' => ['nullable', 'string', 'max:255'],
-            'last_name' => ['nullable', 'string', 'max:255'],
             'phone_number' => [
                 'required',
                 'string',
@@ -45,14 +43,6 @@ final class StoreContactRequest extends FormRequest
         return [
             'phonebook_id' => [
                 'description' => 'The ID of the phonebook.',
-            ],
-            'first_name' => [
-                'description' => 'The first name of the contact.',
-                'example' => 'John',
-            ],
-            'last_name' => [
-                'description' => 'The last name of the contact.',
-                'example' => 'Doe',
             ],
             'phone_number' => [
                 'description' => 'The phone number of the contact.',

@@ -45,18 +45,10 @@ final class PhonebookForm
                             ->relationship()
                             ->defaultItems(0)
                             ->table([
-                                TableColumn::make('First Name'),
-                                TableColumn::make('Last Name'),
                                 TableColumn::make('Phone Number')
                                     ->markAsRequired(),
                             ])
                             ->schema([
-                                TextInput::make('first_name')
-                                    ->label('First Name')
-                                    ->placeholder('Enter first name'),
-                                TextInput::make('last_name')
-                                    ->label('Last Name')
-                                    ->placeholder('Enter last name'),
                                 PhoneInput::make('phone_number')
                                     ->label('Phone Number')
                                     ->placeholder('Enter phone number')

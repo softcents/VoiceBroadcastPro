@@ -42,7 +42,7 @@ final class ContactController extends Controller
 
     #[Endpoint(title: 'Create Contact', description: 'Create a new contact.')]
     #[ResponseFromApiResource(name: ContactResource::class, model: Contact::class, status: 201)]
-    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['first_name' => ['The first name field is required.']]], status: 422)]
+    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['phone_number' => ['The phone number field is required.']]], status: 422)]
     public function store(#[CurrentUser] User $user, StoreContactRequest $request)
     {
         // Verify phonebook belongs to user
@@ -70,7 +70,7 @@ final class ContactController extends Controller
     #[ResponseFromApiResource(name: ContactResource::class, model: Contact::class)]
     #[Response(content: ['message' => 'This action is unauthorized.'], status: 403)]
     #[Response(content: ['message' => 'Record not found.'], status: 404)]
-    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['first_name' => ['The first name field is required.']]], status: 422)]
+    #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['phone_number' => ['The phone number field is required.']]], status: 422)]
     public function update(#[CurrentUser] User $user, UpdateContactRequest $request, Contact $contact)
     {
         if ($contact->phonebook->user_id !== $user->id) {

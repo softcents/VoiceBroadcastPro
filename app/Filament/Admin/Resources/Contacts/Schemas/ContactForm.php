@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Contacts\Schemas;
 
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Ysfkaya\FilamentPhoneInput\Forms\PhoneInput;
@@ -25,11 +24,6 @@ final class ContactForm
                             ->searchable()
                             ->preload()
                             ->required(),
-                        TextInput::make('first_name')
-                            ->label('First Name')
-                            ->required(),
-                        TextInput::make('last_name')
-                            ->label('Last Name'),
                         PhoneInput::make('phone_number')
                             ->label('Phone Number')
                             ->defaultCountry('BD')

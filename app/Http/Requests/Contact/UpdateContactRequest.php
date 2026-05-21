@@ -27,8 +27,6 @@ final class UpdateContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'first_name' => ['sometimes', 'string', 'max:255'],
-            'last_name' => ['sometimes', 'string', 'max:255'],
             'phone_number' => [
                 'sometimes',
                 'string',
@@ -43,14 +41,6 @@ final class UpdateContactRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
-            'first_name' => [
-                'description' => 'The first name of the contact. (Optional)',
-                'example' => 'John',
-            ],
-            'last_name' => [
-                'description' => 'The last name of the contact. (Optional)',
-                'example' => 'Doe',
-            ],
             'phone_number' => [
                 'description' => 'The phone number of the contact. (Optional)',
                 'example' => '+8801XXXXXXXXX',

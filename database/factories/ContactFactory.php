@@ -21,8 +21,6 @@ final class ContactFactory extends Factory
     {
         return [
             'phonebook_id' => \App\Models\Phonebook::factory(),
-            'first_name' => fake()->firstName(),
-            'last_name' => fake()->lastName(),
             'phone_number' => '+88017'.fake()->numerify('#########'),
         ];
     }

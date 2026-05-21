@@ -18,8 +18,6 @@ final class Contact extends Model
 
     protected $fillable = [
         'phonebook_id',
-        'first_name',
-        'last_name',
         'phone_number',
     ];
 
@@ -35,7 +33,7 @@ final class Contact extends Model
     protected function name(): Attribute
     {
         return Attribute::make(
-            get: fn ($value) => $this->first_name.' '.$this->last_name
+            get: fn () => $this->phone_number
         );
     }
 

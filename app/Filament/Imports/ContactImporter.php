@@ -19,12 +19,6 @@ final class ContactImporter extends Importer
     public static function getColumns(): array
     {
         return [
-            ImportColumn::make('first_name')
-                ->label('First Name')
-                ->rules(['nullable', 'max:255']),
-            ImportColumn::make('last_name')
-                ->label('Last Name')
-                ->rules(['nullable', 'max:255']),
             ImportColumn::make('phone_number')
                 ->label('Phone Number')
                 ->requiredMapping()

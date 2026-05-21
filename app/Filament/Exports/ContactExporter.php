@@ -20,8 +20,6 @@ final class ContactExporter extends Exporter
             ExportColumn::make('id')
                 ->label('ID')
                 ->enabledByDefault(false),
-            ExportColumn::make('first_name'),
-            ExportColumn::make('last_name'),
             ExportColumn::make('phone_number'),
             ExportColumn::make('created_at')
                 ->enabledByDefault(false),

@@ -13,7 +13,6 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ExportAction;
 use Filament\Actions\ViewAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Schemas\Components\Section;
@@ -33,11 +32,6 @@ final class ContactsRelationManager extends RelationManager
             ->components([
                 Section::make()
                     ->schema([
-                        TextInput::make('first_name')
-                            ->label('First Name')
-                            ->required(),
-                        TextInput::make('last_name')
-                            ->label('Last Name'),
                         PhoneInput::make('phone_number')
                             ->label('Phone Number')
                             ->defaultCountry('BD')
@@ -53,12 +47,6 @@ final class ContactsRelationManager extends RelationManager
     {
         return $schema
             ->components([
-                TextEntry::make('first_name')
-                    ->label('First Name')
-                    ->placeholder('-'),
-                TextEntry::make('last_name')
-                    ->label('Last Name')
-                    ->placeholder('-'),
                 TextEntry::make('phone_number')
                     ->label('Phone Number')
                     ->placeholder('-'),
@@ -78,12 +66,6 @@ final class ContactsRelationManager extends RelationManager
         return $table
             ->recordTitleAttribute('phone_number')
             ->columns([
-                TextColumn::make('first_name')
-                    ->label('First Name')
-                    ->searchable(),
-                TextColumn::make('last_name')
-                    ->label('Last Name')
-                    ->searchable(),
                 TextColumn::make('phone_number')
                     ->label('Phone Number')
                     ->searchable(),

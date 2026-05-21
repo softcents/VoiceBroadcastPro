@@ -22,10 +22,6 @@ final class ContactInfolist
                     ->description('Essential contact information')
                     ->icon(Tabler::UserCircle)
                     ->schema([
-                        TextEntry::make('nameOrNumber')
-                            ->label('Full Name')
-                            ->icon(Tabler::User)
-                            ->placeholder('No name provided'),
                         TextEntry::make('phone_number')
                             ->label('Phone Number')
                             ->icon(Tabler::Phone)
@@ -34,24 +30,7 @@ final class ContactInfolist
                             ->copyMessageDuration(1500)
                             ->url(fn (Contact $record) => 'tel:'.$record->phone_number),
                     ])
-                    ->columns(2)
-                    ->collapsible(),
-
-                // Personal Information Section
-                Section::make('Personal Information')
-                    ->description('Name details')
-                    ->icon(Tabler::IdBadge)
-                    ->schema([
-                        TextEntry::make('first_name')
-                            ->label('First Name')
-                            ->icon(Tabler::User)
-                            ->placeholder('Not provided'),
-                        TextEntry::make('last_name')
-                            ->label('Last Name')
-                            ->icon(Tabler::User)
-                            ->placeholder('Not provided'),
-                    ])
-                    ->columns()
+                    ->columns(1)
                     ->collapsible(),
 
                 // Phonebook Association Section
