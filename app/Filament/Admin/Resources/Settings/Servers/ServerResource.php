@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Settings\Servers;
 
+use App\Enums\AdminNavigationGroup;
 use App\Filament\Admin\Resources\Settings\Servers\Pages\CreateServer;
 use App\Filament\Admin\Resources\Settings\Servers\Pages\EditServer;
 use App\Filament\Admin\Resources\Settings\Servers\Pages\ListServers;
@@ -19,9 +20,9 @@ final class ServerResource extends Resource
 {
     protected static ?string $model = Server::class;
 
-    protected static string|null|UnitEnum $navigationGroup = 'Settings';
+    protected static string|null|UnitEnum $navigationGroup = AdminNavigationGroup::Settings;
 
-    protected static ?int $navigationSort = 70;
+    protected static ?int $navigationSort = 4;
 
     protected static ?string $recordTitleAttribute = 'name';
 

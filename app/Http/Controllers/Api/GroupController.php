@@ -14,11 +14,11 @@ use Illuminate\Container\Attributes\CurrentUser;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
-use Knuckles\Scribe\Attributes\Group;
+use Knuckles\Scribe\Attributes\Group as ScribeGroup;
 use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
 
-#[Group('Groups', 'Manage groups')]
+#[ScribeGroup('Groups', 'Manage groups')]
 #[Authenticated]
 final class GroupController extends Controller
 {

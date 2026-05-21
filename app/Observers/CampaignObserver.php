@@ -8,7 +8,7 @@ use App\Enums\CallStatus;
 use App\Enums\CallType;
 use App\Enums\CampaignApproval;
 use App\Enums\TransactionType;
-use App\Filament\Admin\Resources\Campaigns\CampaignResource;
+use App\Filament\Admin\Resources\Calling\Campaigns\CampaignResource;
 use App\Models\Call;
 use App\Models\Campaign;
 use App\Models\Transaction;

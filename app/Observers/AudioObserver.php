@@ -7,7 +7,7 @@ namespace App\Observers;
 use App\Enums\AudioApproval;
 use App\Enums\AudioTTSStatus;
 use App\Enums\AudioType;
-use App\Filament\Admin\Resources\Audio\AudioResource;
+use App\Filament\Admin\Resources\Calling\Audio\AudioResource;
 use App\Jobs\ConvertAudio;
 use App\Jobs\GenerateAudio;
 use App\Models\Audio;

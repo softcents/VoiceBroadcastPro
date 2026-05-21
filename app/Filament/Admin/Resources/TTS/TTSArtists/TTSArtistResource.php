@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\TTS\TTSArtists;
 
+use App\Enums\AdminNavigationGroup;
 use App\Filament\Admin\Resources\TTS\TTSArtists\Pages\CreateTTSArtist;
 use App\Filament\Admin\Resources\TTS\TTSArtists\Pages\EditTTSArtist;
 use App\Filament\Admin\Resources\TTS\TTSArtists\Pages\ListTTSArtists;
@@ -19,7 +20,7 @@ final class TTSArtistResource extends Resource
 {
     protected static ?string $model = TTSArtist::class;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Text to Speech';
+    protected static string|UnitEnum|null $navigationGroup = AdminNavigationGroup::TextToSpeech;
 
     protected static ?string $breadcrumb = 'TTS Artists';
 
@@ -27,7 +28,10 @@ final class TTSArtistResource extends Resource
 
     protected static ?string $navigationLabel = 'Artists';
 
-    protected static ?string $slug = 'tts-artists';
+    protected static ?string $modelLabel = 'TTS Artist';
+    protected static ?string $pluralModelLabel = 'TTS Artists';
+
+    protected static ?string $slug = 'text-to-speech/artists';
 
     public static function form(Schema $schema): Schema
     {

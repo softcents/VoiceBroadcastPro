@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Settings\Callers;
 
+use App\Enums\AdminNavigationGroup;
 use App\Filament\Admin\Resources\Settings\Callers\Pages\CreateCaller;
 use App\Filament\Admin\Resources\Settings\Callers\Pages\EditCaller;
 use App\Filament\Admin\Resources\Settings\Callers\Pages\ListCallers;
@@ -19,9 +20,9 @@ final class CallerResource extends Resource
 {
     protected static ?string $model = Caller::class;
 
-    protected static string|null|UnitEnum $navigationGroup = 'Settings';
+    protected static string|null|UnitEnum $navigationGroup = AdminNavigationGroup::Settings;
 
-    protected static ?int $navigationSort = 15;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'caller_name';
 

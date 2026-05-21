@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Finance\Deposits;
 
+use App\Enums\AdminNavigationGroup;
 use App\Filament\Admin\Resources\Finance\Deposits\Pages\CreateDeposit;
 use App\Filament\Admin\Resources\Finance\Deposits\Pages\ListDeposits;
 use App\Filament\Admin\Resources\Finance\Deposits\Pages\ViewDeposit;
@@ -21,9 +22,9 @@ final class DepositResource extends Resource
 {
     protected static ?string $model = Deposit::class;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Financial';
+    protected static string|UnitEnum|null $navigationGroup = AdminNavigationGroup::Finance;
 
-    protected static ?int $navigationSort = 61;
+    protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'transaction_id';
 

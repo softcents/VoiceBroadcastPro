@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Pages;
 
+use App\Enums\AdminNavigationGroup;
 use App\Settings\CallingSetting;
 use Filament\Forms\Components\TextInput;
 use Filament\Pages\SettingsPage;
@@ -13,11 +14,13 @@ use UnitEnum;
 
 final class CallingSettings extends SettingsPage
 {
-    protected static string|UnitEnum|null $navigationGroup = 'Settings';
+    protected static string|UnitEnum|null $navigationGroup = AdminNavigationGroup::Settings;
 
     protected static string $settings = CallingSetting::class;
 
     protected static ?string $title = 'Calling';
+
+    protected static ?int $navigationSort = 1;
 
     public function form(Schema $schema): Schema
     {

@@ -32,6 +32,9 @@ final class CustomerResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $modelLabel = 'Customer';
+    protected static ?string $pluralModelLabel = 'Customers';
+
     public static function form(Schema $schema): Schema
     {
         return CustomerForm::configure($schema);

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Finance\Transactions;
 
+use App\Enums\AdminNavigationGroup;
 use App\Filament\Admin\Resources\Finance\Transactions\Pages\ListTransactions;
 use App\Filament\Admin\Resources\Finance\Transactions\Pages\ViewTransaction;
 use App\Filament\Admin\Resources\Finance\Transactions\Schemas\TransactionInfolist;
@@ -18,9 +19,9 @@ final class TransactionResource extends Resource
 {
     protected static ?string $model = Transaction::class;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Financial';
+    protected static string|UnitEnum|null $navigationGroup = AdminNavigationGroup::Finance;
 
-    protected static ?int $navigationSort = 60;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'id';
 

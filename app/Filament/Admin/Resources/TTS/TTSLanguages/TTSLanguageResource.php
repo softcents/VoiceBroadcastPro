@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\TTS\TTSLanguages;
 
+use App\Enums\AdminNavigationGroup;
 use App\Filament\Admin\Resources\TTS\TTSLanguages\Pages\CreateTTSLanguage;
 use App\Filament\Admin\Resources\TTS\TTSLanguages\Pages\EditTTSLanguage;
 use App\Filament\Admin\Resources\TTS\TTSLanguages\Pages\ListTTSLanguages;
@@ -22,17 +23,20 @@ final class TTSLanguageResource extends Resource
 {
     protected static ?string $model = TTSLanguage::class;
 
-    protected static string|UnitEnum|null $navigationGroup = 'Text to Speech';
+    protected static string|UnitEnum|null $navigationGroup = AdminNavigationGroup::TextToSpeech;
 
     protected static ?string $breadcrumb = 'TTS Languages';
 
-    protected static ?int $navigationSort = 32;
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $navigationLabel = 'Languages';
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $slug = 'tts-languages';
+    protected static ?string $modelLabel = 'TTS Language';
+    protected static ?string $pluralModelLabel = 'TTS Languages';
+
+    protected static ?string $slug = 'text-to-speech/languages';
 
     public static function form(Schema $schema): Schema
     {

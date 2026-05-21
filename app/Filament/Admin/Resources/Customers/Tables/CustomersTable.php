@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Customers\Tables;
 
 use App\Enums\UserStatus;
-use App\Filament\Admin\Resources\Customers\Actions\AddBalanceAction;
+use App\Filament\Admin\Resources\Customers\Actions\DepositAction;
 use App\Filament\Admin\Resources\Customers\Actions\ApprovalAction;
 use App\Filament\Admin\Resources\Customers\Actions\ImpersonateAction;
 use App\Models\User;
@@ -67,14 +67,11 @@ final class CustomersTable
                 ApprovalAction::make()
                     ->hidden(fn (User $record) => $record->status !== UserStatus::Pending),
                 ActionGroup::make([
-                    ViewAction::make()
-                        ->label('View Details'),
-                    AddBalanceAction::make(),
+                    ViewAction::make()->label('View Details'),
+                    DepositAction::make(),
+                    EditAction::make()->label('Edit Customer'),
                     ImpersonateAction::make(),
-                    EditAction::make()
-                        ->label('Edit Customer'),
-                    DeleteAction::make()
-                        ->label('Delete Customer'),
+                    DeleteAction::make()->label('Delete Customer'),
                 ]),
             ])
             ->toolbarActions([
