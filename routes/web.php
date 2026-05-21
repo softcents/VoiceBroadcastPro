@@ -13,7 +13,7 @@ Route::view('/terms', 'terms')->name('terms');
 
 Route::match(['post', 'get'], 'payments/{gateway}/callback/{deposit}', PaymentController::class)
     ->name('payments.callback')
-    ->middleware(['auth:customer'])
+    ->middleware(['auth'])
     ->whereIn('gateway', ['piprapay']);
 
 Route::match(['post', 'get'], 'webhooks/payment/{gateway}', PaymentWebhookController::class)

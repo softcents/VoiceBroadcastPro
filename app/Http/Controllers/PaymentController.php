@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\DepositStatus;
-use App\Filament\User\Resources\Deposits\DepositResource;
+use App\Filament\User\Resources\Finance\Deposits\DepositResource;
 use App\Models\Deposit;
 use Exception;
 use Filament\Notifications\Notification;
@@ -58,6 +58,6 @@ final class PaymentController extends Controller
 
         return redirect(DepositResource::getUrl('view', [
             'record' => $deposit,
-        ], panel: 'customer'));
+        ], panel: 'user'));
     }
 }

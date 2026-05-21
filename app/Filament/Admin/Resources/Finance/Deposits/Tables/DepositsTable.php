@@ -4,20 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Finance\Deposits\Tables;
 
-use App\Enums\DepositStatus;
-use App\Enums\TransactionType;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
-use App\Models\Deposit;
-use App\Models\Transaction;
-use Filament\Actions\Action;
-use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
-use Filament\Forms\Components\Select;
-use Filament\Support\Colors\Color;
-use Filament\Support\Enums\Width;
-use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Customers\Tables;
 
 use App\Enums\UserStatus;
-use App\Filament\Admin\Resources\Customers\Actions\DepositAction;
 use App\Filament\Admin\Resources\Customers\Actions\ApprovalAction;
+use App\Filament\Admin\Resources\Customers\Actions\DepositAction;
 use App\Filament\Admin\Resources\Customers\Actions\ImpersonateAction;
 use App\Models\User;
 use Filament\Actions\ActionGroup;

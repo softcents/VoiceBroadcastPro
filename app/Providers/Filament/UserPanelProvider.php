@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers\Filament;
 
+use App\Enums\UserNavigationGroup;
 use App\Filament\User\Pages\Account\Banned;
 use App\Filament\User\Pages\Account\Pending;
 use App\Filament\User\Pages\Account\Rejected;
@@ -80,11 +81,11 @@ final class UserPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('docs')
-                    ->group('Developers')
+                    ->group(UserNavigationGroup::Developers)
                     ->label('Documentation')
                     ->url('/docs', true)
                     ->icon('heroicon-o-book-open')
-                    ->sort(100),
+                    ->sort(2),
             ])
             ->middleware([
                 EncryptCookies::class,

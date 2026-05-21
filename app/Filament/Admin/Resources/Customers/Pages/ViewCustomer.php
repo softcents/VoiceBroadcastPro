@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Customers\Pages;
 
-use App\Filament\Admin\Resources\Customers\Actions\DepositAction;
 use App\Filament\Admin\Resources\Customers\Actions\ApprovalAction;
+use App\Filament\Admin\Resources\Customers\Actions\DepositAction;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Filament\Admin\Resources\Customers\Schemas\CustomerInfolist;
 use App\Models\User;

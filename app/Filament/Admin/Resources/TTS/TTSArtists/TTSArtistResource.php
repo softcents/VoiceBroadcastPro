@@ -29,6 +29,7 @@ final class TTSArtistResource extends Resource
     protected static ?string $navigationLabel = 'Artists';
 
     protected static ?string $modelLabel = 'TTS Artist';
+
     protected static ?string $pluralModelLabel = 'TTS Artists';
 
     protected static ?string $slug = 'text-to-speech/artists';

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use App\Actions\Billing\CompleteDeposit;
@@ -9,7 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-class PaymentWebhookController extends Controller
+final class PaymentWebhookController extends Controller
 {
     /**
      * @throws Throwable

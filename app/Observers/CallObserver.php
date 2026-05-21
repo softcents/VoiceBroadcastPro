@@ -10,7 +10,6 @@ use App\Models\Call;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use Throwable;
 
 final class CallObserver

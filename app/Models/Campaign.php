@@ -60,6 +60,11 @@ final class Campaign extends Model implements Transactionable
         return $this->hasMany(Call::class);
     }
 
+    public function transactions(): MorphMany
+    {
+        return $this->morphMany(Transaction::class, 'transactionable');
+    }
+
     #[Scope]
     protected function pending(Builder $query): Builder
     {
@@ -85,10 +90,5 @@ final class Campaign extends Model implements Transactionable
     protected function approved(Builder $query): Builder
     {
         return $query->where('approval', CampaignApproval::Approved);
-    }
-
-    public function transactions(): MorphMany
-    {
-        return $this->morphMany(Transaction::class, 'transactionable');
     }
 }

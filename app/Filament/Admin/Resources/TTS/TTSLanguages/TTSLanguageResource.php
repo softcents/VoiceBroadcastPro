@@ -34,6 +34,7 @@ final class TTSLanguageResource extends Resource
     protected static ?string $recordTitleAttribute = 'name';
 
     protected static ?string $modelLabel = 'TTS Language';
+
     protected static ?string $pluralModelLabel = 'TTS Languages';
 
     protected static ?string $slug = 'text-to-speech/languages';
