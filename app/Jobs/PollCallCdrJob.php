@@ -14,7 +14,7 @@ use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
-final class PullCallDeliveryJob implements ShouldQueue
+final class PollCallCdrJob implements ShouldQueue
 {
     use Queueable;
 
@@ -102,6 +102,7 @@ final class PullCallDeliveryJob implements ShouldQueue
             $user->decrement('balance', $diff);
 
             $call->transactions()->create([
+                'user_id' => $user->id,
                 'type' => TransactionType::Debit,
                 'amount' => $diff,
                 'balance_before' => $before,
@@ -116,6 +117,7 @@ final class PullCallDeliveryJob implements ShouldQueue
             $user->increment('balance', $refund);
 
             $call->transactions()->create([
+                'user_id' => $user->id,
                 'type' => TransactionType::Credit,
                 'amount' => $refund,
                 'balance_before' => $before,
@@ -152,6 +154,7 @@ final class PullCallDeliveryJob implements ShouldQueue
         $user->increment('balance', $call->cost);
 
         $call->transactions()->create([
+            'user_id' => $user->id,
             'type' => TransactionType::Credit,
             'amount' => $call->cost,
             'balance_before' => $before,
@@ -185,7 +188,7 @@ final class PullCallDeliveryJob implements ShouldQueue
         };
     }
 
-    private function calculateEstimatedCost(int $duration, User $user): int
+    private function calculateEstimatedCost(int $duration, User $user): int|float
     {
         $pulseDuration = $user->pulse_duration ?? 60;
         $pulseRate = $user->pulse_rate ?? 0;

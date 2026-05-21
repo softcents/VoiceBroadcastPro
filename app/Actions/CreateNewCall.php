@@ -6,9 +6,9 @@ namespace App\Actions;
 
 use App\Enums\CallInterface;
 use App\Enums\TransactionType;
+use App\Exceptions\BusinessException;
 use App\Models\Call;
 use App\Models\User;
-use Exception;
 use Illuminate\Support\Facades\DB;
 use Throwable;
 
@@ -23,7 +23,9 @@ final class CreateNewCall
     {
         return DB::transaction(function () use ($user, $input, $interface): Call {
             /** @var Call $call */
-            $call = $user->calls()->create($input);
+            $call = $user->calls()->create(array_merge($input, [
+                'interface' => $interface,
+            ]));
 
             $lockedUser = User::whereKey($user->id)
                 ->lockForUpdate()
@@ -32,13 +34,13 @@ final class CreateNewCall
             $call->loadMissing('audio');
 
             if (! $call->audio) {
-                throw new Exception('Audio not found');
+                throw new BusinessException('Audio not found');
             }
 
             $cost = $call->audio->cost;
 
-            if ($lockedUser->hasEnoughBalance($cost)) {
-                throw new Exception('Insufficient balance');
+            if (! $lockedUser->hasEnoughBalance($cost)) {
+                throw new BusinessException('Insufficient balance');
             }
 
             $lockedUser->decrement('balance', $cost);
@@ -46,7 +48,6 @@ final class CreateNewCall
             $call->transactions()->create([
                 'user_id' => $lockedUser->id,
                 'type' => TransactionType::Debit,
-                'interface' => $interface,
                 'amount' => $cost,
                 'balance_before' => $lockedUser->balance + $cost,
                 'balance_after' => $lockedUser->balance,
