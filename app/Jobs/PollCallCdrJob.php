@@ -31,6 +31,7 @@ final class PollCallCdrJob implements ShouldQueue
 
             $call = Call::query()
                 ->whereKey($this->callId)
+                ->whereStatus(CallStatus::Processing)
                 ->whereNotNull('unique_id')
                 ->with(['caller.server'])
                 ->lockForUpdate()
