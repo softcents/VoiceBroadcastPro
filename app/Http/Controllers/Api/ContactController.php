@@ -26,13 +26,13 @@ final class ContactController extends Controller
 {
     #[Endpoint(title: 'List Contacts', description: 'Retrieve a list of contacts for the current user.')]
     #[ResponseFromApiResource(name: ContactResource::class, model: User::class, collection: true, paginate: 15)]
-    #[QueryParam(name: 'phonebook_id', type: 'integer', description: 'Filter by phonebook ID', required: false)]
+    #[QueryParam(name: 'group_id', type: 'integer', description: 'Filter by group ID', required: false)]
     public function index(#[CurrentUser] User $user, Request $request): ResourceCollection
     {
         $contacts = Contact::query()
-            ->whereRelation('phonebook', 'user_id', $user->id)
-            ->when($request->filled('phonebook_id'), function ($query) use ($request) {
-                $query->where('phonebook_id', $request->integer('phonebook_id'));
+            ->whereRelation('group', 'user_id', $user->id)
+            ->when($request->filled('group_id'), function ($query) use ($request) {
+                $query->where('group_id', $request->integer('group_id'));
             })
             ->latest()
             ->paginate();
@@ -45,10 +45,10 @@ final class ContactController extends Controller
     #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['phone_number' => ['The phone number field is required.']]], status: 422)]
     public function store(#[CurrentUser] User $user, StoreContactRequest $request)
     {
-        // Verify phonebook belongs to user
-        $phonebook = $user->phonebooks()->findOrFail($request->phonebook_id);
+        // Verify group belongs to user
+        $group = $user->groups()->findOrFail($request->group_id);
 
-        $contact = $phonebook->contacts()->create($request->validated());
+        $contact = $group->contacts()->create($request->validated());
 
         return new ContactResource($contact);
     }
@@ -59,7 +59,7 @@ final class ContactController extends Controller
     #[Response(content: ['message' => 'Record not found.'], status: 404)]
     public function show(#[CurrentUser] User $user, Contact $contact)
     {
-        if ($contact->phonebook->user_id !== $user->id) {
+        if ($contact->group->user_id !== $user->id) {
             abort(403);
         }
 
@@ -73,7 +73,7 @@ final class ContactController extends Controller
     #[Response(content: ['message' => 'The given data was invalid.', 'errors' => ['phone_number' => ['The phone number field is required.']]], status: 422)]
     public function update(#[CurrentUser] User $user, UpdateContactRequest $request, Contact $contact)
     {
-        if ($contact->phonebook->user_id !== $user->id) {
+        if ($contact->group->user_id !== $user->id) {
             abort(403);
         }
 
@@ -88,7 +88,7 @@ final class ContactController extends Controller
     #[Response(status: 204)]
     public function destroy(#[CurrentUser] User $user, Contact $contact)
     {
-        if ($contact->phonebook->user_id !== $user->id) {
+        if ($contact->group->user_id !== $user->id) {
             abort(403);
         }
 

@@ -53,7 +53,7 @@ final class ContactImporter extends Importer
         $this->data['phone_number'] = $phone;
 
         return Contact::firstOrNew([
-            'phonebook_id' => $this->options['phonebook_id'],
+            'group_id' => $this->options['group_id'],
             'phone_number' => $phone,
         ]);
     }

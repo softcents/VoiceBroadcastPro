@@ -10,8 +10,8 @@ use App\Http\Controllers\Api\CallerController;
 use App\Http\Controllers\Api\CampaignController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\DepositController;
+use App\Http\Controllers\Api\GroupController;
 use App\Http\Controllers\Api\OtpController;
-use App\Http\Controllers\Api\PhonebookController;
 use App\Http\Controllers\Api\TemplateController;
 use App\Http\Controllers\Api\TTS\ArtistController;
 use App\Http\Controllers\Api\TTS\LanguageController;
@@ -27,7 +27,7 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     });
 
     Route::apiResource('audio', AudioController::class);
-    Route::apiResource('phonebooks', PhonebookController::class);
+    Route::apiResource('groups', GroupController::class);
     Route::apiResource('contacts', ContactController::class);
     Route::apiResource('templates', TemplateController::class);
     Route::apiResource('callers', CallerController::class)->only('index');

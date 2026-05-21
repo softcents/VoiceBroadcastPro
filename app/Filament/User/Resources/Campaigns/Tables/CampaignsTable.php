@@ -33,8 +33,8 @@ final class CampaignsTable
                 TextColumn::make('audio.title')
                     ->label('Audio')
                     ->limit(20),
-                TextColumn::make('phonebook.name')
-                    ->label('Phonebook')
+                TextColumn::make('group.name')
+                    ->label('Group')
                     ->limit(20),
                 TextColumn::make('approval')
                     ->label('Approval')

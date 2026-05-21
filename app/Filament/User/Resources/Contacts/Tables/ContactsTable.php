@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Contacts\Tables;
 
-use App\Filament\User\Resources\Phonebooks\PhonebookResource;
+use App\Filament\User\Resources\Groups\GroupResource;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
@@ -26,9 +26,9 @@ final class ContactsTable
                     ->sortable()
                     ->width(0)
                     ->alignCenter(),
-                TextColumn::make('phonebook.name')
+                TextColumn::make('group.name')
                     ->searchable()
-                    ->url(fn ($record) => PhonebookResource::getUrl('edit', ['record' => $record->phonebook_id])),
+                    ->url(fn ($record) => GroupResource::getUrl('edit', ['record' => $record->group_id])),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('phone_number')

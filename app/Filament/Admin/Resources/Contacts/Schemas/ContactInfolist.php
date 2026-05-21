@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Contacts\Schemas;
 
-use App\Filament\Admin\Resources\Phonebooks\PhonebookResource;
+use App\Filament\Admin\Resources\Groups\GroupResource;
 use App\Models\Contact;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
@@ -33,18 +33,18 @@ final class ContactInfolist
                     ->columns(1)
                     ->collapsible(),
 
-                // Phonebook Association Section
-                Section::make('Phonebook Association')
-                    ->description('Which phonebook this contact belongs to')
+                // Group Association Section
+                Section::make('Group Association')
+                    ->description('Which group this contact belongs to')
                     ->icon(Tabler::AddressBook)
                     ->schema([
-                        TextEntry::make('phonebook.name')
-                            ->label('Phonebook')
+                        TextEntry::make('group.name')
+                            ->label('Group')
                             ->icon(Tabler::Book)
                             ->badge()
                             ->color('info')
-                            ->url(fn (Contact $record) => $record->phonebook_id ? PhonebookResource::getUrl('view', ['record' => $record->phonebook_id]) : null),
-                        TextEntry::make('phonebook.user.name')
+                            ->url(fn (Contact $record) => $record->group_id ? GroupResource::getUrl('view', ['record' => $record->group_id]) : null),
+                        TextEntry::make('group.user.name')
                             ->label('Owner')
                             ->icon(Tabler::UserCheck)
                             ->placeholder('No owner'),

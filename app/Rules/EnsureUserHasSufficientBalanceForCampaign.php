@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Rules;
 
 use App\Models\Audio;
-use App\Models\Phonebook;
+use App\Models\Group;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Number;
@@ -13,7 +13,7 @@ use Illuminate\Translation\PotentiallyTranslatedString;
 
 final class EnsureUserHasSufficientBalanceForCampaign implements ValidationRule
 {
-    public function __construct(private ?int $phonebookId = null) {}
+    public function __construct(private ?int $groupId = null) {}
 
     /**
      * Run the validation rule.
@@ -32,16 +32,16 @@ final class EnsureUserHasSufficientBalanceForCampaign implements ValidationRule
             return;
         }
 
-        if ($this->phonebookId === null) {
+        if ($this->groupId === null) {
             return;
         }
 
-        $phonebook = Phonebook::withCount('contacts')->find($this->phonebookId);
-        if (! $phonebook) {
+        $group = Group::withCount('contacts')->find($this->groupId);
+        if (! $group) {
             return;
         }
 
-        $contactsCount = (int) $phonebook->contacts_count;
+        $contactsCount = (int) $group->contacts_count;
         if ($contactsCount === 0) {
             return;
         }

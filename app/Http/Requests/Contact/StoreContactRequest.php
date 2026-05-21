@@ -27,13 +27,13 @@ final class StoreContactRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phonebook_id' => ['required', 'integer', 'exists:phonebooks,id'],
+            'group_id' => ['required', 'integer', 'exists:groups,id'],
             'phone_number' => [
                 'required',
                 'string',
                 'phone:BD',
                 Rule::unique('contacts', 'phone_number')
-                    ->where('phonebook_id', $this->input('phonebook_id')),
+                    ->where('group_id', $this->input('group_id')),
             ],
         ];
     }
@@ -41,8 +41,8 @@ final class StoreContactRequest extends FormRequest
     public function bodyParameters(): array
     {
         return [
-            'phonebook_id' => [
-                'description' => 'The ID of the phonebook.',
+            'group_id' => [
+                'description' => 'The ID of the group.',
             ],
             'phone_number' => [
                 'description' => 'The phone number of the contact.',

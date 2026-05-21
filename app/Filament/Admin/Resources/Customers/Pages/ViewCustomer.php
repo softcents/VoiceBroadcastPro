@@ -50,7 +50,7 @@ final class ViewCustomer extends ViewRecord
         $data['campaigns_count'] = $record->campaigns()->count();
         $data['calls_count'] = $record->calls()->count();
         $data['audio_count'] = $record->audio()->count();
-        $data['phonebooks_count'] = $record->phonebooks()->count();
+        $data['groups_count'] = $record->groups()->count();
         $data['templates_count'] = $record->templates()->count();
         $data['transactions_count'] = $record->transactions()->count();
 

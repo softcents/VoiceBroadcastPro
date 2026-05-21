@@ -9,7 +9,7 @@ use App\Enums\AudioType;
 use App\Jobs\ConvertAudio;
 use App\Jobs\GenerateAudio;
 use App\Models\Audio;
-use App\Models\Phonebook;
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Bus;
@@ -23,9 +23,9 @@ final class DemoSeeder extends Seeder
     {
         $user = User::find(2);
 
-        $phonebook = Phonebook::factory()->create([
+        $group = Group::factory()->create([
             'user_id' => $user->id,
-            'name' => 'Demo Phonebook',
+            'name' => 'Demo Group',
         ]);
 
         $contacts = [
@@ -34,7 +34,7 @@ final class DemoSeeder extends Seeder
         ];
 
         foreach ($contacts as $contact) {
-            $phonebook->contacts()->create($contact);
+            $group->contacts()->create($contact);
         }
 
         Audio::factory()

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Contacts\Tables;
 
 use App\Filament\Admin\Resources\Customers\CustomerResource;
-use App\Filament\Admin\Resources\Phonebooks\PhonebookResource;
+use App\Filament\Admin\Resources\Groups\GroupResource;
 use App\Filament\Exports\ContactExporter;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -25,13 +25,13 @@ final class ContactsTable
         return $table
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
-                TextColumn::make('phonebook.user.name')
+                TextColumn::make('group.user.name')
                     ->label('Customer')
                     ->searchable()
-                    ->url(fn ($record) => CustomerResource::getUrl('view', ['record' => $record->phonebook->user_id])),
-                TextColumn::make('phonebook.name')
+                    ->url(fn ($record) => CustomerResource::getUrl('view', ['record' => $record->group->user_id])),
+                TextColumn::make('group.name')
                     ->searchable()
-                    ->url(fn ($record) => PhonebookResource::getUrl('view', ['record' => $record->phonebook_id])),
+                    ->url(fn ($record) => GroupResource::getUrl('view', ['record' => $record->group_id])),
                 TextColumn::make('name')
                     ->searchable(),
                 TextColumn::make('phone_number')

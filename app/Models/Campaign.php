@@ -48,9 +48,9 @@ final class Campaign extends Model
         return $this->belongsTo(Caller::class);
     }
 
-    public function phonebook(): BelongsTo
+    public function group(): BelongsTo
     {
-        return $this->belongsTo(Phonebook::class);
+        return $this->belongsTo(Group::class);
     }
 
     public function calls(): HasMany

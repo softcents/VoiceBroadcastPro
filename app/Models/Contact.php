@@ -17,7 +17,7 @@ final class Contact extends Model
     use HasFactory;
 
     protected $fillable = [
-        'phonebook_id',
+        'group_id',
         'phone_number',
     ];
 
@@ -25,9 +25,9 @@ final class Contact extends Model
         'phone_number' => E164PhoneNumberCast::class,
     ];
 
-    public function phonebook(): BelongsTo
+    public function group(): BelongsTo
     {
-        return $this->belongsTo(Phonebook::class);
+        return $this->belongsTo(Group::class);
     }
 
     protected function name(): Attribute

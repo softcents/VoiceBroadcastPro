@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Campaigns\Schemas;
 
-use App\Filament\User\Resources\Phonebooks\PhonebookResource;
+use App\Filament\User\Resources\Groups\GroupResource;
 use App\Models\Campaign;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Grid;
@@ -51,12 +51,12 @@ final class CampaignInfolist
                                             ->icon(Tabler::Music)
                                             ->limit(20),
 
-                                        TextEntry::make('phonebook.name')
-                                            ->label('Phonebook')
+                                        TextEntry::make('group.name')
+                                            ->label('Group')
                                             ->icon(Tabler::AddressBook)
                                             ->placeholder('N/A')
-                                            ->visible(fn (Campaign $record) => $record->phonebook_id !== null)
-                                            ->url(fn (Campaign $record) => PhonebookResource::getUrl('edit', ['record' => $record->phonebook_id])),
+                                            ->visible(fn (Campaign $record) => $record->group_id !== null)
+                                            ->url(fn (Campaign $record) => GroupResource::getUrl('edit', ['record' => $record->group_id])),
                                         TextEntry::make('status')
                                             ->label('Current Status')
                                             ->badge(),

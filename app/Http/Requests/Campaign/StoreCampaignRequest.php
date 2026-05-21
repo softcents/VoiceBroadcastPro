@@ -33,12 +33,12 @@ final class StoreCampaignRequest extends FormRequest
             'audio_id' => [
                 'required',
                 'exists:audio,id',
-                new EnsureUserHasSufficientBalanceForCampaign($this->integer('phonebook_id')),
+                new EnsureUserHasSufficientBalanceForCampaign($this->integer('group_id')),
             ],
-            'phonebook_id' => [
+            'group_id' => [
                 'required',
                 'integer',
-                Rule::exists('phonebooks', 'id')
+                Rule::exists('groups', 'id')
                     ->where('user_id', Auth::id()),
             ],
             'scheduled_at' => ['nullable', 'date', 'after:now'],
@@ -60,8 +60,8 @@ final class StoreCampaignRequest extends FormRequest
                 'description' => 'The ID of the audio file to be used.',
                 'example' => 1,
             ],
-            'phonebook_id' => [
-                'description' => 'The ID of the phonebook associated with the campaign.',
+            'group_id' => [
+                'description' => 'The ID of the group associated with the campaign.',
                 'example' => 5,
             ],
             'scheduled_at' => [

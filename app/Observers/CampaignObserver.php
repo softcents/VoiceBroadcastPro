@@ -30,7 +30,7 @@ final class CampaignObserver
     public function created(Campaign $campaign): void
     {
         DB::transaction(function () use ($campaign) {
-            $campaign->loadMissing(['phonebook.contacts', 'audio', 'user']);
+            $campaign->loadMissing(['group.contacts', 'audio', 'user']);
             $user = User::query()
                 ->whereKey($campaign->user_id)
                 ->lockForUpdate()
@@ -43,14 +43,14 @@ final class CampaignObserver
                 $this->notifyAdmins($campaign);
             }
 
-            $phonebook = $campaign->phonebook;
-            if (! $phonebook || $phonebook->contacts->isEmpty()) {
+            $group = $campaign->group;
+            if (! $group || $group->contacts->isEmpty()) {
                 return;
             }
 
             $cost = $campaign->audio->calculateCostForUser($user);
             $now = now();
-            $contacts = $phonebook->contacts;
+            $contacts = $group->contacts;
 
             // Calculate total cost upfront
             $totalCost = $cost * $contacts->count();

@@ -17,9 +17,9 @@ final class ContactInfolist
             ->components([
                 Section::make()
                     ->schema([
-                        TextEntry::make('phonebook.name')
+                        TextEntry::make('group.name')
                             ->icon(Tabler::AddressBook)
-                            ->label('Phonebook'),
+                            ->label('Group'),
                         TextEntry::make('name')
                             ->icon(Tabler::User)
                             ->label('Name')

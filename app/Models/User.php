@@ -55,9 +55,9 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->hasMany(Audio::class);
     }
 
-    public function phonebooks(): HasMany
+    public function groups(): HasMany
     {
-        return $this->hasMany(Phonebook::class);
+        return $this->hasMany(Group::class);
     }
 
     public function templates(): HasMany

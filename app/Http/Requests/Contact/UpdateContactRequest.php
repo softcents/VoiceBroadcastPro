@@ -32,7 +32,7 @@ final class UpdateContactRequest extends FormRequest
                 'string',
                 'phone:BD',
                 Rule::unique('contacts', 'phone_number')
-                    ->where('phonebook_id', $this->route('contact')?->phonebook_id)
+                    ->where('group_id', $this->route('contact')?->group_id)
                     ->ignore($this->route('contact')?->id),
             ],
         ];

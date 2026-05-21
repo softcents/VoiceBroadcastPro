@@ -19,8 +19,8 @@ final class ContactForm
                     ->columnSpanFull()
                     ->columns()
                     ->schema([
-                        Select::make('phonebook_id')
-                            ->relationship('phonebook', 'name')
+                        Select::make('group_id')
+                            ->relationship('group', 'name')
                             ->searchable()
                             ->preload()
                             ->required(),

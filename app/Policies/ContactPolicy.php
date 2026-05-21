@@ -16,7 +16,7 @@ final class ContactPolicy
 
     public function view(User $user, Contact $contact): bool
     {
-        return $user->isAdmin() || $user->id === $contact->phonebook->user_id;
+        return $user->isAdmin() || $user->id === $contact->group->user_id;
     }
 
     public function create(User $user): bool
@@ -26,11 +26,11 @@ final class ContactPolicy
 
     public function update(User $user, Contact $contact): bool
     {
-        return $user->isAdmin() || $user->id === $contact->phonebook->user_id;
+        return $user->isAdmin() || $user->id === $contact->group->user_id;
     }
 
     public function delete(User $user, Contact $contact): bool
     {
-        return $user->isAdmin() || $user->id === $contact->phonebook->user_id;
+        return $user->isAdmin() || $user->id === $contact->group->user_id;
     }
 }

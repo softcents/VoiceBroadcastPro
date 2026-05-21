@@ -20,7 +20,7 @@ final class ContactFactory extends Factory
     public function definition(): array
     {
         return [
-            'phonebook_id' => \App\Models\Phonebook::factory(),
+            'group_id' => \App\Models\Group::factory(),
             'phone_number' => '+88017'.fake()->numerify('#########'),
         ];
     }

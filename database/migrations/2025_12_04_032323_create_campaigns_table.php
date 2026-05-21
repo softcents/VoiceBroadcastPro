@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('audio_id')->nullable()->constrained()->nullOnDelete();
             $table->foreignId('caller_id')->nullable()->constrained()->nullOnDelete();
-            $table->foreignId('phonebook_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('group_id')->nullable()->constrained()->nullOnDelete();
 
             $table->string('title');
             $table->string('description')->nullable();

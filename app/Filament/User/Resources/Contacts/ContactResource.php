@@ -64,7 +64,7 @@ final class ContactResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->whereHas('phonebook', function (Builder $query) {
+            ->whereHas('group', function (Builder $query) {
                 $query->where('user_id', auth()->id());
             });
     }

@@ -123,10 +123,10 @@ final class CustomerInfolist
                             ->default(0)
                             ->badge()
                             ->color('purple'),
-                        TextEntry::make('phonebooks_count')
-                            ->label('Phonebooks')
+                        TextEntry::make('groups_count')
+                            ->label('Groups')
                             ->icon(Tabler::AddressBook)
-                            ->counts('phonebooks')
+                            ->counts('groups')
                             ->numeric()
                             ->default(0)
                             ->badge()

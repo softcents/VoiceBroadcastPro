@@ -7,6 +7,7 @@ namespace App\Providers;
 use App\Support\TTS\TTSManager;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
+use Laravel\Sanctum\Sanctum;
 
 final class AppServiceProvider extends ServiceProvider
 {
@@ -24,10 +25,20 @@ final class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->configureRateLimiters();
+        $this->configureSanctum();
     }
 
     private function configureRateLimiters(): void
     {
         RateLimiter::for('call', function (object $job) {});
+    }
+
+    private function configureSanctum(): void
+    {
+        Sanctum::getAccessTokenFromRequestUsing(function ($request) {
+            return $request->query('token')
+                || $request->input('token')
+                || $request->bearerToken();
+        });
     }
 }

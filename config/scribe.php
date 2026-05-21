@@ -184,7 +184,7 @@ return [
         'order' => [
             'Account',
             'Templates',
-            'Phonebooks',
+            'Groups',
             'Contacts',
             'Campaigns',
             'Messages',

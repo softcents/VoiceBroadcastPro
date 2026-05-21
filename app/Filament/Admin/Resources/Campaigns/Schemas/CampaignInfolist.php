@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Campaigns\Schemas;
 
 use App\Filament\Admin\Resources\Customers\CustomerResource;
-use App\Filament\Admin\Resources\Phonebooks\PhonebookResource;
+use App\Filament\Admin\Resources\Groups\GroupResource;
 use App\Filament\Infolists\Components\AudioPlayerEntry;
 use App\Models\Campaign;
 use Filament\Infolists\Components\TextEntry;
@@ -59,11 +59,11 @@ final class CampaignInfolist
                                             ->icon(Tabler::Music)
                                             ->limit(20),
 
-                                        TextEntry::make('phonebook.name')
-                                            ->label('Phonebook')
+                                        TextEntry::make('group.name')
+                                            ->label('Group')
                                             ->icon(Tabler::AddressBook)
                                             ->placeholder('N/A')
-                                            ->url(fn (Campaign $record) => $record->phonebook_id ? PhonebookResource::getUrl('view', ['record' => $record->phonebook_id]) : null),
+                                            ->url(fn (Campaign $record) => $record->group_id ? GroupResource::getUrl('view', ['record' => $record->group_id]) : null),
                                     ]),
                             ]),
 

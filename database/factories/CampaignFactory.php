@@ -8,7 +8,7 @@ use App\Enums\CampaignStatus;
 use App\Models\Audio;
 use App\Models\Caller;
 use App\Models\Campaign;
-use App\Models\Phonebook;
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -28,7 +28,7 @@ final class CampaignFactory extends Factory
             'user_id' => User::factory(),
             'audio_id' => Audio::factory(),
             'caller_id' => Caller::factory(),
-            'phonebook_id' => Phonebook::factory(),
+            'group_id' => Group::factory(),
             'title' => fake()->sentence(),
             'description' => fake()->text(),
             'status' => CampaignStatus::Pending,

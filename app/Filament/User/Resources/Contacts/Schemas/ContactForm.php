@@ -19,12 +19,12 @@ final class ContactForm
                     ->columnSpanFull()
                     ->columns()
                     ->schema([
-                        Select::make('phonebook_id')
-                            ->relationship('phonebook', 'name')
+                        Select::make('group_id')
+                            ->relationship('group', 'name')
                             ->searchable()
                             ->preload()
                             ->required()
-                            ->default(request()->input('phonebook_id')),
+                            ->default(request()->input('group_id')),
                         PhoneInput::make('phone_number')
                             ->label('Phone Number')
                             ->defaultCountry('BD')

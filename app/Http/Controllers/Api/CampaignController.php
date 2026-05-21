@@ -27,7 +27,7 @@ final class CampaignController extends Controller
     public function index(#[CurrentUser] User $user)
     {
         $campaigns = Campaign::whereUserId($user->id)
-            ->with(['audio', 'phonebook'])
+            ->with(['audio', 'group'])
             ->latest()
             ->paginate(15);
 
@@ -40,18 +40,18 @@ final class CampaignController extends Controller
     {
         $campaign = $user->campaigns()->create($request->validated());
 
-        return new CampaignResource($campaign->load(['audio', 'phonebook']));
+        return new CampaignResource($campaign->load(['audio', 'group']));
     }
 
     #[Endpoint(title: 'Get Campaign')]
-    #[ResponseFromApiResource(CampaignResource::class, Campaign::class, with: ['audio', 'phonebook'])]
+    #[ResponseFromApiResource(CampaignResource::class, Campaign::class, with: ['audio', 'group'])]
     public function show(#[CurrentUser] User $user, Campaign $campaign)
     {
         if ($campaign->user_id !== $user->id) {
             abort(403);
         }
 
-        $campaign->load(['audio', 'phonebook']);
+        $campaign->load(['audio', 'group']);
 
         return new CampaignResource($campaign);
     }
@@ -70,7 +70,7 @@ final class CampaignController extends Controller
 
         $campaign->update($request->validated());
 
-        return new CampaignResource($campaign->load(['audio', 'phonebook']));
+        return new CampaignResource($campaign->load(['audio', 'group']));
     }
 
     #[Endpoint(title: 'Delete Campaign')]

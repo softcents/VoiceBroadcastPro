@@ -7,7 +7,7 @@ namespace App\Filament\User\Resources\Campaigns\Schemas;
 use App\Enums\AudioApproval;
 use App\Enums\AudioConversionStatus;
 use App\Models\Caller;
-use App\Models\Phonebook;
+use App\Models\Group as GroupModel;
 use App\Rules\EnsureUserHasSufficientBalanceForCampaign;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -68,7 +68,7 @@ final class CampaignForm
                                                 ->where('approval', AudioApproval::Approved)
                                                 ->where('conversion_status', AudioConversionStatus::Completed)
                                                 ->where('user_id', auth()->id()),
-                                            new EnsureUserHasSufficientBalanceForCampaign($get('phonebook_id')),
+                                            new EnsureUserHasSufficientBalanceForCampaign($get('group_id')),
                                         ];
                                     }),
                             ]),
@@ -98,17 +98,17 @@ final class CampaignForm
                                     ->native(false)
                                     ->selectablePlaceholder(false)
                                     ->required(),
-                                Select::make('phonebook_id')
+                                Select::make('group_id')
                                     ->prefixIcon(Tabler::AddressBook)
                                     ->label('Contact List')
                                     ->relationship(
-                                        name: 'phonebook',
+                                        name: 'group',
                                         titleAttribute: 'name',
                                         modifyQueryUsing: function ($query) {
                                             return $query->whereHas('contacts');
                                         }
                                     )
-                                    ->getOptionLabelFromRecordUsing(function (Phonebook $record) {
+                                    ->getOptionLabelFromRecordUsing(function (GroupModel $record) {
                                         $record->loadCount('contacts');
 
                                         return $record->name.' ('.trans_choice(':count contact|:count contacts', $record->contacts_count).')';
@@ -119,7 +119,7 @@ final class CampaignForm
                                     ->required()
                                     ->createOptionForm([
                                         TextInput::make('name')
-                                            ->label('Phonebook Name')
+                                            ->label('Group Name')
                                             ->required()
                                             ->maxLength(255),
 

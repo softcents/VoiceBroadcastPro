@@ -23,7 +23,7 @@ final class CampaignResource extends JsonResource
             'status' => $this->status,
             'scheduled_at' => $this->scheduled_at,
             'audio' => new AudioResource($this->whenLoaded('audio')),
-            'phonebook' => new PhonebookResource($this->whenLoaded('phonebook')),
+            'group' => new GroupResource($this->whenLoaded('group')),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'calls_success_count' => $this->whenCounted('calls_success_count'),

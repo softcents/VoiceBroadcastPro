@@ -10,7 +10,6 @@ use Filament\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
-use LaraZeus\Tabler\Tabler;
 
 final class ServersTable
 {
