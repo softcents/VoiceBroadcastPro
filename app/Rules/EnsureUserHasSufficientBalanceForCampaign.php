@@ -11,7 +11,7 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Support\Number;
 use Illuminate\Translation\PotentiallyTranslatedString;
 
-final class EnsureUserHasSufficientBalanceForCampaign implements ValidationRule
+final readonly class EnsureUserHasSufficientBalanceForCampaign implements ValidationRule
 {
     public function __construct(private ?int $groupId = null) {}
 

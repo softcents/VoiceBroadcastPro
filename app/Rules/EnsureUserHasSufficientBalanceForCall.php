@@ -34,12 +34,10 @@ final class EnsureUserHasSufficientBalanceForCall implements ValidationRule
             return;
         }
 
-        $cost = $audio->calculateCostForUser($user);
-
-        if (! $user->hasEnoughBalance($cost)) {
+        if (! $user->hasEnoughBalance($audio->cost)) {
             $message = sprintf(
                 'Insufficient balance. This call costs %s. Your balance: %s.',
-                Number::currency($cost, 'BDT'),
+                Number::currency($audio->cost, 'BDT'),
                 Number::currency($user->balance, 'BDT')
             );
 

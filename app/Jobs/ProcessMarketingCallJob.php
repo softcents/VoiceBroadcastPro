@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-final class ProcessMarketingCall implements ShouldQueue
+final class ProcessMarketingCallJob implements ShouldQueue
 {
     use Batchable, Queueable;
 

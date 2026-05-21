@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use RuntimeException;
 
 #[ScopedBy(OwnedByAuthUser::class)]
 #[ObservedBy(AudioObserver::class)]
@@ -71,10 +72,18 @@ final class Audio extends Model
 
     public function calculateCostForUser(User $user): float
     {
-        $pulseDuration = $user->pulse_duration ?: 60;
-        $pulseRate = $user->pulse_rate ?: 0;
+        $pulseDuration = $user->pulse_duration ?? 60;
+        $pulseRate = $user->pulse_rate ?? 0;
 
-        $pulses = ceil($this->duration / $pulseDuration);
+        if ($pulseDuration <= 0) {
+            throw new RuntimeException('Invalid pulse duration');
+        }
+
+        if ($this->duration <= 0 || $pulseRate <= 0) {
+            return 0;
+        }
+
+        $pulses = (int) ceil($this->duration / $pulseDuration);
 
         return $pulses * $pulseRate;
     }
@@ -101,10 +110,26 @@ final class Audio extends Model
         });
     }
 
-    #[Scope]
-    protected function approved(Builder $query): Builder
+    protected function cost(): Attribute
     {
-        return $query->where('approval', AudioApproval::Approved);
+        return Attribute::get(function () {
+            $user = $this->user;
+
+            $pulseDuration = $user->pulse_duration ?? 60;
+            $pulseRate = $user->pulse_rate ?? 0;
+
+            if ($pulseDuration <= 0) {
+                throw new RuntimeException('Invalid pulse duration');
+            }
+
+            if ($this->duration <= 0 || $pulseRate <= 0) {
+                return 0;
+            }
+
+            $pulses = (int) ceil($this->duration / $pulseDuration);
+
+            return $pulses * $pulseRate;
+        });
     }
 
     protected function originalUrl(): Attribute
@@ -119,5 +144,11 @@ final class Audio extends Model
         return Attribute::make(
             get: fn () => getFileUrl($this->converted_path),
         );
+    }
+
+    #[Scope]
+    protected function approved(Builder $query): Builder
+    {
+        return $query->where('approval', AudioApproval::Approved);
     }
 }

@@ -37,7 +37,7 @@ final class SyncTrunkStatus extends Command
             $response = rescue(fn () => $server->httpClient()->get('ari/endpoints'));
 
             if (! $response?->successful()) {
-                $this->error("Failed to fetch endpoints from server ID {$srvId}");
+                $this->error("Failed to fetch endpoints from server ID $srvId");
 
                 continue;
             }
@@ -85,7 +85,7 @@ final class SyncTrunkStatus extends Command
                     ]);
                 }
 
-                $this->info(count($updates)." callers updated for server {$srvId}");
+                $this->info(count($updates)." callers updated for server $srvId");
             }
         }
     }

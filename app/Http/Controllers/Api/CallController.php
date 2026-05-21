@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\CreateNewCall;
 use App\Enums\CallInterface;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Call\StoreCallRequest;
@@ -15,6 +16,7 @@ use Knuckles\Scribe\Attributes\Authenticated;
 use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
+use Throwable;
 
 #[Group('Calls', 'Manage calls')]
 #[Authenticated]
@@ -36,10 +38,16 @@ final class CallController extends Controller
     #[ResponseFromApiResource(CallResource::class, Call::class, status: 201)]
     public function store(#[CurrentUser] User $user, StoreCallRequest $request)
     {
-        $call = $user->calls()->create([
-            'interface' => CallInterface::API,
-        ] + $request->validated());
+        try {
+            $call = app(CreateNewCall::class)
+                ->handle($user, $request->validated(), CallInterface::API);
 
-        return new CallResource($call->unsetRelation('user'));
+            return new CallResource($call->unsetRelation('user'));
+        } catch (Throwable) {
+            return response()->json([
+                'message' => 'Call Creation Failed',
+                'errors' => ['general' => ['Something went wrong while creating the call. Please try again.']],
+            ], 500);
+        }
     }
 }

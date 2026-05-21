@@ -6,8 +6,8 @@ namespace Database\Seeders;
 
 use App\Enums\AudioApproval;
 use App\Enums\AudioType;
-use App\Jobs\ConvertAudio;
-use App\Jobs\GenerateAudio;
+use App\Jobs\ConvertAudioJob;
+use App\Jobs\GenerateAudioJob;
 use App\Models\Audio;
 use App\Models\Group;
 use App\Models\User;
@@ -44,8 +44,8 @@ final class DemoSeeder extends Seeder
                 ]);
 
                 Bus::chain([
-                    new GenerateAudio($audio->id),
-                    new ConvertAudio($audio->id),
+                    new GenerateAudioJob($audio->id),
+                    new ConvertAudioJob($audio->id),
                 ])->dispatch();
             })
             ->create([

@@ -6,9 +6,9 @@ namespace App\Filament\User\Resources\Calling\Calls\Schemas;
 
 use App\Filament\User\Resources\Audience\Contacts\ContactResource;
 use App\Filament\User\Resources\Calling\Campaigns\CampaignResource;
-use App\Filament\User\Resources\Calls\Schemas\Grid;
 use App\Models\Call;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;

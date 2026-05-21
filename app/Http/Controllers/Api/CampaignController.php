@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Api;
 
+use App\Actions\CreateNewCampaign;
+use App\Enums\CallInterface;
 use App\Enums\CampaignStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Campaign\StoreCampaignRequest;
@@ -17,6 +19,7 @@ use Knuckles\Scribe\Attributes\Endpoint;
 use Knuckles\Scribe\Attributes\Group;
 use Knuckles\Scribe\Attributes\Response;
 use Knuckles\Scribe\Attributes\ResponseFromApiResource;
+use Throwable;
 
 #[Group('Campaigns', 'Manage voice campaigns')]
 #[Authenticated]
@@ -38,9 +41,17 @@ final class CampaignController extends Controller
     #[ResponseFromApiResource(CampaignResource::class, Campaign::class, status: 201)]
     public function store(#[CurrentUser] User $user, StoreCampaignRequest $request)
     {
-        $campaign = $user->campaigns()->create($request->validated());
+        try {
+            $campaign = app(CreateNewCampaign::class)
+                ->handle($user, $request->validated(), CallInterface::API);
 
-        return new CampaignResource($campaign->load(['audio', 'group']));
+            return new CampaignResource($campaign->load(['audio', 'group']));
+        } catch (Throwable) {
+            return response()->json([
+                'message' => 'Campaign Creation Failed',
+                'errors' => ['general' => ['Something went wrong while creating the campaign. Please try again.']],
+            ], 500);
+        }
     }
 
     #[Endpoint(title: 'Get Campaign')]

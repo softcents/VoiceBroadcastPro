@@ -8,8 +8,8 @@ use App\Enums\AudioApproval;
 use App\Enums\AudioTTSStatus;
 use App\Enums\AudioType;
 use App\Filament\Admin\Resources\Calling\Audio\AudioResource;
-use App\Jobs\ConvertAudio;
-use App\Jobs\GenerateAudio;
+use App\Jobs\ConvertAudioJob;
+use App\Jobs\GenerateAudioJob;
 use App\Models\Audio;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -86,8 +86,8 @@ final class AudioObserver implements ShouldHandleEventsAfterCommit
         }
 
         Bus::chain([
-            new GenerateAudio($audio->id),
-            new ConvertAudio($audio->id),
+            new GenerateAudioJob($audio->id),
+            new ConvertAudioJob($audio->id),
         ])->dispatch();
     }
 
@@ -97,6 +97,6 @@ final class AudioObserver implements ShouldHandleEventsAfterCommit
             return;
         }
 
-        ConvertAudio::dispatch($audio->id);
+        ConvertAudioJob::dispatch($audio->id);
     }
 }

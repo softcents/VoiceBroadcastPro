@@ -8,11 +8,9 @@ use App\Enums\CallInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
 use App\Models\Scopes\OwnedByAuthUser;
-use App\Observers\CallObserver;
 use App\Settings\CallingSetting;
 use Database\Factories\CallFactory;
 use Illuminate\Database\Eloquent\Attributes\Guarded;
-use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Attributes\ScopedBy;
 use Illuminate\Database\Eloquent\Builder;
@@ -25,7 +23,6 @@ use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
 use RuntimeException;
 
 #[ScopedBy(OwnedByAuthUser::class)]
-#[ObservedBy(CallObserver::class)]
 #[Guarded(['id'])]
 final class Call extends Model
 {

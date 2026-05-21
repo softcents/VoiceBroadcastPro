@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class ProcessOtpCall implements ShouldQueue
+final class ProcessOtpCallJob implements ShouldQueue
 {
     use Batchable, Queueable;
 

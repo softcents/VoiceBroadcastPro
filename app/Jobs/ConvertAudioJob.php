@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use ProtoneMedia\LaravelFFMpeg\Support\FFMpeg;
 
-final class ConvertAudio implements ShouldQueue
+final class ConvertAudioJob implements ShouldQueue
 {
     use Queueable;
 

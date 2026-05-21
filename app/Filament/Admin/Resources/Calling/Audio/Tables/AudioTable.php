@@ -9,8 +9,8 @@ use App\Enums\AudioConversionStatus;
 use App\Enums\AudioTTSStatus;
 use App\Enums\AudioType;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
-use App\Jobs\ConvertAudio;
-use App\Jobs\GenerateAudio;
+use App\Jobs\ConvertAudioJob;
+use App\Jobs\GenerateAudioJob;
 use App\Models\Audio;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
@@ -101,14 +101,14 @@ final class AudioTable
                         ->icon(Tabler::Refresh)
                         ->label('Retry')
                         ->action(function ($record) {
-                            ConvertAudio::dispatch($record->id);
+                            ConvertAudioJob::dispatch($record->id);
                         })
                         ->visible(fn (Audio $record) => $record->conversion_status === AudioConversionStatus::Failed),
                     Action::make('retry_tts')
                         ->icon(Tabler::Refresh)
                         ->label('Retry')
                         ->action(function ($record) {
-                            GenerateAudio::dispatch($record->id);
+                            GenerateAudioJob::dispatch($record->id);
                         })
                         ->visible(fn (Audio $record) => $record->tts_status === AudioTTSStatus::Failed),
 
@@ -135,8 +135,8 @@ final class AudioTable
                             $record->update($data);
 
                             Bus::chain([
-                                new GenerateAudio($record->id),
-                                new ConvertAudio($record->id),
+                                new GenerateAudioJob($record->id),
+                                new ConvertAudioJob($record->id),
                             ])->dispatch();
                         }),
                     ViewAction::make()
