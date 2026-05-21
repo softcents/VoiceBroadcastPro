@@ -12,13 +12,18 @@ use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Throwable;
 
 final class PollCallCdrJob implements ShouldQueue
 {
     use Queueable;
 
-    public const int MAX_ATTEMPTS = 7;
+    /**
+     * Maximum poll attempts before we consider giving up — but we still verify
+     * the channel is truly gone via ARI before marking Failed.
+     */
+    public const int MAX_ATTEMPTS = 30;
 
     public function __construct(public readonly int $callId) {}
 
@@ -54,14 +59,62 @@ final class PollCallCdrJob implements ShouldQueue
             $cdrExists = ! empty($cdr);
 
             $attempt = (int) ($call->poll_attempt ?? 0) + 1;
-            $exceedAttempts = $attempt >= self::MAX_ATTEMPTS;
 
-            match (true) {
-                $cdrExists => $this->markAsCompleted($call, $cdr),
-                $exceedAttempts => $this->markAsFailed($call, $attempt),
-                default => $this->markAsPending($call, $attempt),
-            };
+            if ($cdrExists) {
+                $this->markAsCompleted($call, $cdr);
+
+                return;
+            }
+
+            // Before giving up, ask ARI whether the channel is still alive.
+            // If it is, the call simply hasn't ended yet — keep polling, don't
+            // refund a call that's actively in progress.
+            if ($attempt >= self::MAX_ATTEMPTS) {
+                if ($this->isChannelStillActive($call)) {
+                    Log::info('Poll attempts exceeded but channel still active on ARI, extending polling', [
+                        'call_id' => $call->id,
+                        'unique_id' => $call->unique_id,
+                        'attempt' => $attempt,
+                    ]);
+
+                    // Reset attempt counter so we don't refund a live call.
+                    $this->markAsPending($call, 0);
+
+                    return;
+                }
+
+                $this->markAsFailed($call, $attempt);
+
+                return;
+            }
+
+            $this->markAsPending($call, $attempt);
         });
+    }
+
+    /**
+     * Check ARI to see whether the channel for this call is still active.
+     *
+     * Returns true when ARI reports the channel exists (call still in progress).
+     * Returns false when ARI returns 404 (channel gone) or any error/timeout —
+     * in the error case we err on the side of "gone" to avoid hanging forever,
+     * because the CDR-missing path will still attempt one more poll cycle.
+     */
+    private function isChannelStillActive(Call $call): bool
+    {
+        try {
+            $response = $call->caller->server->httpClient()
+                ->get("ari/channels/{$call->unique_id}");
+
+            return $response->successful();
+        } catch (Throwable $e) {
+            Log::warning('ARI channel check failed during poll timeout', [
+                'call_id' => $call->id,
+                'exception' => $e->getMessage(),
+            ]);
+
+            return false;
+        }
     }
 
     private function markAsCompleted(Call $call, Cdr $cdr): void
@@ -180,12 +233,22 @@ final class PollCallCdrJob implements ShouldQueue
         ]);
     }
 
+    /**
+     * Polling cadence. Designed so the cumulative window comfortably exceeds
+     * typical call durations even before ARI fallback kicks in:
+     *
+     *   attempts 1-3   →  30s each   (early CDR appearance, ~1.5 min)
+     *   attempts 4-6   →  60s each   (short calls finishing, +3 min)
+     *   attempts 7-12  →  120s each  (typical marketing calls, +12 min)
+     *   attempts 13+   →  300s each  (long sales calls, +1.5h to MAX_ATTEMPTS=30)
+     */
     private function delayForAttempt(int $attempt): int
     {
         return match (true) {
             $attempt <= 3 => 30,
-            $attempt <= 5 => 60,
-            default => 120,
+            $attempt <= 6 => 60,
+            $attempt <= 12 => 120,
+            default => 300,
         };
     }
 
