@@ -11,6 +11,8 @@ use App\Models\Call;
 use App\Models\User;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 final class PullCallDeliveryJob implements ShouldQueue
 {
@@ -20,83 +22,180 @@ final class PullCallDeliveryJob implements ShouldQueue
 
     public function __construct(public readonly int $callId) {}
 
+    /**
+     * @throws Throwable
+     */
     public function handle(): void
     {
-        $call = Call::query()
-            ->whereId($this->callId)
-            ->whereNotNull('unique_id')
-            ->withWhereHas('caller.server')
-            ->lockForUpdate()
-            ->first();
+        DB::transaction(function () {
 
-        if (! $call) {
-            return; // Call not found or unique_id is null, nothing to do
-        }
+            $call = Call::query()
+                ->whereKey($this->callId)
+                ->whereNotNull('unique_id')
+                ->with(['caller.server'])
+                ->lockForUpdate()
+                ->first();
 
-        $server = $call->caller->server;
-
-        if (! $server) {
-            return; // Server not found, cannot pull delivery status
-        }
-
-        $cdr = Cdr::using($server->database_host, $server->database_username, $server->database_password)
-            ->where('uniqueid', $call->unique_id)
-            ->first();
-
-        if (! $cdr) {
-            $attempt = $call->poll_attempt ?? 1;
-
-            if ($attempt >= self::MAX_ATTEMPTS) {
-                // Exceeded max attempts, mark call as failed. Refund the money to the user.
-                $call->update([
-                    'status' => 'Failed',
-                    'poll_attempt' => $attempt,
-                    'next_poll_at' => null,
-                    'cost' => 0, // Reset cost to 0 since we are refunding
-                ]);
-
-                $lockedUser = User::lockForUpdate()->find($call->user_id);
-                if ($lockedUser) {
-                    $lockedUser->increment('balance', $call->cost); // Refund the cost to the user
-
-                    $call->transactions()->create([
-                        'type' => TransactionType::Credit,
-                        'amount' => $call->cost,
-                        'balance_before' => $lockedUser->balance - $call->cost,
-                        'balance_after' => $lockedUser->balance,
-                        'currency' => 'BDT',
-                        'description' => "Refund for call ID {$call->id} after failed delivery",
-                    ]);
-                }
-
+            if (! $call || ! $call->caller?->server) {
                 return;
             }
 
-            $nextAttempt = $call->poll_attempt + 1;
+            $server = $call->caller->server;
 
-            $call->update([
-                'poll_attempt' => $nextAttempt,
-                'next_poll_at' => now()->addSeconds($this->delayForAttempt($nextAttempt)),
-            ]);
+            $cdr = Cdr::using(
+                $server->database_host,
+                $server->database_username,
+                $server->database_password
+            )
+                ->where('uniqueid', $call->unique_id)
+                ->first();
 
-            return; // CDR not found, will retry later
+            $cdrExists = ! empty($cdr);
+
+            $attempt = (int) ($call->poll_attempt ?? 0) + 1;
+            $exceedAttempts = $attempt >= self::MAX_ATTEMPTS;
+
+            match (true) {
+                $cdrExists => $this->markAsCompleted($call, $cdr),
+                $exceedAttempts => $this->markAsFailed($call, $attempt),
+                default => $this->markAsPending($call, $attempt),
+            };
+        });
+    }
+
+    private function markAsCompleted(Call $call, Cdr $cdr): void
+    {
+        $actualDuration = (int) $cdr->billsec;
+
+        $user = User::query()
+            ->whereKey($call->user_id)
+            ->lockForUpdate()
+            ->first();
+
+        if (! $user) {
+            return;
         }
 
-        // Recalculate cost based on actual call duration
+        $actualCost = $this->calculateEstimatedCost($actualDuration, $user);
+        $estimatedCost = (int) $call->cost;
+
+        $diff = $actualCost - $estimatedCost;
+
+        // update call
         $call->update([
             'status' => CallStatus::Completed,
-            'duration' => $cdr->billsec,
+            'duration' => $actualDuration,
+            'cost' => $actualCost,
             'poll_attempt' => null,
             'next_poll_at' => null,
+        ]);
+
+        // no change needed
+        if ($diff === 0) {
+            return;
+        }
+
+        $before = $user->balance;
+
+        if ($diff > 0) {
+            // undercharged → collect extra
+            $user->decrement('balance', $diff);
+
+            $call->transactions()->create([
+                'type' => TransactionType::Debit,
+                'amount' => $diff,
+                'balance_before' => $before,
+                'balance_after' => $before - $diff,
+                'currency' => 'BDT',
+                'description' => "Extra charge adjustment for call #{$call->id}",
+            ]);
+        } else {
+            // overcharged → refund difference
+            $refund = abs($diff);
+
+            $user->increment('balance', $refund);
+
+            $call->transactions()->create([
+                'type' => TransactionType::Credit,
+                'amount' => $refund,
+                'balance_before' => $before,
+                'balance_after' => $before + $refund,
+                'currency' => 'BDT',
+                'description' => "Refund adjustment for call #{$call->id}",
+            ]);
+        }
+    }
+
+    private function markAsFailed(Call $call, int $attempt): void
+    {
+        if ($call->cost <= 0) {
+            $call->update([
+                'status' => CallStatus::Failed,
+                'poll_attempt' => $attempt,
+                'next_poll_at' => null,
+            ]);
+
+            return;
+        }
+
+        $user = User::query()
+            ->whereKey($call->user_id)
+            ->lockForUpdate()
+            ->first();
+
+        if (! $user) {
+            return;
+        }
+
+        $before = $user->balance;
+
+        $user->increment('balance', $call->cost);
+
+        $call->transactions()->create([
+            'type' => TransactionType::Credit,
+            'amount' => $call->cost,
+            'balance_before' => $before,
+            'balance_after' => $before + $call->cost,
+            'currency' => 'BDT',
+            'description' => "Refund for call #{$call->id} (CDR not found after {$attempt} attempts)",
+        ]);
+
+        $call->update([
+            'status' => CallStatus::Failed,
+            'poll_attempt' => $attempt,
+            'next_poll_at' => null,
+            'cost' => 0,
+        ]);
+    }
+
+    private function markAsPending(Call $call, int $attempt): void
+    {
+        $call->update([
+            'poll_attempt' => $attempt,
+            'next_poll_at' => now()->addSeconds($this->delayForAttempt($attempt)),
         ]);
     }
 
     private function delayForAttempt(int $attempt): int
     {
         return match (true) {
-            $attempt <= 3 => 30, // 30 seconds for attempts 1-3
-            $attempt <= 5 => 60, // 1 minute for attempts 4-5
-            default => 120, // 2 minutes for attempts 6-7
+            $attempt <= 3 => 30,
+            $attempt <= 5 => 60,
+            default => 120,
         };
+    }
+
+    private function calculateEstimatedCost(int $duration, User $user): int
+    {
+        $pulseDuration = $user->pulse_duration ?? 60;
+        $pulseRate = $user->pulse_rate ?? 0;
+
+        if ($pulseDuration <= 0 || $pulseRate <= 0 || $duration <= 0) {
+            return 0;
+        }
+
+        $pulses = (int) ceil($duration / $pulseDuration);
+
+        return $pulses * $pulseRate;
     }
 }

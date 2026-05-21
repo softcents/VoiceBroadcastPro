@@ -70,24 +70,6 @@ final class Audio extends Model
         return $this->belongsTo(TTSArtist::class);
     }
 
-    public function calculateCostForUser(User $user): float
-    {
-        $pulseDuration = $user->pulse_duration ?? 60;
-        $pulseRate = $user->pulse_rate ?? 0;
-
-        if ($pulseDuration <= 0) {
-            throw new RuntimeException('Invalid pulse duration');
-        }
-
-        if ($this->duration <= 0 || $pulseRate <= 0) {
-            return 0;
-        }
-
-        $pulses = (int) ceil($this->duration / $pulseDuration);
-
-        return $pulses * $pulseRate;
-    }
-
     protected static function boot(): void
     {
         parent::boot();

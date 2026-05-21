@@ -46,7 +46,7 @@ final readonly class EnsureUserHasSufficientBalanceForCampaign implements Valida
             return;
         }
 
-        $costPerCall = $audio->calculateCostForUser($user);
+        $costPerCall = $audio->cost;
         $totalEstimatedCost = $costPerCall * $contactsCount;
 
         if (! $user->hasEnoughBalance($totalEstimatedCost)) {
