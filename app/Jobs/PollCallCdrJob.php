@@ -56,29 +56,28 @@ final class PollCallCdrJob implements ShouldQueue
                 ->where('uniqueid', $call->unique_id)
                 ->first();
 
-            $cdrExists = ! empty($cdr);
-
             $attempt = (int) ($call->poll_attempt ?? 0) + 1;
 
-            if ($cdrExists) {
+            if (! empty($cdr)) {
                 $this->markAsCompleted($call, $cdr);
 
                 return;
             }
 
-            // Before giving up, ask ARI whether the channel is still alive.
-            // If it is, the call simply hasn't ended yet — keep polling, don't
-            // refund a call that's actively in progress.
-            if ($attempt >= self::MAX_ATTEMPTS) {
+            // At each segment checkpoint, verify whether the channel is still alive via ARI.
+            // Channel gone → CDR will never appear; refund immediately.
+            // Channel alive → call still in progress; keep polling regardless of attempt count.
+            if (in_array($attempt, [3, 6, 12, self::MAX_ATTEMPTS], true)) {
                 if ($this->isChannelStillActive($call)) {
-                    Log::info('Poll attempts exceeded but channel still active on ARI, extending polling', [
+                    Log::info('CDR not found at poll checkpoint but channel still active, continuing', [
                         'call_id' => $call->id,
                         'unique_id' => $call->unique_id,
                         'attempt' => $attempt,
                     ]);
 
-                    // Reset attempt counter so we don't refund a live call.
-                    $this->markAsPending($call, 0);
+                    // Reset counter at the final checkpoint so it never exceeds MAX_ATTEMPTS.
+                    $nextAttempt = $attempt >= self::MAX_ATTEMPTS ? 0 : $attempt;
+                    $this->markAsPending($call, $nextAttempt);
 
                     return;
                 }
@@ -96,9 +95,9 @@ final class PollCallCdrJob implements ShouldQueue
      * Check ARI to see whether the channel for this call is still active.
      *
      * Returns true when ARI reports the channel exists (call still in progress).
-     * Returns false when ARI returns 404 (channel gone) or any error/timeout —
-     * in the error case we err on the side of "gone" to avoid hanging forever,
-     * because the CDR-missing path will still attempt one more poll cycle.
+     * Returns false when ARI returns 404 (channel gone) or on any error — we
+     * treat errors as "gone" to avoid infinite polling; 1.5 h of CDR-missing
+     * attempts before a checkpoint fires is enough margin for transient outages.
      */
     private function isChannelStillActive(Call $call): bool
     {
@@ -234,13 +233,12 @@ final class PollCallCdrJob implements ShouldQueue
     }
 
     /**
-     * Polling cadence. Designed so the cumulative window comfortably exceeds
-     * typical call durations even before ARI fallback kicks in:
+     * Polling cadence with ARI segment checkpoints at attempts 3, 6, 12, and MAX_ATTEMPTS:
      *
-     *   attempts 1-3   →  30s each   (early CDR appearance, ~1.5 min)
-     *   attempts 4-6   →  60s each   (short calls finishing, +3 min)
-     *   attempts 7-12  →  120s each  (typical marketing calls, +12 min)
-     *   attempts 13+   →  300s each  (long sales calls, +1.5h to MAX_ATTEMPTS=30)
+     *   attempts 1–3   →  30s each   checkpoint @ 3  (~1.5 min)
+     *   attempts 4–6   →  60s each   checkpoint @ 6  (+3 min)
+     *   attempts 7–12  →  120s each  checkpoint @ 12 (+12 min)
+     *   attempts 13–30 →  300s each  checkpoint @ 30 (+1.5 h)
      */
     private function delayForAttempt(int $attempt): int
     {
