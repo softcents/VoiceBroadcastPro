@@ -9,6 +9,7 @@ use App\Enums\CallStatus;
 use App\Enums\CallType;
 use App\Enums\TransactionType;
 use App\Exceptions\BusinessException;
+use App\Jobs\ProcessOtpCallJob;
 use App\Models\Call;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -27,7 +28,7 @@ final class CreateNewOtpCall
      */
     public function handle(User $user, array $input, CallInterface $interface = CallInterface::Web): Call
     {
-        return DB::transaction(function () use ($user, $input, $interface): Call {
+        $call = DB::transaction(function () use ($user, $input, $interface): Call {
             $lockedUser = User::whereKey($user->id)
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -66,5 +67,11 @@ final class CreateNewOtpCall
 
             return $call;
         });
+
+        if (! $call->scheduled_at || $call->scheduled_at->isPast()) {
+            ProcessOtpCallJob::dispatch($call->id);
+        }
+
+        return $call;
     }
 }

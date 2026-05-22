@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace App\Actions;
 
 use App\Enums\CallInterface;
+use App\Enums\CallType;
 use App\Enums\TransactionType;
 use App\Exceptions\BusinessException;
+use App\Jobs\ProcessMarketingCallJob;
+use App\Jobs\ProcessOtpCallJob;
 use App\Models\Call;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -21,7 +24,7 @@ final class CreateNewCall
      */
     public function handle(User $user, array $input, CallInterface $interface = CallInterface::Web): Call
     {
-        return DB::transaction(function () use ($user, $input, $interface): Call {
+        $call = DB::transaction(function () use ($user, $input, $interface): Call {
             /** @var Call $call */
             $call = $user->calls()->create(array_merge($input, [
                 'interface' => $interface,
@@ -59,5 +62,14 @@ final class CreateNewCall
 
             return $call;
         });
+
+        if (! $call->scheduled_at || $call->scheduled_at->isPast()) {
+            match ($call->type) {
+                CallType::Marketing => ProcessMarketingCallJob::dispatch($call->id),
+                CallType::OTP => ProcessOtpCallJob::dispatch($call->id),
+            };
+        }
+
+        return $call;
     }
 }
