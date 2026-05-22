@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Actions\RetryCall;
 use App\Enums\CallInterface;
 use App\Enums\CallStatus;
 use App\Enums\CallType;
@@ -20,7 +21,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Propaganistas\LaravelPhone\Casts\E164PhoneNumberCast;
-use RuntimeException;
 
 #[ScopedBy(OwnedByAuthUser::class)]
 #[Guarded(['id'])]
@@ -74,15 +74,7 @@ final class Call extends Model
      */
     public function retry(): void
     {
-        if ($this->canRetry) {
-            $this->update([
-                'status' => CallStatus::Pending,
-            ]);
-
-            $this->increment('retries');
-        } else {
-            throw new RuntimeException('Call cannot be retried.');
-        }
+        app(RetryCall::class)->handle($this);
     }
 
     protected function isRetryable(): Attribute
@@ -96,9 +88,7 @@ final class Call extends Model
     {
         $callSettings = app(CallingSetting::class);
 
-        return Attribute::make(
-            get: fn () => $this->isRetryable && $this->retries < $callSettings->max_retry_attempts,
-        );
+        return Attribute::get(fn (): bool => $this->isRetryable && $this->retries < $callSettings->max_retry_attempts);
     }
 
     #[Scope]

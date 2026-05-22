@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Calling\Campaigns\Pages;
 
-use App\Enums\CallStatus;
 use App\Enums\CampaignStatus;
 use App\Filament\User\Resources\Calling\Campaigns\CampaignResource;
 use App\Filament\User\Resources\Calling\Campaigns\Widgets\CampaignChartWidget;
 use App\Filament\User\Resources\Calling\Campaigns\Widgets\CampaignStatsWidget;
+use App\Models\Call;
 use App\Models\Campaign;
 use Filament\Actions\Action;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
-use Illuminate\Support\Facades\DB;
 use LaraZeus\Tabler\Tabler;
+use Throwable;
 
 final class ViewCampaign extends ViewRecord
 {
@@ -32,22 +32,31 @@ final class ViewCampaign extends ViewRecord
                 ->requiresConfirmation()
                 ->visible(fn (Campaign $record): bool => $record->calls()->retryable()->exists())
                 ->action(function (Campaign $record): void {
-                    DB::transaction(function () use ($record): void {
-                        $record->calls()->retryable()->update([
-                            'status' => CallStatus::Pending,
-                            'unique_id' => null,
-                        ]);
+                    $skipped = 0;
 
-                        $record->update([
-                            'status' => CampaignStatus::Pending,
-                        ]);
-
-                        Notification::make('retry_initiated')
-                            ->title('Retry Initiated')
-                            ->body('All failed calls are set to retry.')
-                            ->success()
-                            ->send();
+                    $record->calls()->retryable()->each(function (Call $call) use (&$skipped): void {
+                        try {
+                            $call->retry();
+                        } catch (Throwable) {
+                            $skipped++;
+                        }
                     });
+
+                    $hasPending = $record->calls()->pending()->exists();
+
+                    if ($hasPending) {
+                        $record->update(['status' => CampaignStatus::Pending]);
+                    }
+
+                    $body = $skipped > 0
+                        ? "{$skipped} call(s) were skipped due to insufficient balance or retry limit."
+                        : 'All eligible failed calls have been queued for retry.';
+
+                    Notification::make('retry_initiated')
+                        ->title('Retry Initiated')
+                        ->body($body)
+                        ->success()
+                        ->send();
 
                     $this->refresh();
                 }),

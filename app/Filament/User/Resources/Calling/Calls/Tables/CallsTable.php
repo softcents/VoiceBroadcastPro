@@ -12,11 +12,13 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
+use Filament\Notifications\Notification;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Collection;
 use LaraZeus\Tabler\Tabler;
+use Throwable;
 
 final class CallsTable
 {
@@ -96,9 +98,24 @@ final class CallsTable
                         ->icon(Tabler::Refresh)
                         ->color('danger')
                         ->requiresConfirmation()
-                        ->action(function (Collection $records) {
-                            $records->where('status', CallStatus::Failed)
-                                ->each(fn (Call $record) => $record->retry());
+                        ->action(function (Collection $records): void {
+                            $skipped = 0;
+
+                            $records->each(function (Call $record) use (&$skipped): void {
+                                try {
+                                    $record->retry();
+                                } catch (Throwable) {
+                                    $skipped++;
+                                }
+                            });
+
+                            if ($skipped > 0) {
+                                Notification::make()
+                                    ->title("{$skipped} call(s) could not be retried")
+                                    ->body('Calls may have insufficient balance or exceeded the retry limit.')
+                                    ->warning()
+                                    ->send();
+                            }
                         }),
                     DeleteBulkAction::make(),
                 ]),

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Calling\Calls\Pages;
 
+use App\Exceptions\BusinessException;
 use App\Filament\User\Resources\Calling\Calls\CallResource;
 use App\Models\Call;
 use Filament\Actions\Action;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use LaraZeus\Tabler\Tabler;
 
@@ -23,7 +25,17 @@ final class ViewCall extends ViewRecord
                 ->color('danger')
                 ->visible(fn (Call $record) => $record->can_retry)
                 ->requiresConfirmation()
-                ->action(fn (Call $record) => $record->retry()),
+                ->action(function (Call $record): void {
+                    try {
+                        $record->retry();
+                    } catch (BusinessException $e) {
+                        Notification::make()
+                            ->title('Retry Failed')
+                            ->body($e->getMessage())
+                            ->danger()
+                            ->send();
+                    }
+                }),
         ];
     }
 }
