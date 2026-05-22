@@ -60,7 +60,7 @@ final class CreateNewCall
 
             $call->update(['cost' => $cost]);
 
-            return $call;
+            return $call->refresh();
         });
 
         if (! $call->scheduled_at || $call->scheduled_at->isPast()) {
