@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Settings\Servers\Schemas;
 
+use App\Models\Server;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Actions;
@@ -83,7 +84,7 @@ final class ServerForm
                                             ->prefixIcon(Tabler::Key)
                                             ->label('Password')
                                             ->placeholder('Enter your password')
-                                            ->formatStateUsing(fn ($record) => $record->ari_password)
+                                            ->formatStateUsing(fn (?Server $record) => $record?->ari_password)
                                             ->password()
                                             ->revealable()
                                             ->required(),
@@ -115,14 +116,10 @@ final class ServerForm
                                     ->prefixIcon(Tabler::Key)
                                     ->label('Password')
                                     ->placeholder('Enter your password')
-                                    ->formatStateUsing(fn ($record) => $record->database_password)
+                                    ->formatStateUsing(fn (?Server $record) => $record?->database_password)
                                     ->password()
                                     ->revealable()
                                     ->required(),
-
-                                Actions::make([
-
-                                ]),
                             ]),
                     ]),
             ]);
