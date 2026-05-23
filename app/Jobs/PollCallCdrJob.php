@@ -6,6 +6,7 @@ namespace App\Jobs;
 
 use App\Enums\CallStatus;
 use App\Enums\TransactionType;
+use App\Jobs\UpdateCampaignStatus;
 use App\Models\Asterisk\Cdr;
 use App\Models\Call;
 use App\Models\User;
@@ -32,7 +33,9 @@ final class PollCallCdrJob implements ShouldQueue
      */
     public function handle(): void
     {
-        DB::transaction(function () {
+        $settledCampaignId = null;
+
+        DB::transaction(function () use (&$settledCampaignId): void {
 
             $call = Call::query()
                 ->whereKey($this->callId)
@@ -60,6 +63,7 @@ final class PollCallCdrJob implements ShouldQueue
 
             if (! empty($cdr)) {
                 $this->markAsCompleted($call, $cdr);
+                $settledCampaignId = $call->campaign_id;
 
                 return;
             }
@@ -83,12 +87,17 @@ final class PollCallCdrJob implements ShouldQueue
                 }
 
                 $this->markAsFailed($call, $attempt);
+                $settledCampaignId = $call->campaign_id;
 
                 return;
             }
 
             $this->markAsPending($call, $attempt);
         });
+
+        if ($settledCampaignId) {
+            UpdateCampaignStatus::dispatch($settledCampaignId);
+        }
     }
 
     /**

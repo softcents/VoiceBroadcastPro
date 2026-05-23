@@ -8,6 +8,7 @@ use App\Enums\CallStatus;
 use App\Jobs\Concerns\RefundsCallCost;
 use App\Jobs\Middleware\LimitCallerCalls;
 use App\Jobs\Middleware\LimitServerCalls;
+use App\Jobs\UpdateCampaignStatus;
 use App\Models\Call;
 use Exception;
 use Illuminate\Bus\Batchable;
@@ -172,6 +173,10 @@ final class ProcessMarketingCallJob implements ShouldBeUnique, ShouldQueue
                 'unique_id' => $uniqueId,
                 'status' => CallStatus::Processing,
             ]);
+
+            if ($this->call->campaign_id) {
+                UpdateCampaignStatus::dispatch($this->call->campaign_id);
+            }
         } catch (Exception $e) {
             Log::error("Exception during API call for Call ID {$this->call->id}", [
                 'exception' => $e->getMessage(),
