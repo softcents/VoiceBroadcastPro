@@ -31,6 +31,7 @@
         "league/flysystem-aws-s3-v3": "^3.0",
         "maatwebsite/excel": "^3.1",
         "nunomaduro/essentials": "^1.0",
+        "opcodesio/log-viewer": "^3.24",
         "pbmedia/laravel-ffmpeg": "^8.7",
         "propaganistas/laravel-disposable-email": "^2.4",
         "propaganistas/laravel-phone": "^6.0",

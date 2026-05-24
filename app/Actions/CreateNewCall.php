@@ -65,8 +65,8 @@ final class CreateNewCall
 
         if (! $call->scheduled_at || $call->scheduled_at->isPast()) {
             match ($call->type) {
-                CallType::Marketing => ProcessMarketingCallJob::dispatch($call->id),
-                CallType::OTP => ProcessOtpCallJob::dispatch($call->id),
+                CallType::Marketing => ProcessMarketingCallJob::dispatch($call->id)->onQueue('calling'),
+                CallType::OTP => ProcessOtpCallJob::dispatch($call->id)->onQueue('calling'),
             };
         }
 

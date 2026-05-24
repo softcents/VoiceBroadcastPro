@@ -33,8 +33,8 @@ final class DispatchCall extends Command
             ->get(['id', 'type'])
             ->each(function (Call $call) use (&$dispatched): void {
                 match ($call->type) {
-                    CallType::Marketing => ProcessMarketingCallJob::dispatch($call->id),
-                    CallType::OTP => ProcessOtpCallJob::dispatch($call->id),
+                    CallType::Marketing => ProcessMarketingCallJob::dispatch($call->id)->onQueue('calling'),
+                    CallType::OTP => ProcessOtpCallJob::dispatch($call->id)->onQueue('calling'),
                 };
 
             });

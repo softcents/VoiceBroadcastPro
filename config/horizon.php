@@ -219,10 +219,10 @@ return [
         ],
         'call' => [
             'connection' => 'redis',
-            'queue' => ['default'],
+            'queue' => ['calling'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 6,
+            'maxProcesses' => 1,
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,
@@ -236,11 +236,6 @@ return [
         'production' => [
             'default' => [
                 'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-            ],
-            'call' => [
-                'maxProcesses' => 20,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
