@@ -233,7 +233,30 @@ return [
     ],
 
     'environments' => [
-
+        'production' => [
+            'default' => [
+                'maxProcesses' => 5,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
+            'call' => [
+                'maxProcesses' => 2,
+                'balanceMaxShift' => 1,
+                'balanceCooldown' => 3,
+            ],
+        ],
+        'local' => [
+            'default' => [
+                'maxProcesses' => 1,
+                'balanceMaxShift' => 0,
+                'balanceCooldown' => 0,
+            ],
+            'call' => [
+                'maxProcesses' => 1,
+                'balanceMaxShift' => 0,
+                'balanceCooldown' => 0,
+            ],
+        ],
     ],
 
     /*
