@@ -125,4 +125,5 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    'local_call' => (bool) env('APP_LOCAL_CALL', false),
 ];

@@ -89,7 +89,7 @@ return [
     'middleware' => [
         'web',
         'auth',
-         AdminMiddleware::class
+        AdminMiddleware::class,
     ],
 
     /*
@@ -209,7 +209,7 @@ return [
             'queue' => ['default'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 1,
+            'maxProcesses' => 5,
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,
@@ -222,7 +222,7 @@ return [
             'queue' => ['calling'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 5,
+            'maxProcesses' => 2,
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,
@@ -233,19 +233,7 @@ return [
     ],
 
     'environments' => [
-        'production' => [
-            'default' => [
-                'maxProcesses' => 10,
-                'balanceMaxShift' => 1,
-                'balanceCooldown' => 3,
-            ],
-        ],
 
-        'local' => [
-            'default' => [
-                'maxProcesses' => 3,
-            ],
-        ],
     ],
 
     /*

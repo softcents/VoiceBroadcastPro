@@ -71,7 +71,7 @@ final class InitiateCallJob implements ShouldQueue
             return;
         }
 
-        $this->initiateCall($audioPath);
+        $this->initiateCall();
     }
 
     public function failed(Throwable $exception): void
@@ -94,14 +94,22 @@ final class InitiateCallJob implements ShouldQueue
     /**
      * @throws Throwable
      */
-    private function initiateCall(string $audioPath): void
+    private function initiateCall(): void
     {
         try {
             $server = $this->call->caller->server;
-            $phone = $this->call->phone_number;
-            $trunk = $this->call->caller->trunk_name;
-            $callerName = $this->call->caller->caller_name;
-            $callerNumber = $this->call->caller->caller_number;
+
+            if (config('app.local_call', false)) {
+                $phone = '1111';
+                $trunk = '2222';
+                $callerName = '2222';
+                $callerNumber = '2222';
+            } else {
+                $phone = $this->call->phone_number;
+                $trunk = $this->call->caller->trunk_name;
+                $callerName = $this->call->caller->caller_name;
+                $callerNumber = $this->call->caller->caller_number;
+            }
 
             $response = Http::timeout(30)
                 ->withBasicAuth($server->ari_username, $server->ari_password)
