@@ -32,7 +32,7 @@
         "maatwebsite/excel": "^3.1",
         "nunomaduro/essentials": "^1.0",
         "opcodesio/log-viewer": "^3.24",
-        "opiy-org/asterisk-ari-php": "^2.1",
+        "opiy-org/asterisk-ari-php": "dev-master",
         "pbmedia/laravel-ffmpeg": "^8.7",
         "propaganistas/laravel-disposable-email": "^2.4",
         "propaganistas/laravel-phone": "^6.0",
@@ -113,5 +113,11 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories" : [
+        {
+            "type" : "vcs",
+            "url" : "https://github.com/fropatch/asterisk-ari-php"
+        }
+    ]
 }
