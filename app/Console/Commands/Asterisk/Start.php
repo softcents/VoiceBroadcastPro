@@ -16,6 +16,7 @@ use OpiyOrg\AriClient\Client\Rest\Resource\Events as AriEventsRestResourceClient
 use OpiyOrg\AriClient\Client\Rest\Settings as AriRestClientSettings;
 use OpiyOrg\AriClient\Client\WebSocket\Factory as AriWebSocketClientFactory;
 use OpiyOrg\AriClient\Client\WebSocket\Ratchet\Settings as AriRatchetSettings;
+use OpiyOrg\AriClient\Client\WebSocket\Ratchet\WebSocketClient;
 use OpiyOrg\AriClient\Client\WebSocket\Settings as AriWebSocketClientSettings;
 use React\EventLoop\Loop;
 use React\EventLoop\LoopInterface;
@@ -26,7 +27,7 @@ use Throwable;
 #[Description('Command description')]
 final class Start extends Command
 {
-    /** @var array<int, AriWebSocketClientFactory> */
+    /** @var array<int, WebSocketClient> */
     private array $clients = [];
 
     public function handle(): int
@@ -148,7 +149,25 @@ final class Start extends Command
         $this->components->info('Asterisk ARI client stopped successfully.');
     }
 
-    private function restart(LoopInterface $loop) {}
+    private function restart(LoopInterface $loop)
+    {
+        $this->components->warn('Reloading is not implemented yet. Please stop and start the client to apply changes.');
+
+        //        $this->newLine();
+        //        $this->components->info('Restarting Asterisk ARI client...');
+        //
+        // //        // Stop all clients
+        // //        foreach ($this->clients as $client) {
+        // //            $client->getLoop()->stop();
+        // //        }
+        //
+        //        $this->clients = [];
+        //
+        //        // Re-initialize servers
+        //        $this->initializeServers($loop);
+        //
+        //        $this->components->info('Asterisk ARI client restarted successfully.');
+    }
 
     private function getPidFilePath(): string
     {
