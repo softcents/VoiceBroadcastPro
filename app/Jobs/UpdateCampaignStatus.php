@@ -54,8 +54,9 @@ final class UpdateCampaignStatus implements ShouldBeUnique, ShouldQueue
         $failed = $calls->where('status', CallStatus::Failed)->count();
         $processing = $calls->where('status', CallStatus::Processing)->count();
         $pending = $calls->where('status', CallStatus::Pending)->count();
+        $initiated = $calls->where('status', CallStatus::Initiated)->count();
 
-        if ($processing > 0 || $pending > 0) {
+        if ($processing > 0 || $pending > 0 || $initiated > 0) {
             // Still has active or queued calls — at least set Processing if not already.
             if ($campaign->status !== CampaignStatus::Processing) {
                 $campaign->update(['status' => CampaignStatus::Processing]);
@@ -74,13 +75,6 @@ final class UpdateCampaignStatus implements ShouldBeUnique, ShouldQueue
 
             if ($campaign->status !== $newStatus) {
                 $campaign->update(['status' => $newStatus]);
-
-                Log::info('Campaign status updated', [
-                    'campaign_id' => $campaign->id,
-                    'status' => $newStatus->value,
-                    'completed' => $completed,
-                    'failed' => $failed,
-                ]);
             }
         }
     }

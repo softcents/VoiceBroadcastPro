@@ -9,19 +9,27 @@ use App\Enums\TransactionType;
 use App\Models\Asterisk\Cdr;
 use App\Models\Call;
 use App\Models\User;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Throwable;
 
-final class ReconcileStaleCall implements ShouldQueue
+final class ReconcileStaleCall implements ShouldBeUnique, ShouldQueue
 {
     use Queueable;
+
+    public int $uniqueFor = 60;
 
     public function __construct(
         public readonly int $callId
     ) {}
+
+    public function uniqueId(): string
+    {
+        return (string) $this->callId;
+    }
 
     public function handle(): void
     {
@@ -41,12 +49,19 @@ final class ReconcileStaleCall implements ShouldQueue
                 return;
             }
 
-            // Only reconcile calls still in Processing.
-            if ($call->status !== CallStatus::Processing) {
+            // Only reconcile calls still in a non-terminal state.
+            if (! in_array($call->status, [CallStatus::Processing, CallStatus::Initiated], true)) {
                 return;
             }
 
             $campaignId = $call->campaign_id;
+
+            // Initiated calls have no channel — refund and mark failed.
+            if ($call->status === CallStatus::Initiated) {
+                $this->refund($call);
+
+                return;
+            }
 
             if (! $call->unique_id) {
                 $this->refund($call);

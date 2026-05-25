@@ -8,6 +8,7 @@ use App\Enums\CallStatus;
 use App\Jobs\Concerns\RefundsCallCost;
 use App\Models\Call;
 use Exception;
+use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -15,15 +16,22 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-final class InitiateCallJob implements ShouldQueue
+final class InitiateCallJob implements ShouldBeUnique, ShouldQueue
 {
     use Queueable, RefundsCallCost;
+
+    public int $uniqueFor = 60;
 
     private ?Call $call = null;
 
     public function __construct(
         public readonly int $callId
     ) {}
+
+    public function uniqueId(): string
+    {
+        return (string) $this->callId;
+    }
 
     /**
      * @throws Throwable

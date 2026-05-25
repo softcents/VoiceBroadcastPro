@@ -35,6 +35,7 @@ final class Call extends Model
         'interface' => CallInterface::class,
         'phone_number' => E164PhoneNumberCast::class,
         'scheduled_at' => 'datetime',
+        'initiated_at' => 'datetime',
         'duration' => 'float',
         'cost' => 'float',
     ];

@@ -12,6 +12,7 @@ use LaraZeus\Tabler\Tabler;
 enum CallStatus: string implements HasColor, HasIcon, HasLabel
 {
     case Pending = 'pending';
+    case Initiated = 'initiated';
     case Processing = 'processing';
     case Completed = 'completed';
     case Failed = 'failed';
@@ -25,6 +26,7 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::Pending => 'gray',
+            self::Initiated => 'warning',
             self::Processing => 'info',
             self::Completed => 'success',
             self::Failed => 'danger',
@@ -35,6 +37,7 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     {
         return match ($this) {
             self::Pending => Tabler::Clock,
+            self::Initiated => Tabler::PlayerPlay,
             self::Processing => Tabler::PhoneCalling,
             self::Completed => Tabler::PhoneCheck,
             self::Failed => Tabler::CircleX,

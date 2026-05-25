@@ -33,6 +33,7 @@ final class CampaignChartWidget extends ChartWidget
 
         $statusColors = [
             CallStatus::Pending->value => 'rgb(156, 163, 175)', // gray
+            CallStatus::Initiated->value => 'rgb(245, 158, 11)', // amber/warning
             CallStatus::Processing->value => 'rgb(59, 130, 246)',  // blue/info
             CallStatus::Completed->value => 'rgb(16, 185, 129)',  // emerald/success
             CallStatus::Failed->value => 'rgb(239, 68, 68)',   // red/danger

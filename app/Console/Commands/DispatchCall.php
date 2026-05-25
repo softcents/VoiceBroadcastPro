@@ -29,13 +29,13 @@ final class DispatchCall extends Command
         $serverProcessingCounts = Call::query()
             ->select('callers.server_id', DB::raw('COUNT(*) as count'))
             ->join('callers', 'callers.id', '=', 'calls.caller_id')
-            ->where('calls.status', CallStatus::Processing)
+            ->whereIn('calls.status', [CallStatus::Processing, CallStatus::Initiated])
             ->groupBy('callers.server_id')
             ->pluck('count', 'callers.server_id');
 
         $callerProcessingCounts = Call::query()
             ->select('caller_id', DB::raw('COUNT(*) as count'))
-            ->where('status', CallStatus::Processing)
+            ->whereIn('status', [CallStatus::Processing, CallStatus::Initiated])
             ->groupBy('caller_id')
             ->pluck('count', 'caller_id');
 
@@ -81,6 +81,16 @@ final class DispatchCall extends Command
             $serverUsedSlots[$caller->server_id] = $serverUsed + $calls->count();
 
             $results = $results->merge($calls);
+        }
+
+        if ($results->isNotEmpty()) {
+            Call::query()
+                ->withoutGlobalScopes()
+                ->whereIn('id', $results->pluck('id'))
+                ->update([
+                    'status' => CallStatus::Initiated,
+                    'initiated_at' => now(),
+                ]);
         }
 
         $results->each(fn ($call) => InitiateCallJob::dispatch($call->id)->onQueue('calling'));
