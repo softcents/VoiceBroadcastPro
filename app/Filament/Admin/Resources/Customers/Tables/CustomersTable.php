@@ -71,7 +71,6 @@ final class CustomersTable
                     DepositAction::make(),
                     EditAction::make()->label('Edit Customer'),
                     ImpersonateAction::make(),
-                    DeleteAction::make()->label('Delete Customer'),
                 ]),
             ])
             ->toolbarActions([

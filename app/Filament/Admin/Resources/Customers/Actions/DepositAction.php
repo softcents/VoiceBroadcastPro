@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\Admin\Resources\Customers\Actions;
 
+use App\Enums\DepositPaymentMethod;
 use App\Enums\DepositStatus;
 use App\Models\User;
 use Filament\Actions\Action;
@@ -36,7 +37,7 @@ final class DepositAction
 
                     $record->deposits()->create([
                         'amount' => $data['amount'],
-                        'gateway' => 'admin_addition',
+                        'payment_method' => DepositPaymentMethod::Manual,
                         'status' => DepositStatus::Completed,
                     ]);
                 });
