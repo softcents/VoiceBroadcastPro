@@ -49,10 +49,9 @@ final class DepositAction
 
                 Notification::make()
                     ->title('Your balance has been updated by admin')
-                    ->body(sprintf(
-                        format: 'An amount of %s has been added to your account by the admin.',
-                        values: Number::currency($data['amount'], 'BDT'))
-                    )
+                    ->body(__('An amount of :amount has been added to your account by the admin.', [
+                        'amount' => Number::currency($data['amount'], 'BDT'),
+                    ]))
                     ->success()
                     ->sendToDatabase($record);
             });
