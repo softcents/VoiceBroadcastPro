@@ -31,6 +31,13 @@ final class ServerForm
                             ->placeholder('e.g. Primary Asterisk Server')
                             ->required()
                             ->prefixIcon(Tabler::Server),
+                        TextInput::make('max_concurrency')
+                            ->label('Max Concurrency')
+                            ->placeholder('e.g. 100')
+                            ->numeric()
+                            ->default(100)
+                            ->required()
+                            ->prefixIcon(Tabler::Users),
 
                         Select::make('enabled')
                             ->label('Status')

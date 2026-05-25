@@ -28,7 +28,7 @@ final class AudioResource extends Resource
 
     protected static string|UnitEnum|null $navigationGroup = AdminNavigationGroup::Calling;
 
-    protected static ?int $navigationSort = 1;
+    protected static ?int $navigationSort = 3;
 
     protected static ?string $recordTitleAttribute = 'title';
 

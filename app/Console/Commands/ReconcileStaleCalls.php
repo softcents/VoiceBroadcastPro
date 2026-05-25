@@ -11,7 +11,7 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('app:reconcile-stale-calls {--threshold=30 : Minutes after which a call is considered stale}')]
+#[Signature('app:reconcile-stale-calls {--threshold=10 : Minutes after which a call is considered stale}')]
 #[Description('Find calls stuck in Processing or Initiated status and reconcile them against Asterisk CDR')]
 final class ReconcileStaleCalls extends Command
 {

@@ -22,6 +22,7 @@ final class ContactImporter extends Importer
             ImportColumn::make('phone_number')
                 ->label('Phone Number')
                 ->requiredMapping()
+                ->example(['8801322635808', '8801608460717'])
                 ->rules(['required', 'max:255', 'phone:BD']),
         ];
     }
@@ -44,11 +45,7 @@ final class ContactImporter extends Importer
 
     public function resolveRecord(): Contact|Model
     {
-        $phone = rescue(
-            fn () => new PhoneNumber($this->data['phone_number'], 'BD')->formatE164(),
-            null,
-            false
-        );
+        $phone = rescue(fn () => new PhoneNumber($this->data['phone_number'], 'BD')->formatE164(), report: false);
 
         $this->data['phone_number'] = $phone;
 
