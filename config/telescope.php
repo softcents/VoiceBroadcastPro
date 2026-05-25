@@ -98,7 +98,7 @@ return [
     'middleware' => [
         'web',
         Authorize::class,
-        //        AdminMiddleware::class,
+        AdminMiddleware::class,
     ],
 
     /*

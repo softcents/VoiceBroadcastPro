@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Asterisk;
 
-use App\Support\UsingAsteriskConnection;
+use App\Asterisk\UsingAsteriskConnection;
 use Illuminate\Database\Eloquent\Model;
 
 final class Cel extends Model

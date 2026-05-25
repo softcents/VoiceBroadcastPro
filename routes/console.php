@@ -5,7 +5,5 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('telescope:prune --hours=24')->daily()->runInBackground();
-
 Schedule::command('app:sync-trunk-status')->everyMinute();
-Schedule::command('app:poll-call-cdr')->everyMinute();
-Schedule::command('app:dispatch-call')->everyMinute();
+Schedule::command('app:dispatch-call')->everyThirtySeconds();

@@ -9,7 +9,7 @@ use App\Enums\CallStatus;
 use App\Enums\CallType;
 use App\Enums\TransactionType;
 use App\Exceptions\BusinessException;
-use App\Jobs\ProcessOtpCallJob;
+use App\Jobs\InitiateCallJob;
 use App\Models\Call;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -69,7 +69,7 @@ final class CreateNewOtpCall
         });
 
         if (! $call->scheduled_at || $call->scheduled_at->isPast()) {
-            ProcessOtpCallJob::dispatch($call->id);
+            InitiateCallJob::dispatch($call->id)->onQueue('calling');
         }
 
         return $call;

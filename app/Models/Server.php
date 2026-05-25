@@ -27,6 +27,7 @@ final class Server extends Model
     protected $casts = [
         'ari_password' => 'encrypted',
         'database_password' => 'encrypted',
+        'ari_port' => 'integer',
     ];
 
     public function callers(): HasMany

@@ -6,13 +6,8 @@ namespace App\Jobs;
 
 use App\Enums\CallStatus;
 use App\Jobs\Concerns\RefundsCallCost;
-use App\Jobs\Middleware\LimitCallerCalls;
-use App\Jobs\Middleware\LimitServerCalls;
-use App\Jobs\UpdateCampaignStatus;
 use App\Models\Call;
 use Exception;
-use Illuminate\Bus\Batchable;
-use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 use Illuminate\Support\Facades\Http;
@@ -20,39 +15,15 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Throwable;
 
-final class ProcessMarketingCallJob implements ShouldBeUnique, ShouldQueue
+final class InitiateCallJob implements ShouldQueue
 {
-    use Batchable, Queueable, RefundsCallCost;
-
-    public int $tries = 50;
-
-    public int $timeout = 120;
-
-    public int $maxExceptions = 3;
-
-    public int $uniqueFor = 3600;
+    use Queueable, RefundsCallCost;
 
     private ?Call $call = null;
 
     public function __construct(
         public readonly int $callId
     ) {}
-
-    public function uniqueId(): string
-    {
-        return (string) $this->callId;
-    }
-
-    /**
-     * @return array<int, object>
-     */
-    public function middleware(): array
-    {
-        return [
-            new LimitServerCalls($this->callId),
-            new LimitCallerCalls($this->callId),
-        ];
-    }
 
     /**
      * @throws Throwable
@@ -127,21 +98,24 @@ final class ProcessMarketingCallJob implements ShouldBeUnique, ShouldQueue
     {
         try {
             $server = $this->call->caller->server;
+            //            $phone = $this->call->phone_number;
+            //            $trunk = $this->call->caller->trunk_name;
+            //            $callerName = $this->call->caller->caller_name;
+            //            $callerNumber = $this->call->caller->caller_number;
+
+            $phone = '1111';
+            $trunk = '2222';
+            $callerName = '2222';
+            $callerNumber = '2222';
 
             $response = Http::timeout(30)
                 ->withBasicAuth($server->ari_username, $server->ari_password)
                 ->baseUrl($server->ari_base_url)
                 ->post('ari/channels', [
-                    'endpoint' => "PJSIP/{$this->call->phone_number}@{$this->call->caller->trunk_name}",
-                    'extension' => 'frolax.agency',
-                    'context' => 'outgoing-http',
-                    'priority' => 1,
-                    'callerId' => "{$this->call->caller->caller_name} <{$this->call->caller->caller_number}>",
-                    'variables' => [
-                        'STEP_COUNT' => '1',
-                        'STEP_1_TYPE' => 'url',
-                        'STEP_1_VALUE' => getFileUrl($audioPath),
-                    ],
+                    'endpoint' => "PJSIP/{$phone}@$trunk",
+                    'app' => 'MyStasisApp',
+                    'callerId' => "$callerName <$callerNumber>",
+                    'appArgs' => "$this->callId",
                 ]);
 
             if ($response->failed()) {

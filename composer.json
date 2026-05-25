@@ -32,11 +32,10 @@
         "maatwebsite/excel": "^3.1",
         "nunomaduro/essentials": "^1.0",
         "opcodesio/log-viewer": "^3.24",
+        "opiy-org/asterisk-ari-php": "^2.1",
         "pbmedia/laravel-ffmpeg": "^8.7",
         "propaganistas/laravel-disposable-email": "^2.4",
         "propaganistas/laravel-phone": "^6.0",
-        "ratchet/pawl": "^0.4.3",
-        "react/event-loop": "^1.6",
         "spatie/laravel-ray": "^1.43",
         "spatie/laravel-settings": "^3.6",
         "stechstudio/filament-impersonate": "^4.0",
@@ -113,6 +112,6 @@
             "php-http/discovery": true
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "prefer-stable": true
 }
