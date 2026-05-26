@@ -7,12 +7,13 @@ namespace App\Filament\Admin\Resources\Settings\Servers\Schemas;
 use App\Models\Server;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Schemas\Components\Actions;
+use Filament\Infolists\Components\CodeEntry;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Tabs;
 use Filament\Schemas\Schema;
 use LaraZeus\Tabler\Tabler;
+use Phiki\Grammar\Grammar;
 
 final class ServerForm
 {
@@ -127,6 +128,14 @@ final class ServerForm
                                     ->password()
                                     ->revealable()
                                     ->required(),
+
+                                CodeEntry::make('setup_remote_database')
+                                    ->label('Setup Remote Database')
+                                    ->state(sprintf('bash <(curl -fsSL %s)', url('/scripts/freepbx-db.sh')))
+                                    ->grammar(Grammar::Shellscript)
+                                    ->copyable()
+                                    ->columnSpanFull(),
+
                             ]),
                     ]),
             ]);
