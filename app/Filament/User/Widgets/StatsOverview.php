@@ -15,22 +15,28 @@ final class StatsOverview extends StatsOverviewWidget
 
     protected function getStats(): array
     {
+        $user = auth()->user();
+
+        $balance = $user->balance;
+        $pulseRate = $user->pulse_rate;
+        $pulseDuration = $user->pulse_duration;
+
+        $remainingCalls = $pulseRate > 0 ? floor($balance / $pulseRate) : 0;
+
         return [
-            Stat::make('Account Balance', Number::currency(auth()->user()->balance, 'BDT'))
+            Stat::make('Account Balance', Number::currency($balance, 'BDT'))
                 ->description('Current balance in your account')
                 ->icon(Tabler::PigMoney),
 
-            // Estimated Remaining Calls
-            Stat::make('Remaining Calls', (string) (auth()->user()->pulse_rate > 0 ? floor(auth()->user()->balance / auth()->user()->pulse_rate) : 0))
+            Stat::make('Remaining Calls', Number::abbreviate($remainingCalls, 0, 2))
                 ->description('Estimated number of calls')
                 ->icon(Tabler::PhoneCalling),
 
-            // Pulse Rate
-            Stat::make('Pulse Rate', Number::currency(auth()->user()->pulse_rate, 'BDT'))
+            Stat::make('Pulse Rate', Number::currency($pulseRate, 'BDT', precision: 6))
                 ->description('Cost per pulse')
                 ->icon(Tabler::HeartRateMonitor),
 
-            Stat::make('Pulse Duration', auth()->user()->pulse_duration.' seconds')
+            Stat::make('Pulse Duration', $pulseDuration.' seconds')
                 ->description('Duration of one pulse')
                 ->icon(Tabler::Clock),
         ];

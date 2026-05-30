@@ -14,6 +14,8 @@ final class CallingSetting extends Settings
 
     public int $max_retry_attempts = 3;
 
+    public float $campaign_success_threshold = 1.0;
+
     public static function group(): string
     {
         return 'calling';

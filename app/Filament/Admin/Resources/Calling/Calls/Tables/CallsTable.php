@@ -29,27 +29,43 @@ final class CallsTable
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
                 TextColumn::make('phone_number')
+                    ->label('Phone Number')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('status')
+                    ->label('Status')
                     ->badge(),
+                TextColumn::make('type')
+                    ->label('Type')
+                    ->badge(),
+                TextColumn::make('interface')
+                    ->label('From')
+                    ->badge(),
+                TextColumn::make('duration')
+                    ->label('Duration')
+                    ->numeric()
+                    ->placeholder('-')
+                    ->formatStateUsing(fn (float $state) => secondsToHuman($state))
+                    ->sortable(),
+                TextColumn::make('cost')
+                    ->label('Cost')
+                    ->money('BDT', decimalPlaces: 6)
+                    ->sortable()
+                    ->alignRight(),
                 TextColumn::make('campaign.title')
+                    ->label('Campaign')
                     ->searchable()
                     ->sortable()
-                    ->url(fn (Call $record) => $record->campaign ? CampaignResource::getUrl('view', ['record' => $record->campaign_id]) : null)
-                    ->placeholder('N/A'),
+                    ->url(fn (Call $record) => $record->campaign_id ? CampaignResource::getUrl('view', ['record' => $record->campaign_id]) : null)
+                    ->toggleable(),
                 TextColumn::make('user.name')
-                    ->label('Customer')
+                    ->label('User')
                     ->searchable()
-                    ->url(fn (Call $record) => $record->user ? CustomerResource::getUrl('view', ['record' => $record->user_id]) : null),
-                TextColumn::make('created_at')
-                    ->dateTime()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->url(fn (Call $record) => CustomerResource::getUrl('edit', ['record' => $record->user_id]))
+                    ->toggleable(),
+                TextColumn::make('created_at'),
+                TextColumn::make('updated_at'),
             ])
             ->filters([
                 SelectFilter::make('type')

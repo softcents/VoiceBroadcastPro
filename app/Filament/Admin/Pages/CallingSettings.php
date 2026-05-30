@@ -33,21 +33,34 @@ final class CallingSettings extends SettingsPage
                             ->prefix('BDT')
                             ->numeric()
                             ->minValue(0)
-                            ->required(),
+                            ->step(0.01)
+                            ->required()
+                            ->helperText('The cost of each pulse in Bangladeshi Taka (BDT).'),
                         TextInput::make('pulse_duration')
                             ->label('Pulse Duration')
                             ->suffix('seconds')
                             ->numeric()
                             ->minValue(1)
                             ->step(1)
-                            ->required(),
+                            ->required()
+                            ->helperText('The duration of each pulse in seconds.'),
                         TextInput::make('max_retry_attempts')
                             ->label('Max Retry Attempts')
                             ->suffix('times')
                             ->numeric()
                             ->minValue(0)
                             ->step(1)
-                            ->required(),
+                            ->required()
+                            ->helperText('The maximum number of retry attempts for failed calls.'),
+                        TextInput::make('campaign_success_threshold')
+                            ->label('Campaign Success Threshold')
+                            ->suffix('%')
+                            ->numeric()
+                            ->minValue(0)
+                            ->maxValue(100)
+                            ->step(0.01)
+                            ->required()
+                            ->helperText('The percentage of successful calls required for a campaign to be considered successful.'),
                     ]),
             ]);
     }

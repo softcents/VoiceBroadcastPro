@@ -9,6 +9,7 @@ use App\Enums\CallType;
 use App\Enums\TransactionType;
 use App\Exceptions\BusinessException;
 use App\Models\Call;
+use App\Models\Campaign;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Throwable;

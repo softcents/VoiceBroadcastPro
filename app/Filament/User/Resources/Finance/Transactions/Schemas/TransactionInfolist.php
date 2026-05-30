@@ -46,7 +46,7 @@ final class TransactionInfolist
                                             ->label('Amount')
                                             ->size(TextSize::Large)
                                             ->weight(FontWeight::Bold)
-                                            ->money('BDT'),
+                                            ->money('BDT', decimalPlaces: 6),
 
                                         TextEntry::make('description')
                                             ->columnSpanFull(),

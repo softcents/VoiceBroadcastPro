@@ -54,18 +54,10 @@ final class CallsTable
                     ->sortable(),
                 TextColumn::make('cost')
                     ->label('Cost')
-                    ->money('BDT')
+                    ->money('BDT', decimalPlaces: 6)
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->label('Created At')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->label('Updated At')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at'),
+                TextColumn::make('updated_at'),
             ])
             ->filters([
                 SelectFilter::make('status')

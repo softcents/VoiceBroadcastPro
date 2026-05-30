@@ -65,7 +65,13 @@ final class Campaign extends Model implements Transactionable
     #[Scope]
     protected function pending(Builder $query): Builder
     {
-        return $query->where('status', CampaignStatus::Pending);
+        return $query->whereStatus(CampaignStatus::Pending);
+    }
+
+    #[Scope]
+    protected function processing(Builder $query): Builder
+    {
+        return $query->whereStatus(CampaignStatus::Processing);
     }
 
     /**

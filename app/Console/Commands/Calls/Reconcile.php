@@ -13,7 +13,7 @@ use Illuminate\Console\Command;
 
 #[Signature('calls:reconcile {--threshold=10 : Minutes after which a call is considered stale}')]
 #[Description('Find calls stuck in Processing or Initiated status and reconcile them against Asterisk CDR')]
-final class ReconcileCalls extends Command
+final class Reconcile extends Command
 {
     public function handle(): void
     {

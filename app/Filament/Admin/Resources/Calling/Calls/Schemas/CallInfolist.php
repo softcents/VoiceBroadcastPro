@@ -39,7 +39,7 @@ final class CallInfolist
                                 ]),
                                 Section::make([
                                     TextEntry::make('cost')
-                                        ->money('BDT')
+                                        ->money('BDT', decimalPlaces: 6)
                                         ->label('Cost')
                                         ->weight(FontWeight::Bold)
                                         ->size('lg'),

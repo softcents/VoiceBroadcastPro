@@ -95,19 +95,31 @@ final class Call extends Model
     #[Scope]
     protected function active(Builder $query): Builder
     {
-        return $query->where('status', CallStatus::Processing);
+        return $query->whereStatus(CallStatus::Processing);
     }
 
     #[Scope]
     protected function pending(Builder $query): Builder
     {
-        return $query->where('status', CallStatus::Pending);
+        return $query->whereStatus(CallStatus::Pending);
+    }
+
+    #[Scope]
+    protected function processing(Builder $query): Builder
+    {
+        return $query->whereStatus(CallStatus::Processing);
     }
 
     #[Scope]
     protected function failed(Builder $query): Builder
     {
-        return $query->where('status', CallStatus::Failed);
+        return $query->whereStatus(CallStatus::Failed);
+    }
+
+    #[Scope]
+    protected function completed(Builder $query): Builder
+    {
+        return $query->whereStatus(CallStatus::Completed);
     }
 
     #[Scope]
