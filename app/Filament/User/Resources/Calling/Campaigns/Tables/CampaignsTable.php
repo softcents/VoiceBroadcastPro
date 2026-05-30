@@ -19,7 +19,7 @@ final class CampaignsTable
     public static function configure(Table $table): Table
     {
         return $table
-            ->defaultSort('created_at', direction: 'desc')
+            ->defaultSort('id', direction: 'desc')
             ->columns([
                 TextColumn::make('id')
                     ->label('ID')
