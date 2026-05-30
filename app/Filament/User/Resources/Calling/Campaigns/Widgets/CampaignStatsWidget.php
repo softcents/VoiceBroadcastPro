@@ -6,10 +6,11 @@ namespace App\Filament\User\Resources\Calling\Campaigns\Widgets;
 
 use App\Enums\CallStatus;
 use App\Models\Campaign;
-use Filament\Actions\Action;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Number;
+use LaraZeus\Tabler\Tabler;
 
 final class CampaignStatsWidget extends StatsOverviewWidget
 {
@@ -17,7 +18,7 @@ final class CampaignStatsWidget extends StatsOverviewWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected ?string $pollingInterval = '30s';
+    protected ?string $pollingInterval = '15s';
 
     protected function getColumns(): int
     {
@@ -37,12 +38,14 @@ final class CampaignStatsWidget extends StatsOverviewWidget
                 SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as failed_calls,
                 SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as pending_calls,
                 SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) as processing_calls,
+                SUM(CASE WHEN status = ? THEN 1 ELSE 0 END) AS initiated_calls,
                 COALESCE(SUM(cost), 0) as total_cost
             ', [
                 CallStatus::Completed->value,
                 CallStatus::Failed->value,
                 CallStatus::Pending->value,
                 CallStatus::Processing->value,
+                CallStatus::Initiated->value,
             ])
             ->first();
 
@@ -51,6 +54,7 @@ final class CampaignStatsWidget extends StatsOverviewWidget
         $failedCalls = (int) $stats->failed_calls;
         $pendingCalls = (int) $stats->pending_calls;
         $processingCalls = (int) $stats->processing_calls;
+        $initiatedCalls = (int) $stats->initiated_calls;
         $totalCost = (float) $stats->total_cost;
 
         $completedRate = $totalCalls > 0
@@ -59,35 +63,39 @@ final class CampaignStatsWidget extends StatsOverviewWidget
 
         return [
             Stat::make('Total Calls', number_format($totalCalls))
-                ->description('All calls in campaign')
-                ->color('gray'),
-
-            Stat::make('Completed', number_format($completedCalls))
-                ->description('Successfully completed')
-                ->color('success'),
-
-            Stat::make('Failed', number_format($failedCalls))
-                ->description('Could not connect')
-                ->color('danger')
-                ->action(
-                    Action::make('retryFailed')
-                        ->label('Retry Failed Calls')
-                        ->url('https://example.com/retry-failed-calls')
-                ),
+                ->description('All calls in campaign'),
 
             Stat::make('Pending', number_format($pendingCalls))
                 ->description('Waiting to be processed')
-                ->color('warning'),
+                ->icon(Tabler::PhonePlus),
+
+            Stat::make('Initiated', number_format($initiatedCalls))
+                ->description('Waiting for call to start')
+                ->icon(Tabler::PhoneIncoming),
 
             Stat::make('Processing', number_format($processingCalls))
                 ->description('Currently in progress')
-                ->color('info'),
+                ->icon(Tabler::PhoneCall),
 
-            Stat::make('Completion Rate', $completedRate.'%')
-                ->description('Completed / Total')
-                ->color($completedRate >= 50 ? 'success' : ($completedRate >= 25 ? 'warning' : 'danger')),
+            Stat::make('Failed', number_format($failedCalls))
+                ->description('Could not connect')
+                ->icon(Tabler::PhoneX)
+                ->color('danger'),
 
-            Stat::make('Total Cost', '৳'.number_format($totalCost, 2))
+            Stat::make('Completed', number_format($completedCalls))
+                ->description('Successfully completed')
+                ->icon(Tabler::PhoneDone)
+                ->color('success'),
+
+            Stat::make('Completion', $completedRate.'%')
+                ->description('Percentage of completed calls')
+                ->color(
+                    $completedRate >= 50
+                        ? 'success'
+                        : ($completedRate >= 25 ? 'warning' : 'danger')
+                ),
+
+            Stat::make('Total Cost', Number::currency($totalCost, 'BDT'))
                 ->description('Campaign expenditure')
                 ->color('primary'),
         ];

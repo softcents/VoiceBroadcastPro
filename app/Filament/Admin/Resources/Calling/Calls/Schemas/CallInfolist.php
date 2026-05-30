@@ -6,10 +6,9 @@ namespace App\Filament\Admin\Resources\Calling\Calls\Schemas;
 
 use App\Filament\Admin\Resources\Audience\Contacts\ContactResource;
 use App\Filament\Admin\Resources\Calling\Campaigns\CampaignResource;
-use App\Filament\Admin\Resources\Calls\Schemas\Grid;
-use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Models\Call;
 use Filament\Infolists\Components\TextEntry;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -30,9 +29,8 @@ final class CallInfolist
                             ->schema([
                                 Section::make([
                                     TextEntry::make('phone_number')
-                                        ->label('Phone Number')
-                                        ->weight(FontWeight::Bold)
-                                        ->size('lg'),
+                                        ->icon(Tabler::Dialpad)
+                                        ->label('Phone Number'),
                                     TextEntry::make('type')
                                         ->badge(),
                                     TextEntry::make('status')
@@ -99,11 +97,6 @@ final class CallInfolist
                                         TextEntry::make('audio.title')
                                             ->label('Audio')
                                             ->placeholder('Not Assigned'),
-                                        TextEntry::make('user.name')
-                                            ->label('User')
-                                            ->icon(Tabler::User)
-                                            ->placeholder('No user found')
-                                            ->url(fn ($record) => $record->user_id ? CustomerResource::getUrl('view', ['record' => $record->user_id]) : null),
                                     ]),
                             ]),
                     ]),

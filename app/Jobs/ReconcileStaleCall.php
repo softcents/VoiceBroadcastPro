@@ -33,9 +33,7 @@ final class ReconcileStaleCall implements ShouldBeUnique, ShouldQueue
 
     public function handle(): void
     {
-        $campaignId = null;
-
-        DB::transaction(function () use (&$campaignId): void {
+        DB::transaction(function (): void {
             $call = Call::query()
                 ->withoutGlobalScopes()
                 ->with(['caller.server'])
@@ -93,10 +91,6 @@ final class ReconcileStaleCall implements ShouldBeUnique, ShouldQueue
 
             $this->complete($call, $cdr->billsec);
         });
-
-        if ($campaignId) {
-            UpdateCampaignStatus::dispatch($campaignId);
-        }
     }
 
     public function failed(Throwable $exception): void

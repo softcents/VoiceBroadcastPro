@@ -7,6 +7,7 @@ namespace App\Filament\User\Resources\Calling\Campaigns\Pages;
 use App\Enums\CampaignStatus;
 use App\Filament\User\Resources\Calling\Campaigns\CampaignResource;
 use App\Filament\User\Resources\Calling\Campaigns\Widgets\CampaignChartWidget;
+use App\Filament\User\Resources\Calling\Campaigns\Widgets\CampaignDurationChartWidget;
 use App\Filament\User\Resources\Calling\Campaigns\Widgets\CampaignStatsWidget;
 use App\Models\Call;
 use App\Models\Campaign;
@@ -68,13 +69,8 @@ final class ViewCampaign extends ViewRecord
     {
         return [
             CampaignStatsWidget::class,
-        ];
-    }
-
-    protected function getFooterWidgets(): array
-    {
-        return [
             CampaignChartWidget::class,
+            CampaignDurationChartWidget::class,
         ];
     }
 }

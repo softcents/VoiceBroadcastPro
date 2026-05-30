@@ -6,7 +6,6 @@ namespace App\Jobs\Concerns;
 
 use App\Enums\CallStatus;
 use App\Enums\TransactionType;
-use App\Jobs\UpdateCampaignStatus;
 use App\Models\Call;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
@@ -25,9 +24,7 @@ trait RefundsCallCost
      */
     protected function refundCallCost(int $callId, string $reason): void
     {
-        $campaignId = null;
-
-        DB::transaction(function () use ($callId, $reason, &$campaignId): void {
+        DB::transaction(function () use ($callId, $reason): void {
             $call = Call::query()
                 ->withoutGlobalScopes()
                 ->whereKey($callId)
@@ -79,12 +76,6 @@ trait RefundsCallCost
                 'status' => CallStatus::Failed,
                 'cost' => 0,
             ]);
-
-            $campaignId = $call->campaign_id;
         });
-
-        if ($campaignId) {
-            UpdateCampaignStatus::dispatch($campaignId);
-        }
     }
 }

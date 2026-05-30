@@ -119,9 +119,12 @@ final class InitiateCallJob implements ShouldBeUnique, ShouldQueue
                 $callerNumber = $this->call->caller->caller_number;
             }
 
-            $response = Http::timeout(30)
+            $response = Http::baseUrl($server->ari_base_url)
                 ->withBasicAuth($server->ari_username, $server->ari_password)
-                ->baseUrl($server->ari_base_url)
+                ->timeout(30)
+                ->connectTimeout(10)
+                ->asJson()
+                ->acceptJson()
                 ->post('ari/channels', [
                     'endpoint' => "PJSIP/{$phone}@$trunk",
                     'app' => 'MyStasisApp',
@@ -158,10 +161,6 @@ final class InitiateCallJob implements ShouldBeUnique, ShouldQueue
                 'unique_id' => $uniqueId,
                 'status' => CallStatus::Processing,
             ]);
-
-            if ($this->call->campaign_id) {
-                UpdateCampaignStatus::dispatch($this->call->campaign_id);
-            }
         } catch (Exception $e) {
             Log::error("Exception during API call for Call ID {$this->call->id}", [
                 'exception' => $e->getMessage(),

@@ -6,5 +6,5 @@ use Illuminate\Support\Facades\Schedule;
 
 Schedule::command('telescope:prune --hours=24')->daily()->runInBackground();
 Schedule::command('app:sync-trunk-status')->everyMinute();
-Schedule::command('app:dispatch-call')->everyThirtySeconds();
-Schedule::command('app:reconcile-stale-calls')->everyMinute();
+Schedule::command('calls:dispatch')->everyMinute();
+Schedule::command('calls:reconcile')->everyMinute();

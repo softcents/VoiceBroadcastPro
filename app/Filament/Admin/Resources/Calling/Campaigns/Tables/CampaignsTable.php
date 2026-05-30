@@ -26,6 +26,11 @@ final class CampaignsTable
         return $table
             ->defaultSort('created_at', direction: 'desc')
             ->columns([
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable()
+                    ->width(0)
+                    ->alignCenter(),
                 TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable()
@@ -33,29 +38,26 @@ final class CampaignsTable
                 TextColumn::make('title')
                     ->label('Title')
                     ->searchable()
-                    ->wrap()
-                    ->limit(50),
+                    ->limit(20),
+                TextColumn::make('audio.title')
+                    ->label('Audio')
+                    ->limit(20),
+                TextColumn::make('group.name')
+                    ->label('Group')
+                    ->limit(20),
                 TextColumn::make('approval')
                     ->label('Approval')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => $state->name),
+                    ->badge(),
                 TextColumn::make('status')
                     ->label('Current Status')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => $state->name),
+                    ->badge(),
                 TextColumn::make('scheduled_at')
                     ->label('Scheduled At')
+                    ->placeholder('Not Scheduled')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->label('Created At')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at'),
+                TextColumn::make('updated_at'),
             ])
             ->filters([
                 //

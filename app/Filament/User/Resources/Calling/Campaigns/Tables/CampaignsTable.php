@@ -38,26 +38,17 @@ final class CampaignsTable
                     ->limit(20),
                 TextColumn::make('approval')
                     ->label('Approval')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => $state->name),
+                    ->badge(),
                 TextColumn::make('status')
                     ->label('Current Status')
-                    ->badge()
-                    ->formatStateUsing(fn ($state) => $state->name),
+                    ->badge(),
                 TextColumn::make('scheduled_at')
                     ->label('Scheduled At')
                     ->placeholder('Not Scheduled')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('created_at')
-                    ->label('Created At')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('created_at'),
+                TextColumn::make('updated_at'),
             ])
             ->filters([
                 //

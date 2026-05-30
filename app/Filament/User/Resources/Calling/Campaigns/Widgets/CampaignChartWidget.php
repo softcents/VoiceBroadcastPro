@@ -15,67 +15,57 @@ final class CampaignChartWidget extends ChartWidget
 
     protected ?string $heading = 'Call Status Distribution';
 
-    protected ?string $maxHeight = '300px';
+    protected ?string $maxHeight = '200px';
 
     protected int|string|array $columnSpan = 1;
 
     protected function getData(): array
     {
         if (! $this->record instanceof Campaign) {
-            return [];
+            return [
+                'datasets' => [],
+                'labels' => [],
+            ];
         }
 
-        $data = $this->record->calls()
-            ->selectRaw('count(*) as count, status')
+        $counts = $this->record->calls()
+            ->selectRaw('status, COUNT(*) as count')
             ->groupBy('status')
-            ->pluck('count', 'status')
-            ->toArray();
+            ->pluck('count', 'status');
 
-        $statusColors = [
-            CallStatus::Pending->value => 'rgb(156, 163, 175)', // gray
-            CallStatus::Initiated->value => 'rgb(245, 158, 11)', // amber/warning
-            CallStatus::Processing->value => 'rgb(59, 130, 246)',  // blue/info
-            CallStatus::Completed->value => 'rgb(16, 185, 129)',  // emerald/success
-            CallStatus::Failed->value => 'rgb(239, 68, 68)',   // red/danger
+        $statuses = [
+            CallStatus::Pending,
+            CallStatus::Initiated,
+            CallStatus::Processing,
+            CallStatus::Completed,
+            CallStatus::Failed,
         ];
 
-        $labels = [];
-        $values = [];
-        $colors = [];
-
-        foreach ($data as $status => $count) {
-            $statusEnum = CallStatus::tryFrom($status);
-            $labels[] = $statusEnum?->getLabel() ?? $status;
-            $values[] = $count;
-            $colors[] = $statusColors[$status] ?? 'rgb(156, 163, 175)';
-        }
+        $colors = [
+            CallStatus::Pending->value => '#9CA3AF',
+            CallStatus::Initiated->value => '#F59E0B',
+            CallStatus::Processing->value => '#3B82F6',
+            CallStatus::Completed->value => '#10B981',
+            CallStatus::Failed->value => '#EF4444',
+        ];
 
         return [
-            'datasets' => [
-                [
-                    'label' => 'Calls',
-                    'data' => $values,
-                    'backgroundColor' => $colors,
-                    'borderWidth' => 0,
-                ],
-            ],
-            'labels' => $labels,
+            'datasets' => collect($statuses)
+                ->map(fn ($status) => [
+                    'label' => $status->getLabel(),
+                    'data' => [
+                        (int) ($counts[$status->value] ?? 0),
+                    ],
+                    'backgroundColor' => $colors[$status->value],
+                ])
+                ->all(),
+
+            'labels' => ['Calls'],
         ];
     }
 
     protected function getType(): string
     {
-        return 'doughnut';
-    }
-
-    protected function getOptions(): array
-    {
-        return [
-            'plugins' => [
-                'legend' => [
-                    'position' => 'right',
-                ],
-            ],
-        ];
+        return 'bar';
     }
 }

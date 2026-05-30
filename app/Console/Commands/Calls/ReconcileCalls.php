@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Calls;
 
 use App\Enums\CallStatus;
 use App\Jobs\ReconcileStaleCall;
@@ -11,9 +11,9 @@ use Illuminate\Console\Attributes\Description;
 use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 
-#[Signature('app:reconcile-stale-calls {--threshold=10 : Minutes after which a call is considered stale}')]
+#[Signature('calls:reconcile {--threshold=10 : Minutes after which a call is considered stale}')]
 #[Description('Find calls stuck in Processing or Initiated status and reconcile them against Asterisk CDR')]
-final class ReconcileStaleCalls extends Command
+final class ReconcileCalls extends Command
 {
     public function handle(): void
     {
