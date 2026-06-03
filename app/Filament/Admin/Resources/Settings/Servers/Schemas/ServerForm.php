@@ -113,7 +113,7 @@ final class ServerForm
                                     ->label('Port')
                                     ->placeholder('e.g. 3306')
                                     ->numeric()
-                                    ->default(8088)
+                                    ->default(3306)
                                     ->required(),
                                 TextInput::make('database_username')
                                     ->prefixIcon(Tabler::User)
