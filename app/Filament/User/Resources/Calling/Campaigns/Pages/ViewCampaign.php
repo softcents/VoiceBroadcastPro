@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Filament\User\Resources\Calling\Campaigns\Pages;
 
+use App\Enums\CampaignStatus;
 use App\Enums\TransactionType;
 use App\Filament\User\Resources\Calling\Campaigns\CampaignResource;
 use App\Filament\User\Resources\Calling\Campaigns\Widgets\CampaignChartWidget;
@@ -103,6 +104,10 @@ final class ViewCampaign extends ViewRecord
                     ]);
 
                     $lockedUser->decrement('balance', $totalCost);
+
+                    if (in_array([CampaignStatus::Finished, CampaignStatus::Failed], $record->status)) {
+                        $record->update(['status' => CampaignStatus::Processing]);
+                    }
                 });
 
                 $this->refresh();

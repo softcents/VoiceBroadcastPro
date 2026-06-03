@@ -6,10 +6,10 @@ namespace App\Actions;
 
 use App\Enums\CallStatus;
 use App\Enums\CallType;
+use App\Enums\CampaignStatus;
 use App\Enums\TransactionType;
 use App\Exceptions\BusinessException;
 use App\Models\Call;
-use App\Models\Campaign;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Throwable;
@@ -70,6 +70,10 @@ final class RetryCall
             ]);
 
             $call->increment('retries');
+
+            if ($call->campaign && in_array($call->campaign->status, [CampaignStatus::Finished, CampaignStatus::Failed])) {
+                $call->campaign->update(['status' => CampaignStatus::Processing]);
+            }
         });
     }
 
