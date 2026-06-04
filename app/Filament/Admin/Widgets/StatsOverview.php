@@ -33,12 +33,12 @@ final class StatsOverview extends BaseWidget
                 ->description('Active users on the platform')
                 ->icon(Tabler::Users),
 
-            Stat::make('Total Calls (Today)', Call::whereDate('created_at', now())->count())
+            Stat::make('Total Calls (Today)', Call::whereToday('created_at')->count())
                 ->description('Calls made today')
                 ->icon(Tabler::PhoneCalling),
 
             Stat::make('Revenue (Today)', function () {
-                $cost = Call::whereDate('created_at', now())
+                $cost = Call::whereToday('created_at')
                     ->whereStatus(CallStatus::Completed)
                     ->sum('cost');
 
