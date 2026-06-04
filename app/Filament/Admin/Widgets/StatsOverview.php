@@ -23,7 +23,7 @@ final class StatsOverview extends BaseWidget
 
     public function getColumns(): int|array
     {
-        return 4;
+        return 3;
     }
 
     protected function getStats(): array
@@ -33,18 +33,20 @@ final class StatsOverview extends BaseWidget
                 ->description('Active users on the platform')
                 ->icon(Tabler::Users),
 
-            Stat::make('Total Calls (Today)', Call::whereToday('created_at')->count())
+            Stat::make('Total Calls', function () {
+                $count = Call::count();
+
+                return Number::abbreviate($count, maxPrecision: 2);
+            })
                 ->description('Calls made today')
                 ->icon(Tabler::PhoneCalling),
 
-            Stat::make('Revenue (Today)', function () {
-                $cost = Call::whereToday('created_at')
-                    ->whereStatus(CallStatus::Completed)
-                    ->sum('cost');
+            Stat::make('Revenue', function () {
+                $cost = Call::whereStatus(CallStatus::Completed)->sum('cost');
 
                 return Number::currency((float) $cost, 'BDT');
             })
-                ->description('Total revenue generated today')
+                ->description('Total revenue generated')
                 ->icon(Tabler::Businessplan),
 
             Stat::make('Total User Balance', function () {
@@ -53,20 +55,8 @@ final class StatsOverview extends BaseWidget
 
                 return Number::currency((float) $balance, 'BDT');
             })
-                ->description('Total wallet balance of all users')
+                ->description('Balance across all users')
                 ->icon(Tabler::Wallet),
-
-            Stat::make('Active Campaigns', Campaign::whereStatus(CampaignStatus::Processing)->count())
-                ->description('Campaigns currently processing')
-                ->icon(Tabler::Loader),
-
-            Stat::make('Pending Campaigns', Campaign::whereStatus(CampaignStatus::Pending)->count())
-                ->description('Campaigns waiting to start')
-                ->icon(Tabler::Clock),
-
-            Stat::make('Completed (Today)', Campaign::whereStatus(CampaignStatus::Finished)->whereDate('updated_at', today())->count())
-                ->description('Campaigns completed today')
-                ->icon(Tabler::CircleCheck),
 
             Stat::make('Total Campaigns', Campaign::count())
                 ->description('All time total campaigns')
