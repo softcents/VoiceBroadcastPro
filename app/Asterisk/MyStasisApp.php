@@ -13,6 +13,7 @@ use App\Models\Call;
 use App\Models\User;
 use Illuminate\Console\View\Components\Factory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use JsonException;
 use OpiyOrg\AriClient\Client\Rest\Resource\Channels;
@@ -103,34 +104,33 @@ final class MyStasisApp implements AsteriskStasisApp, StasisApplicationInterface
     {
         $uniqueId = $channelHangupRequest->getChannel()->getId();
 
-        $call = $this->findCall(null, $uniqueId);
+        DB::transaction(function () use ($uniqueId) {
+            $call = Call::query()
+                ->with(['caller.server', 'audio'])
+                ->where('unique_id', $uniqueId)
+                ->lockForUpdate()
+                ->first();
 
-        if (! $call) {
-            // If we can't find the call, we can't find the CDR, so we just return.
-            return;
-        }
+            if (! $call) {
+                return;
+            }
 
-        $cdr = Cdr::using(
-            host: $call->caller->server->database_host,
-            username: $call->caller->server->database_username,
-            password: $call->caller->server->database_password
-        )
-            ->where('uniqueid', $uniqueId)
-            ->first();
+            $cdr = Cdr::using(
+                host: $call->caller->server->database_host,
+                username: $call->caller->server->database_username,
+                password: $call->caller->server->database_password
+            )
+                ->where('uniqueid', $uniqueId)
+                ->first();
 
-        if (! $cdr) {
-            $this->markCallAsFailed($call);
+            if (! $cdr || $cdr->billsec <= 0) {
+                $this->markCallAsFailed($call);
 
-            return;
-        }
+                return;
+            }
 
-        if ($cdr->billsec <= 0) {
-            $this->markCallAsFailed($call);
-
-            return;
-        }
-
-        $this->markCallAsCompleted($call, $cdr->billsec);
+            $this->markCallAsCompleted($call, $cdr->billsec);
+        });
     }
 
     public function findCall(?int $callId = null, ?string $uniqueId = null): ?Call

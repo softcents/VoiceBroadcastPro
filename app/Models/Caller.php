@@ -59,19 +59,9 @@ final class Caller extends Model
             ->count();
     }
 
-    /**
-     * Get the number of available slots for this caller.
-     * Returns a high number (1000) if max_concurrency is 0 (unlimited).
-     */
     public function availableSlots(): int
     {
-        $limit = $this->max_concurrency;
-
-        if ($limit <= 0) {
-            return 1000; // Unlimited
-        }
-
-        return max(0, $limit - $this->activeCallsCount());
+        return max(0, $this->max_concurrency - $this->activeCallsCount());
     }
 
     protected function name(): Attribute

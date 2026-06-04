@@ -222,7 +222,7 @@ return [
             'queue' => ['calling'],
             'balance' => 'auto',
             'autoScalingStrategy' => 'time',
-            'maxProcesses' => 2,
+            'maxProcesses' => (int) env('HORIZON_CALL_MAX_PROCESSES', 5),
             'maxTime' => 0,
             'maxJobs' => 0,
             'memory' => 128,
@@ -240,7 +240,6 @@ return [
                 'balanceCooldown' => 3,
             ],
             'call' => [
-                'maxProcesses' => 2,
                 'balanceMaxShift' => 1,
                 'balanceCooldown' => 3,
             ],
@@ -252,7 +251,6 @@ return [
                 'balanceCooldown' => 0,
             ],
             'call' => [
-                'maxProcesses' => 1,
                 'balanceMaxShift' => 0,
                 'balanceCooldown' => 0,
             ],

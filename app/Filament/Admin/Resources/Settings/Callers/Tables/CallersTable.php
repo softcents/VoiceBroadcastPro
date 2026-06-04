@@ -34,7 +34,7 @@ final class CallersTable
                     ->sortable()
                     ->badge()
                     ->alignCenter()
-                    ->formatStateUsing(fn (int $state): string => $state === 0 ? 'Unlimited' : trans_choice(':count Call|:count Calls', $state, ['count' => $state])),
+                    ->formatStateUsing(fn (int $state): string => trans_choice(':count Call|:count Calls', $state, ['count' => $state])),
                 TextColumn::make('users.name')
                     ->label('Users')
                     ->searchable()

@@ -32,7 +32,6 @@ final class CallerForm
                             ->required(),
                         TextInput::make('max_concurrency')
                             ->label('Max Concurrency')
-                            ->hint('Set to 0 for unlimited.')
                             ->numeric()
                             ->default(0)
                             ->required()

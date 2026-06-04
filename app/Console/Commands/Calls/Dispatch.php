@@ -46,6 +46,8 @@ final class Dispatch extends Command
                     JOIN callers cl ON cl.id = c.caller_id
                     LEFT JOIN campaigns ca ON ca.id = c.campaign_id
                     WHERE c.status = ?
+                    AND cl.enabled = 1
+                    AND cl.is_online = 1
                     AND (
                         (
                             c.campaign_id IS NOT NULL
@@ -115,6 +117,10 @@ final class Dispatch extends Command
 
             DB::update($updateSql, [$initiated, $pending, ...$ids]);
 
+            foreach ($ids as $id) {
+                InitiateCallJob::dispatch($id)->onQueue('calling');
+            }
+
             return $ids;
         });
 
@@ -122,10 +128,6 @@ final class Dispatch extends Command
             $this->info('No calls to dispatch.');
 
             return;
-        }
-
-        foreach ($dispatchedIds as $id) {
-            InitiateCallJob::dispatch($id)->onQueue('calling');
         }
 
         $this->info('Dispatched '.count($dispatchedIds).' calls onto the queue.');
