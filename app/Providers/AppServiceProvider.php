@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use App\Models\User;
 use App\Support\TTS\TTSManager;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Sanctum\Sanctum;
@@ -26,6 +28,7 @@ final class AppServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiters();
         $this->configureSanctum();
+        $this->authorizeAdminGate();
     }
 
     private function configureRateLimiters(): void
@@ -39,6 +42,13 @@ final class AppServiceProvider extends ServiceProvider
             return $request->query('token')
                 || $request->input('token')
                 || $request->bearerToken();
+        });
+    }
+
+    private function authorizeAdminGate(): void
+    {
+        Gate::before(function (User $user) {
+            return $user->isAdmin() ? true : null;
         });
     }
 }

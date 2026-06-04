@@ -67,7 +67,8 @@ final class CreateNewCampaign
             ]);
 
             // We could move this logic to a queue job if we want to speed up the response time of campaign creation
-            $campaign->group->contacts()->chunkById(1000, function ($contacts) use ($campaign, $costPerCall, $interface) {
+            $now = now();
+            $campaign->group->contacts()->chunkById(1000, function ($contacts) use ($campaign, $costPerCall, $interface, $now) {
                 $payload = [];
 
                 foreach ($contacts as $contact) {
@@ -83,6 +84,8 @@ final class CreateNewCampaign
                         'interface' => $interface,
                         'scheduled_at' => $campaign->scheduled_at,
                         'cost' => $costPerCall,
+                        'created_at' => $now,
+                        'updated_at' => $now,
                     ];
                 }
 
