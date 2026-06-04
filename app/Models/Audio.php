@@ -97,7 +97,7 @@ final class Audio extends Model
         return Attribute::get(function () {
             $user = $this->user;
 
-            $pulseDuration = $user->pulse_duration ?? 60;
+            $pulseDuration = $user->pulse_duration ?? 10;
             $pulseRate = $user->pulse_rate ?? 0;
 
             if ($pulseDuration <= 0) {

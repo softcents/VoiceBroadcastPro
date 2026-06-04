@@ -115,6 +115,11 @@ final class MyStasisApp implements AsteriskStasisApp, StasisApplicationInterface
                 return;
             }
 
+            // Already settled by ReconcileStaleCall — nothing to do.
+            if (! in_array($call->status, [CallStatus::Processing, CallStatus::Initiated], true)) {
+                return;
+            }
+
             $cdr = Cdr::using(
                 host: $call->caller->server->database_host,
                 username: $call->caller->server->database_username,
@@ -203,11 +208,6 @@ final class MyStasisApp implements AsteriskStasisApp, StasisApplicationInterface
             'cost' => $actualCost,
         ]);
 
-        // no change needed (tolerate float noise within 1 paisa)
-        if (abs($diff) < 0.01) {
-            return;
-        }
-
         $before = $user->balance;
 
         if ($diff > 0) {
@@ -243,7 +243,7 @@ final class MyStasisApp implements AsteriskStasisApp, StasisApplicationInterface
 
     private function calculateEstimatedCost(int $duration, User $user): int|float
     {
-        $pulseDuration = $user->pulse_duration ?? 60;
+        $pulseDuration = $user->pulse_duration ?? 10;
         $pulseRate = $user->pulse_rate ?? 0;
 
         if ($pulseDuration <= 0 || $pulseRate <= 0 || $duration <= 0) {

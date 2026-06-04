@@ -152,13 +152,10 @@ final class ReconcileStaleCall implements ShouldBeUnique, ShouldQueue
             'cost' => $actualCost,
         ]);
 
-        if (abs($diff) < 0.01) {
-            return;
-        }
-
         $before = (float) $user->balance;
 
         if ($diff > 0) {
+            // undercharged → collect extra
             $user->decrement('balance', $diff);
 
             $call->transactions()->create([
@@ -188,7 +185,7 @@ final class ReconcileStaleCall implements ShouldBeUnique, ShouldQueue
 
     private function calculateCost(int $duration, User $user): float
     {
-        $pulseDuration = $user->pulse_duration ?? 60;
+        $pulseDuration = $user->pulse_duration ?? 10;
         $pulseRate = $user->pulse_rate ?? 0;
 
         if ($pulseDuration <= 0 || $pulseRate <= 0 || $duration <= 0) {
