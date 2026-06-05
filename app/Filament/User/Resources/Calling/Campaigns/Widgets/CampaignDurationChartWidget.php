@@ -19,6 +19,8 @@ final class CampaignDurationChartWidget extends ChartWidget
 
     protected int|string|array $columnSpan = 1;
 
+    protected ?string $pollingInterval = '5s';
+
     protected function getData(): array
     {
         if (! $this->record instanceof Campaign) {

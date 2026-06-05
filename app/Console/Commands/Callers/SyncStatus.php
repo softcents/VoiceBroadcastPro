@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\Callers;
 
 use App\Models\Caller;
 use Illuminate\Console\Attributes\Description;
@@ -12,9 +12,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Http\Client\Response;
 
-#[Signature('app:sync-trunk-status')]
+#[Signature('callers:sync-status')]
 #[Description('Command description')]
-final class SyncTrunkStatus extends Command
+final class SyncStatus extends Command
 {
     /**
      * Execute the console command.

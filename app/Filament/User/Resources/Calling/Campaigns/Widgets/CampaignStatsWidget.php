@@ -18,7 +18,7 @@ final class CampaignStatsWidget extends StatsOverviewWidget
 
     protected int|string|array $columnSpan = 'full';
 
-    protected ?string $pollingInterval = '15s';
+    protected ?string $pollingInterval = '5s';
 
     protected function getColumns(): int
     {
