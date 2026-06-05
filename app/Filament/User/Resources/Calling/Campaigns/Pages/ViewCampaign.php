@@ -105,7 +105,7 @@ final class ViewCampaign extends ViewRecord
 
                     $lockedUser->decrement('balance', $totalCost);
 
-                    if (in_array([CampaignStatus::Finished, CampaignStatus::Failed], $record->status)) {
+                    if (in_array($record->status, [CampaignStatus::Finished, CampaignStatus::Failed])) {
                         $record->update(['status' => CampaignStatus::Processing]);
                     }
                 });
