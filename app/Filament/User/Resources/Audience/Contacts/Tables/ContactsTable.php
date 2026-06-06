@@ -29,8 +29,6 @@ final class ContactsTable
                 TextColumn::make('group.name')
                     ->searchable()
                     ->url(fn ($record) => GroupResource::getUrl('edit', ['record' => $record->group_id])),
-                TextColumn::make('name')
-                    ->searchable(),
                 TextColumn::make('phone_number')
                     ->searchable(),
                 TextColumn::make('created_at')
