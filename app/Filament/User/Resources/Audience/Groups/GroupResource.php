@@ -8,6 +8,7 @@ use App\Enums\UserNavigationGroup;
 use App\Filament\User\Resources\Audience\Groups\Pages\CreateGroup;
 use App\Filament\User\Resources\Audience\Groups\Pages\EditGroup;
 use App\Filament\User\Resources\Audience\Groups\Pages\ListGroups;
+use App\Filament\User\Resources\Audience\Groups\Pages\ViewGroup;
 use App\Filament\User\Resources\Audience\Groups\RelationManagers\ContactsRelationManager;
 use App\Filament\User\Resources\Audience\Groups\Schemas\GroupForm;
 use App\Filament\User\Resources\Audience\Groups\Schemas\GroupInfolist;
@@ -60,6 +61,7 @@ final class GroupResource extends Resource
         return [
             'index' => ListGroups::route('/'),
             'create' => CreateGroup::route('/create'),
+            'view' => ViewGroup::route('/{record}'),
             'edit' => EditGroup::route('/{record}/edit'),
         ];
     }

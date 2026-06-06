@@ -24,6 +24,10 @@ final class ContactImporter extends Importer
                 ->requiredMapping()
                 ->example(['8801322635808', '8801608460717'])
                 ->rules(['required', 'max:255', 'phone:BD']),
+            ImportColumn::make('name')
+                ->label('Name')
+                ->example(['John Doe', 'Jane Doe'])
+                ->rules(['nullable', 'max:255']),
         ];
     }
 
