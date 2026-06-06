@@ -130,6 +130,7 @@ final class InitiateCallJob implements ShouldBeUnique, ShouldQueue
                     'app' => 'MyStasisApp',
                     'callerId' => "$callerName <$callerNumber>",
                     'appArgs' => "$this->callId",
+                    'timeout' => 300, // 5 minutes
                 ]);
 
             if ($response->failed()) {
