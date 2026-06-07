@@ -78,11 +78,6 @@ final class TransactionsTable
                         Call::class => 'Call',
                     ])
                     ->searchable(),
-            ])
-            ->recordActions([
-            ])
-            ->toolbarActions([
-                //
             ]);
     }
 }
