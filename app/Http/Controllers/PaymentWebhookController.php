@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Actions\Billing\CompleteDeposit;
+use App\Actions\CompleteDeposit;
 use App\Models\PaymentWebhook;
-use App\Support\Facades\Payment;
+use App\Support\Payment\Payment;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Throwable;
