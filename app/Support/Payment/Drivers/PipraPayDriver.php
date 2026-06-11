@@ -101,7 +101,7 @@ final readonly class PipraPayDriver implements PaymentGateway
             gatewayStatus: $payload['status'],
             gatewayPaymentId: $payload['pp_id'],
             checkoutUrl: $payload['currency'],
-            amount: $payload['amount'],
+            amount: (int) $payload['amount'],
             currency: $payload['currency'],
             raw: $payload,
         );
