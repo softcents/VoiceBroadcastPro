@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Actions;
 
-use App\Actions\Billing\CreditBalance;
 use App\Enums\DepositStatus;
 use App\Models\Deposit;
 use App\Support\Payment\Data\PaymentResponse;
