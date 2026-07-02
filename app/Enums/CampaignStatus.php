@@ -16,6 +16,7 @@ enum CampaignStatus: string implements HasColor, HasIcon, HasLabel
     case Processing = 'processing';
     case Failed = 'failed';
     case Finished = 'finished';
+    case Paused = 'paused';
 
     public function getLabel(): string
     {
@@ -30,6 +31,7 @@ enum CampaignStatus: string implements HasColor, HasIcon, HasLabel
             self::Processing => 'info',
             self::Failed => 'danger',
             self::Finished => 'success',
+            self::Paused => 'info',
         };
     }
 
@@ -41,6 +43,7 @@ enum CampaignStatus: string implements HasColor, HasIcon, HasLabel
             self::Processing => Tabler::Loader,
             self::Failed => Tabler::CircleX,
             self::Finished => Tabler::CircleCheck,
+            self::Paused => Tabler::PlayerPause,
         };
     }
 }

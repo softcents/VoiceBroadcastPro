@@ -16,6 +16,7 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     case Processing = 'processing';
     case Completed = 'completed';
     case Failed = 'failed';
+    case Paused = 'paused';
 
     public function getLabel(): ?string
     {
@@ -30,6 +31,7 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
             self::Processing => 'info',
             self::Completed => 'success',
             self::Failed => 'danger',
+            self::Paused => 'info'
         };
     }
 
@@ -41,6 +43,7 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
             self::Processing => Tabler::PhoneCalling,
             self::Completed => Tabler::PhoneCheck,
             self::Failed => Tabler::CircleX,
+            self::Paused => Tabler::PlayerPause
         };
     }
 
