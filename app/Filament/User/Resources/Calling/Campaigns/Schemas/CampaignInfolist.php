@@ -61,7 +61,8 @@ final class CampaignInfolist
                                             ->label('Current Status')
                                             ->badge(),
                                     ]),
-                            ]),
+                            ])
+                            ->collapsible(),
                     ]),
 
                 Group::make()

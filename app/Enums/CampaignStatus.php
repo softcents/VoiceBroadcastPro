@@ -26,12 +26,12 @@ enum CampaignStatus: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::Pending => 'gray',
+            self::Pending,
+            self::Paused => 'gray',
             self::Cancelled => 'warning',
             self::Processing => 'info',
             self::Failed => 'danger',
             self::Finished => 'success',
-            self::Paused => 'info',
         };
     }
 
@@ -45,5 +45,40 @@ enum CampaignStatus: string implements HasColor, HasIcon, HasLabel
             self::Finished => Tabler::CircleCheck,
             self::Paused => Tabler::PlayerPause,
         };
+    }
+
+    public function isPending(): bool
+    {
+        return $this === self::Pending;
+    }
+
+    public function isCancelled(): bool
+    {
+        return $this === self::Cancelled;
+    }
+
+    public function isProcessing(): bool
+    {
+        return $this === self::Processing;
+    }
+
+    public function isFailed(): bool
+    {
+        return $this === self::Failed;
+    }
+
+    public function isFinished(): bool
+    {
+        return $this === self::Finished;
+    }
+
+    public function isPaused(): bool
+    {
+        return $this === self::Paused;
+    }
+
+    public function isPausable(): bool
+    {
+        return in_array($this, [self::Pending, self::Processing]);
     }
 }

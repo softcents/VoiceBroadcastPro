@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Contracts\Transactionable;
+use App\Enums\CallStatus;
 use App\Enums\CampaignApproval;
 use App\Enums\CampaignStatus;
 use App\Models\Scopes\OwnedByAuthUser;
@@ -18,6 +19,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Support\Facades\DB;
+use Throwable;
 
 #[ScopedBy(OwnedByAuthUser::class)]
 #[Guarded(['id'])]
@@ -28,6 +31,7 @@ final class Campaign extends Model implements Transactionable
 
     protected $casts = [
         'status' => CampaignStatus::class,
+        'prev_status' => CampaignStatus::class,
         'approval' => CampaignApproval::class,
         'scheduled_at' => 'datetime',
     ];
@@ -60,6 +64,57 @@ final class Campaign extends Model implements Transactionable
     public function transactions(): MorphMany
     {
         return $this->morphMany(Transaction::class, 'transactionable');
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function pause(): void
+    {
+        if (! $this->status->isPausable()) {
+            return;
+        }
+
+        DB::transaction(function () {
+            $this->update([
+                'status' => CampaignStatus::Paused,
+                'prev_status' => $this->status,
+            ]);
+
+            $this->calls()
+                ->where('status', '!=', CallStatus::Paused)
+                ->update([
+                    'prev_status' => DB::raw('status'),
+                    'status' => CallStatus::Paused,
+                ]);
+        });
+
+    }
+
+    /**
+     * @throws Throwable
+     */
+    public function resume(): void
+    {
+        if (! $this->status->isPaused()) {
+            return;
+        }
+
+        DB::transaction(function () {
+            $this->update([
+                'status' => $this->prev_status ?? CampaignStatus::Pending,
+                'prev_status' => null,
+            ]);
+
+            $this->calls()
+                ->where('status', CallStatus::Paused)
+                ->whereNotNull('prev_status')
+                ->update([
+                    'status' => DB::raw('prev_status'),
+                    'prev_status' => null,
+                ]);
+        });
+
     }
 
     #[Scope]

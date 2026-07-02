@@ -21,6 +21,8 @@ final class CampaignDurationChartWidget extends ChartWidget
 
     protected ?string $pollingInterval = '5s';
 
+    protected bool $isCollapsible = true;
+
     protected function getData(): array
     {
         if (! $this->record instanceof Campaign) {

@@ -31,6 +31,7 @@ final class Call extends Model
 
     protected $casts = [
         'status' => CallStatus::class,
+        'prev_status' => CallStatus::class,
         'type' => CallType::class,
         'interface' => CallInterface::class,
         'phone_number' => E164PhoneNumberCast::class,

@@ -5,16 +5,17 @@ declare(strict_types=1);
 namespace App\Filament\Admin\Resources\Calling\Campaigns\Tables;
 
 use App\Enums\CampaignApproval;
+use App\Enums\CampaignStatus;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Models\Campaign;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Collection;
 use LaraZeus\Tabler\Tabler;
@@ -80,6 +81,21 @@ final class CampaignsTable
                         ->requiresConfirmation()
                         ->visible(fn (Campaign $record) => $record->approval !== CampaignApproval::Rejected)
                         ->action(fn (Campaign $record) => $record->update(['approval' => CampaignApproval::Rejected])),
+
+                    Action::make('pause')
+                        ->label('Pause')
+                        ->icon(Tabler::PlayerPause)
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->visible(fn (Campaign $record) => $record->status->isPausable())
+                        ->action(fn (Campaign $record) => $record->pause()),
+                    Action::make('resume')
+                        ->label('Resume')
+                        ->icon(Tabler::PlayerPlay)
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->visible(fn (Campaign $record) => $record->status->isPaused())
+                        ->action(fn (Campaign $record) => $record->resume()),
                 ]),
             ])
             ->toolbarActions([
@@ -96,8 +112,30 @@ final class CampaignsTable
                         ->color('danger')
                         ->requiresConfirmation()
                         ->action(fn (Collection $records) => $records->each(fn (Campaign $record) => $record->update(['approval' => CampaignApproval::Rejected]))),
-                    DeleteBulkAction::make(),
+
+                    BulkAction::make('pause')
+                        ->label('Pause Selected')
+                        ->icon(Tabler::PlayerPause)
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->successNotificationTitle('Pausable campaigns paused successfully.')
+                        ->action(fn (Collection $records) => $records->each(fn (Campaign $record) => $record->pause())),
+                    BulkAction::make('resume')
+                        ->label('Resume Selected')
+                        ->icon(Tabler::PlayerPlay)
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->successNotificationTitle('Resumable campaigns resumed successfully.')
+                        ->action(fn (Collection $records) => $records->each(fn (Campaign $record) => $record->resume())),
                 ]),
+            ])
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Status')
+                    ->options(CampaignStatus::class),
+                SelectFilter::make('approval')
+                    ->label('Approval')
+                    ->options(CampaignApproval::class),
             ]);
     }
 }
