@@ -10,15 +10,17 @@ use App\Enums\CallType;
 use App\Filament\Admin\Resources\Calling\Campaigns\CampaignResource;
 use App\Filament\Admin\Resources\Customers\CustomerResource;
 use App\Models\Call;
+use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteAction;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Collection;
+use LaraZeus\Tabler\Tabler;
 
 final class CallsTable
 {
@@ -81,12 +83,34 @@ final class CallsTable
             ->recordActions([
                 ActionGroup::make([
                     ViewAction::make(),
-                    DeleteAction::make(),
+                    Action::make('pause')
+                        ->icon(Tabler::PlayerPause)
+                        ->action(fn (Call $record) => $record->pause())
+                        ->successNotificationTitle('Call Paused')
+                        ->visible(fn (Call $record) => $record->status->isPausable()),
+                    Action::make('resume')
+                        ->icon(Tabler::PlayerPlay)
+                        ->action(fn (Call $record) => $record->resume())
+                        ->successNotificationTitle('Call Resumed')
+                        ->visible(fn (Call $record) => $record->status->isPaused()),
                 ]),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    BulkAction::make('pause')
+                        ->label('Pause Selected')
+                        ->icon(Tabler::PlayerPause)
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->successNotificationTitle('Pausable calls paused successfully.')
+                        ->action(fn (Collection $records) => $records->each(fn (Call $record) => $record->pause())),
+                    BulkAction::make('resume')
+                        ->label('Resume Selected')
+                        ->icon(Tabler::PlayerPlay)
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->successNotificationTitle('Resumable calls resumed successfully.')
+                        ->action(fn (Collection $records) => $records->each(fn (Call $record) => $record->resume())),
                 ]),
             ]);
     }

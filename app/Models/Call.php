@@ -139,4 +139,28 @@ final class Call extends Model
                 ->where('retries', '<', $callSettings->max_retry_attempts);
         });
     }
+
+    public function pause(): void
+    {
+        if (!$this->status->isPausable()) {
+            return;
+        }
+
+        $this->update([
+            'prev_status' => $this->status,
+            'status' => CallStatus::Paused,
+        ]);
+    }
+
+    public function resume(): void
+    {
+        if (!$this->status->isPaused()) {
+            return;
+        }
+
+        $this->update([
+            'status' => $this->prev_status ?? CallStatus::Pending,
+            'prev_status' => null,
+        ]);
+    }
 }

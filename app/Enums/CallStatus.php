@@ -26,12 +26,12 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
     public function getColor(): string
     {
         return match ($this) {
-            self::Pending => 'gray',
+            self::Pending,
+            self::Paused => 'gray',
             self::Initiated => 'warning',
             self::Processing => 'info',
             self::Completed => 'success',
-            self::Failed => 'danger',
-            self::Paused => 'info'
+            self::Failed => 'danger'
         };
     }
 
@@ -47,13 +47,43 @@ enum CallStatus: string implements HasColor, HasIcon, HasLabel
         };
     }
 
+    public function isPending(): bool
+    {
+        return $this === self::Pending;
+    }
+
+    public function isInitiated(): bool
+    {
+        return $this === self::Initiated;
+    }
+
+    public function isProcessing(): bool
+    {
+        return $this === self::Processing;
+    }
+
     public function isCompleted(): bool
     {
         return $this === self::Completed;
     }
 
+    public function isFailed(): bool
+    {
+        return $this === self::Failed;
+    }
+
+    public function isPaused(): bool
+    {
+        return $this === self::Paused;
+    }
+
     public function isRefundable(): bool
     {
         return $this === self::Failed;
+    }
+
+    public function isPausable(): bool
+    {
+        return $this === self::Paused;
     }
 }
