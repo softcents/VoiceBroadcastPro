@@ -13,6 +13,7 @@ enum UserType: string implements HasColor, HasIcon, HasLabel
 {
     case Admin = 'admin';
     case User = 'user';
+    case SP = 'sp';
 
     public function getLabel(): string
     {
@@ -24,6 +25,7 @@ enum UserType: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::Admin => 'danger',
             self::User => 'info',
+            self::SP => 'warning',
         };
     }
 
@@ -32,6 +34,7 @@ enum UserType: string implements HasColor, HasIcon, HasLabel
         return match ($this) {
             self::Admin => Tabler::ShieldCheck,
             self::User => Tabler::User,
+            self::SP => Tabler::Users,
         };
     }
 }
