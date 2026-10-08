@@ -61,22 +61,6 @@ final class CustomerResource extends Resource
             ->where('sp_id', auth()->id());
     }
 
-    public static function mutateFormDataBeforeCreate(array $data): array
-    {
-        $data['type'] = UserType::User;
-        $data['sp_id'] = auth()->id();
-
-        return $data;
-    }
-
-    public static function mutateFormDataBeforeSave(array $data): array
-    {
-        $data['type'] = UserType::User;
-        $data['sp_id'] = auth()->id();
-
-        return $data;
-    }
-
     public static function getPages(): array
     {
         return [
