@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Attributes\Guarded;
 use Illuminate\Database\Eloquent\Attributes\Scope;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,7 +26,6 @@ use Laravel\Sanctum\HasApiTokens;
 #[Guarded(['id'])]
 final class User extends Authenticatable implements FilamentUser, HasAvatar
 {
-    /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     protected $casts = [
@@ -40,15 +40,20 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         'rate' => 'float',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
+
+    public function sp(): BelongsTo
+    {
+        return $this->belongsTo(self::class, 'sp_id');
+    }
+
+    public function customers(): HasMany
+    {
+        return $this->hasMany(self::class, 'sp_id');
+    }
 
     public function audio(): HasMany
     {
@@ -92,7 +97,6 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
 
     public function canAccessPanel(Panel $panel): bool
     {
-        // Managed by AdminMiddleware and UserMiddleware
         return true;
     }
 
@@ -111,6 +115,11 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
         return $this->type === UserType::User;
     }
 
+    public function isSP(): bool
+    {
+        return $this->type === UserType::SP;
+    }
+
     public function hasEnoughBalance(float $amount): bool
     {
         return $this->balance >= $amount;
@@ -126,5 +135,11 @@ final class User extends Authenticatable implements FilamentUser, HasAvatar
     protected function user(Builder $query): Builder
     {
         return $query->where('type', UserType::User);
+    }
+
+    #[Scope]
+    protected function sp(Builder $query): Builder
+    {
+        return $query->where('type', UserType::SP);
     }
 }
